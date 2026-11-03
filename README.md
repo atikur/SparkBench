@@ -6,7 +6,14 @@ actually did. A build that compiles and a UART "OK" are not proof. LEDs lighting
 order and the right text on the OLED, measured from video, are.
 
 Built for the [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon)
-(26 October – 4 November 2026).
+(26 October – 4 November 2026), problem statement **Push the Frontier**: a better way to understand
+and control a physical system.
+
+**Everything in this repository was built during the hackathon**, from the first board bring-up on
+27 October to the explanation feature on 3 November. The dated engineering log is
+[docs/history.md](docs/history.md). Development was AI-assisted (Codex and Claude Code sessions
+driven by the author). The runtime Meta model calls are exactly the ones listed under
+[How Meta AI is used](#how-meta-ai-is-used), and every request is saved under `runs/`.
 
 ![SparkBench dashboard showing a recorded LED + OLED check that passed with 45 evaluated samples, the camera frame, and expected versus observed values](docs/images/dashboard-evidence-pass.jpg)
 
@@ -139,8 +146,6 @@ quoted above are summarised in [docs/live-validation.md](docs/live-validation.md
 - Photo guidance is advisory. A photo cannot establish continuity, voltage or polarity.
 - The latest dashboard-installed READY/BUSY/DONE firmware has passed flash and identity checks; its
   camera test is pending a refreshed camera reference.
-- Development was AI-assisted (Codex and Claude Code sessions driven by the author). Runtime use of
-  Meta models is exactly what the table above lists.
 
 ## Repository layout
 

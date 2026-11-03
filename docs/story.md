@@ -71,18 +71,53 @@ with proof cards; the Limits dialog.
 **Cut:** SAM 3.1 segmentation, servo calibration, full-rig acceptance, new peripherals, any planner
 benchmark expansion. All remain documented as future work.
 
-## Demo script, 2 minutes 30 seconds
+## Demo script, 3 minutes
 
-1. 0:00 Problem in one line over the home page. "AI builds it. Who checks it?"
+The rules allow three minutes, require that the video show only work built during the hackathon,
+and say judges must be able to tell what that is. All of SparkBench was built between 27 October
+and 4 November, so say it once at the start, keep it on screen, and label recorded footage.
+
+1. 0:00 Title card: "SparkBench. Built from scratch, 27 Oct – 4 Nov 2026." One line over the home
+   page: "AI builds it. Who checks it?"
 2. 0:15 New project. Type the desk-light sentence. Muse Spark's brief appears. Accept and plan.
 3. 0:45 The plan table. Compile, connect, install. "Identity confirmed over USB" is not a pass.
 4. 1:10 Run camera test. The phone watches the board. Verdict: passed, with the numbers.
-5. 1:35 Swap the two LED wires. Run again. "Behavior mismatch, fault correctly detected." Open the
+5. 1:40 Swap the two LED wires. Run again. "Behavior mismatch, fault correctly detected." Open the
    frame: expected green, observed red.
-6. 2:00 Press Explain. Muse Spark names the swap and cites the frames. One next check.
-7. 2:20 Evidence tab: pass, caught fault, and an honest incomplete side by side. Tagline.
+6. 2:05 Press Explain. Muse Spark names the swap, cites the frames, proposes one check.
+7. 2:30 Evidence tab: pass, caught fault and an honest incomplete side by side. Limits dialog for
+   two seconds.
+8. 2:45 Closing card: what Meta does (plans, reads the display, explains) and what it never does
+   (write the firmware, grade itself). Tagline. Repository link.
 
-Record the dashboard at desktop width with the phone's view in a corner. Label recorded footage.
+Record the dashboard at desktop width with the phone's view in a corner.
+
+## Submission checklist, from the participant guide
+
+Deadline: Wednesday 4 November, 9:00 PM ET (Thursday 5 November, 8:00 AM in Dhaka), on the
+Cerebral Valley platform. Late submissions are not considered.
+
+- [ ] **Problem statement:** Push the Frontier. Say it in the form and in the README (done).
+- [ ] **Track:** Indie Developer or Startups, one only. The Representative submits for the team.
+- [ ] **Repository public** before submitting. It is private now.
+- [ ] **Everyone who worked on the project listed** on the submission page.
+- [ ] **Three-minute video** at an accessible link, showing only hackathon-built work, opening with
+      the built-from-scratch card.
+- [ ] **New work only, clearly identified.** The README states it and `docs/history.md` is the
+      dated log. Repeat it in the form's description.
+- [ ] **Meta Model API use stated plainly:** `muse-spark-1.3-contributor` (Muse Spark series) for
+      the brief, the plan, the blind OLED read and the explanation; every request saved on disk.
+- [ ] **$150 Meta credits** claimed by each participant individually by the same deadline.
+- [ ] **Bonus prizes to tick:** Best Agentic Use-Case (a bounded multi-step workflow that decides:
+      clarify, unsupported, pass, mismatch, incomplete, explain); Community Vote (share the gallery
+      link after submitting); Most Viral (post the video on X and submit the post link).
+- [ ] **Do not claim:** Best Build on Meta Open Weight Models (we use the hosted API, not Muse
+      Glimmer or Muse Spark Open) and Best Creative Build (no Muse Image or Muse Wonder).
+
+Optional, only with hours to spare after everything above: route the Explain step through Muse
+Spark Open on Baseten (`meta-models/muse-spark-open-1026`, which accepts images) as a selectable
+provider, which would make the open-weight bonus eligible. It needs a Baseten key and about three
+hours, so it is not in the plan.
 
 ## How the rubric reads this
 
