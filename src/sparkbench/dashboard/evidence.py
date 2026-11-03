@@ -172,7 +172,7 @@ class EvidenceStore:
         for e in list(self.catalog.values()):
             try:
                 run = self.load(e.id)
-                result.append({k: run[k] for k in ("id", "title", "description", "available", "recorded_at", "behavior_verdict", "qualification_outcome", "evaluated_sample_count")})
+                result.append({k: run[k] for k in ("id", "title", "description", "available", "recorded_at", "behavior_verdict", "qualification_outcome", "evaluated_sample_count", "mismatch_count", "unknown_count", "finding_unit", "oled_evaluated")})
             except (EvidenceError, OSError, ValueError, TypeError) as exc:
                 result.append({"id": e.id, "title": e.title, "description": e.description, "available": False,
                                "behavior_verdict": "unavailable", "error": str(exc) if isinstance(exc, EvidenceError) else "Evidence unavailable"})

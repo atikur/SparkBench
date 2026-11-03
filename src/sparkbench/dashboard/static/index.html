@@ -20,61 +20,84 @@
     <button id="tab-projects" class="tab" type="button" aria-pressed="true">Projects</button>
     <button id="tab-evidence" class="tab" type="button" aria-pressed="false">Evidence</button>
   </nav>
-  <span class="tagline">Proof beyond the build.</span>
+  <span id="planner-config" class="meta-status" role="status">Checking Meta…</span>
 </header>
 
 <main id="main">
 <div id="notice" role="status" class="notice" hidden></div>
 <div id="error" class="error-panel" role="alert" hidden><h2>Evidence unavailable</h2><p id="error-message"></p><button id="retry" class="button" type="button">Try again</button></div>
 
-<!-- Projects home -->
+<!-- Home -->
 <section id="projects-home" class="view" aria-label="Projects">
-  <div class="page-head"><h1>Projects</h1><button id="open-guide" class="primary-button" type="button">New project</button></div>
-  <p class="lead">Describe what the board should do. Meta plans it, SparkBench builds and installs it, and the camera checks what actually happened.</p>
-  <p id="planner-config" class="help" role="status"></p>
-  <nav id="project-list" class="card-list" aria-label="Saved projects"></nav>
-  <details class="quiet">
-    <summary>Quick plan without a project</summary>
-    <p class="help">Send one instruction straight to the planner, then build and test it.</p>
-    <button id="open-planner" class="button" type="button">New quick plan</button>
-    <nav id="saved-plan-list" class="card-list compact" aria-label="Saved quick plans"></nav>
-  </details>
+  <div class="hero">
+    <p class="eyebrow">Proof beyond the build</p>
+    <h1 class="hero-title">Describe it. Meta plans it.<br>The camera proves it.</h1>
+    <p class="lead">SparkBench turns a plain-language idea into ESP32 firmware with Meta Muse Spark, installs it on a real board, and checks on camera what the hardware actually did.</p>
+    <div class="actions"><button id="open-guide" class="primary-button large" type="button">Start a project</button></div>
+  </div>
+
+  <ol class="loop" aria-label="How it works">
+    <li><span class="loop-n">1</span><strong>Describe</strong><span>Your idea in plain words</span></li>
+    <li class="meta"><span class="loop-n">2</span><strong>Plan</strong><span>Muse Spark writes up to 8 steps</span><em class="meta-chip">Muse Spark</em></li>
+    <li><span class="loop-n">3</span><strong>Build &amp; install</strong><span>Trusted code compiles and flashes</span></li>
+    <li class="meta"><span class="loop-n">4</span><strong>Verify</strong><span>The iPhone camera watches the board</span><em class="meta-chip">Muse Spark</em></li>
+  </ol>
+
+  <section class="home-section" aria-labelledby="proof-heading">
+    <div class="section-head"><h2 id="proof-heading">Proof from the bench</h2><button class="link-button" type="button" data-view="evidence">All runs →</button></div>
+    <div id="proof-cards" class="proof-cards"></div>
+  </section>
+
+  <section class="home-section" aria-labelledby="projects-heading">
+    <div class="section-head"><h2 id="projects-heading">Your projects</h2></div>
+    <nav id="project-list" class="card-list" aria-label="Saved projects"></nav>
+    <details class="quiet">
+      <summary>Quick plan without a project</summary>
+      <p class="help">Send one instruction straight to the planner, then build and test it.</p>
+      <div class="actions"><button id="open-planner" class="button" type="button">New quick plan</button></div>
+      <nav id="saved-plan-list" class="card-list compact" aria-label="Saved quick plans"></nav>
+    </details>
+  </section>
 </section>
 
 <!-- Project page: step 1 -->
 <section id="guide-workspace" class="view" hidden aria-label="Project">
   <button class="back-link" type="button" data-view="projects">← Projects</button>
-  <div class="page-head"><h1 id="project-title">New project</h1><span id="brief-state" class="pill"></span></div>
+  <div class="page-head"><div><p class="eyebrow">Project</p><h1 id="project-title">New project</h1></div><span id="brief-state" class="pill"></span></div>
   <ol class="stepper" id="project-stepper">
-    <li data-step="1" class="current"><span>1</span>Describe</li>
-    <li data-step="2"><span>2</span>Plan</li>
-    <li data-step="3"><span>3</span>Build &amp; install</li>
-    <li data-step="4"><span>4</span>Verify</li>
+    <li data-step="1" data-target="#project-form-card" class="current"><span>1</span>Describe</li>
+    <li data-step="2" data-target="open-plan"><span>2</span>Plan</li>
+    <li data-step="3" data-target="open-plan"><span>3</span>Build &amp; install</li>
+    <li data-step="4" data-target="open-plan"><span>4</span>Verify</li>
   </ol>
   <p id="project-error" class="error-line" role="alert" hidden></p>
 
-  <section class="card">
-    <h2>What should it do?</h2>
+  <section class="card" id="project-form-card">
+    <h2 id="project-form-title">What should it do?</h2>
     <form id="project-form">
       <label for="project-idea" class="sr-only">Idea</label>
       <textarea id="project-idea" rows="3" maxlength="2000" required placeholder="A desk indicator that shows READY in green, BUSY in red, then DONE with both lights off. Three seconds each."></textarea>
-      <div class="field-row">
-        <label>Experience<select id="project-experience"><option value="beginner">New to electronics</option><option value="some_experience">Some experience</option></select></label>
-        <label>Budget or constraints<input id="project-budget" maxlength="120" placeholder="Use the parts I already have"></label>
-      </div>
-      <label for="project-parts-notes">Parts you have <span class="muted">(optional)</span></label>
-      <textarea id="project-parts-notes" rows="2" maxlength="1500" placeholder="Classic ESP32, two LEDs, 330 Ω resistors, I²C OLED"></textarea>
+      <p id="project-idea-view" class="idea-quote" hidden></p>
+      <details id="project-details" class="quiet" open>
+        <summary>Experience, budget and parts</summary>
+        <div class="field-row">
+          <label>Experience<select id="project-experience"><option value="beginner">New to electronics</option><option value="some_experience">Some experience</option></select></label>
+          <label>Budget or constraints<input id="project-budget" maxlength="120" placeholder="Use the parts I already have"></label>
+        </div>
+        <label for="project-parts-notes">Parts you have <span class="muted">(optional)</span></label>
+        <textarea id="project-parts-notes" rows="2" maxlength="1500" placeholder="Classic ESP32, two LEDs, 330 Ω resistors, I²C OLED"></textarea>
+        <div class="actions"><button id="save-profile" class="button" type="button" hidden>Save details</button></div>
+      </details>
       <div class="actions">
         <button id="create-project" class="primary-button" type="submit">Ask Meta to plan it</button>
-        <button id="save-profile" class="button" type="button" hidden>Save details</button>
-        <span class="help">Supported bench: classic ESP32, red and green LEDs, one small OLED. Up to 8 steps of 3 seconds.</span>
+        <span id="project-form-help" class="help">Supported bench: classic ESP32, red and green LEDs, one small OLED. Up to 8 steps of 3 seconds.</span>
       </div>
     </form>
   </section>
 
-  <section class="card">
-    <div class="card-head"><h2>Meta's brief</h2></div>
-    <p id="guide-summary" class="copy muted">Meta will clarify the idea and propose a supported build.</p>
+  <section class="card meta-card">
+    <div class="card-head"><h2>Meta's brief</h2><span class="meta-chip">Muse Spark</span></div>
+    <p id="guide-summary" class="copy muted">Muse Spark will clarify the idea and propose a supported build.</p>
     <ul id="guide-goals" class="goals"></ul>
     <div id="guide-questions" class="question-box" hidden></div>
     <div id="guide-next-step" class="next-step" hidden></div>
@@ -99,8 +122,8 @@
     </details>
   </section>
 
-  <section id="guide-conversation-card" class="card" hidden>
-    <div class="card-head"><h2>Ask Meta</h2><span id="guide-request-status" class="help"></span></div>
+  <section id="guide-conversation-card" class="card meta-card" hidden>
+    <div class="card-head"><h2>Ask Meta</h2><span class="meta-chip">Muse Spark · text + photos</span></div>
     <div id="guide-conversation" class="conversation" aria-live="polite"></div>
     <form id="guide-question-form">
       <label for="guide-question" class="sr-only">Your question</label>
@@ -110,6 +133,7 @@
         <button id="guide-show-camera" class="button" type="button">Use iPhone camera</button>
         <select id="guide-run" aria-label="Attach a recorded test"><option value="">No test attached</option></select>
         <button id="ask-guide" class="primary-button" type="submit">Ask Meta</button>
+        <span id="guide-request-status" class="help"></span>
       </div>
       <div id="guide-camera-controls" class="actions wrap" hidden>
         <select id="guide-camera" aria-label="iPhone camera"></select>
@@ -131,20 +155,21 @@
   </details>
 </section>
 
-<!-- Plan, build, verify page: steps 2–4 -->
+<!-- Plan, build, verify: steps 2–4 -->
 <section id="planning-workspace" class="view" hidden aria-label="Plan, build and verify">
   <button id="planner-back" class="back-link" type="button">← Back</button>
-  <div class="page-head"><h1>Plan, build, verify</h1><span id="proposal-status" class="pill">No plan</span></div>
+  <div class="page-head"><div><p class="eyebrow">Plan, build, verify</p><h1 id="planner-title">Quick plan</h1></div><span id="proposal-status" class="pill">No plan</span></div>
   <ol class="stepper" id="bench-stepper">
-    <li data-step="1" class="done"><span>1</span>Describe</li>
-    <li data-step="2" class="current"><span>2</span>Plan</li>
-    <li data-step="3"><span>3</span>Build &amp; install</li>
-    <li data-step="4"><span>4</span>Verify</li>
+    <li data-step="1" data-target="back" class="done"><span>1</span>Describe</li>
+    <li data-step="2" data-target="#plan-card" class="current"><span>2</span>Plan</li>
+    <li data-step="3" data-target="#build-card"><span>3</span>Build &amp; install</li>
+    <li data-step="4" data-target="#verify-card"><span>4</span>Verify</li>
   </ol>
   <p id="planner-error" class="error-line" role="alert" hidden></p>
 
-  <section class="card">
-    <h2>Instruction</h2>
+  <section class="card" id="instruction-card">
+    <div class="card-head"><h2>Instruction</h2><button id="edit-instruction" class="link-button" type="button" hidden>Change</button></div>
+    <p id="instruction-view" class="idea-quote" hidden></p>
     <form id="intent-form">
       <label for="intent-input" class="sr-only">Instruction</label>
       <textarea id="intent-input" maxlength="2000" rows="3" required placeholder="Count 0 to 3 on the OLED. Green for even numbers, red for odd, then both off and DONE."></textarea>
@@ -153,15 +178,15 @@
         <span id="instruction-count" class="help">0 / 2000</span>
       </div>
     </form>
-    <div id="planner-empty"><p class="help">Meta turns the instruction into up to 8 steps. You review them before anything is built.</p></div>
+    <div id="planner-empty"><p class="help">Muse Spark turns the instruction into up to 8 steps. You review them before anything is built.</p></div>
   </section>
 
   <div id="planner-result" hidden>
-    <section class="card">
-      <div class="card-head"><h2>Meta's plan</h2><span id="proposal-usage" class="help mono"></span></div>
+    <section class="card meta-card" id="plan-card">
+      <div class="card-head"><h2>Meta's plan</h2><span id="proposal-usage" class="meta-chip">Muse Spark</span></div>
       <p id="proposal-summary" class="copy"></p>
       <div id="proposal-question" class="question-box" hidden></div>
-      <table id="proposal-table"><thead><tr><th>Step</th><th>Red</th><th>Green</th><th>OLED</th><th>Time</th></tr></thead><tbody id="proposal-steps"></tbody></table>
+      <table id="proposal-table" class="plan-table"><thead><tr><th>Step</th><th>Red</th><th>Green</th><th>OLED</th><th>Time</th></tr></thead><tbody id="proposal-steps"></tbody></table>
       <p id="proposal-validation" class="help"></p>
       <div class="actions">
         <button id="review-plan" class="primary-button" type="button" hidden>Looks right, mark reviewed</button>
@@ -169,21 +194,33 @@
       </div>
     </section>
 
-    <section id="execution-panel" hidden aria-label="Bench">
-      <section class="card">
+    <section id="execution-panel" class="view" hidden aria-label="Bench">
+      <section class="card" id="build-card">
         <h2>Build &amp; install</h2>
+        <ol class="checklist">
+          <li id="row-compile" data-state="current">
+            <span class="dot" aria-hidden="true"></span>
+            <div class="row-body"><strong>Compile</strong><span id="row-compile-note" class="help">Meta's steps go into a trusted C++ table. No model-written code.</span></div>
+            <div class="row-actions"><button id="compile-proposal" class="button" type="button">Compile</button></div>
+          </li>
+          <li id="row-devices" data-state="todo">
+            <span class="dot" aria-hidden="true"></span>
+            <div class="row-body"><strong>Connect</strong><span id="row-devices-note" class="help">Choose the ESP32 USB port and the iPhone camera.</span>
+              <div id="device-controls" class="field-row" hidden>
+                <label>ESP32 port<select id="execution-port"></select></label>
+                <label>iPhone camera<select id="execution-camera"></select></label>
+              </div>
+            </div>
+            <div class="row-actions"><button id="refresh-devices" class="button" type="button">Find devices</button></div>
+          </li>
+          <li id="row-install" data-state="todo">
+            <span class="dot" aria-hidden="true"></span>
+            <div class="row-body"><strong>Install</strong><span id="row-install-note" class="help">Writes the app only and keeps the previous image.</span></div>
+            <div class="row-actions"><button id="install-proposal" class="button" type="button" disabled>Install</button><button id="verify-runtime" class="button" type="button" disabled>Check identity</button></div>
+          </li>
+        </ol>
         <div class="actions wrap">
-          <button id="compile-proposal" class="button" type="button">1. Compile</button>
-          <button id="refresh-devices" class="button" type="button">Find devices</button>
-        </div>
-        <div id="device-controls" class="field-row" hidden>
-          <label>ESP32 port<select id="execution-port"></select></label>
-          <label>iPhone camera<select id="execution-camera"></select></label>
-        </div>
-        <div class="actions wrap">
-          <button id="install-proposal" class="button" type="button" disabled>2. Install</button>
-          <button id="verify-runtime" class="button" type="button" disabled>Check identity</button>
-          <button id="inspect-job" class="button" type="button" hidden>Job logs</button>
+          <button id="inspect-job" class="link-button" type="button" hidden>Job logs</button>
         </div>
         <details id="firmware-source-panel" class="quiet" hidden>
           <summary>Firmware source and downloads</summary>
@@ -201,15 +238,24 @@
 
       <div class="status-strip"><span id="execution-status" role="status">Compile the reviewed plan first.</span><span id="execution-error" class="error-line" role="alert" hidden></span></div>
 
-      <section class="card">
-        <h2>Verify on camera</h2>
+      <section class="card meta-card" id="verify-card">
+        <div class="card-head"><h2>Verify on camera</h2><span class="meta-chip">Muse Spark reads the OLED</span></div>
+        <p class="help">The iPhone records the board while it runs. LEDs are measured from pixels. Muse Spark reads each OLED frame without being told what to expect.</p>
         <div class="actions wrap">
-          <button id="test-proposal" class="primary-button" type="button" disabled>3. Run camera test</button>
+          <button id="test-proposal" class="primary-button" type="button" disabled>Run camera test</button>
           <button id="cancel-execution" class="button danger" type="button" hidden>Stop</button>
-          <button id="open-test-evidence" class="button" type="button" hidden>Open evidence →</button>
         </div>
-        <img id="execution-image" class="test-frame" alt="Latest camera test frame" hidden>
+        <div id="test-result" class="test-result" hidden>
+          <div class="test-result-head"><span id="test-verdict" class="verdict"></span><p id="test-headline" class="copy"></p></div>
+          <div class="numbers">
+            <div><strong id="test-samples"></strong><span>samples</span></div>
+            <div><strong id="test-mismatches"></strong><span>mismatches</span></div>
+            <div><strong id="test-unknowns"></strong><span>unknown</span></div>
+          </div>
+        </div>
+        <img id="execution-image" class="test-frame" alt="Camera test frame" hidden>
         <p id="execution-image-label" class="help"></p>
+        <div class="actions"><button id="open-test-evidence" class="button" type="button" hidden>Open full evidence →</button></div>
       </section>
     </section>
 
@@ -217,10 +263,10 @@
   </div>
 </section>
 
-<!-- Evidence home -->
+<!-- Evidence list -->
 <section id="evidence-home" class="view" hidden aria-label="Evidence">
-  <div class="page-head"><h1>Evidence</h1><span id="run-count" class="pill"></span></div>
-  <p class="lead">Recorded camera tests. Pass, mismatch and incomplete sit side by side.</p>
+  <div class="page-head"><div><p class="eyebrow">Evidence</p><h1>Recorded camera tests</h1></div><span id="run-count" class="pill"></span></div>
+  <p class="lead">Passes, caught faults and incomplete runs are all kept. Unknown readings never count as a pass.</p>
   <nav id="run-list" class="card-list" aria-label="Recorded runs"></nav>
 </section>
 
@@ -228,10 +274,10 @@
 <div id="workspace" class="view" hidden>
   <button class="back-link" type="button" data-view="evidence">← Evidence</button>
   <div class="page-head">
-    <div><h1 id="run-title"></h1><p class="help"><span id="run-date"></span> · <span id="run-scope"></span></p></div>
+    <div><p id="run-kind" class="eyebrow"></p><h1 id="run-title"></h1><p class="help"><span id="run-date"></span> · <span id="run-scope"></span></p></div>
     <div class="verdict-block"><span class="verdict" id="verdict"></span><span id="qualification" class="help" hidden></span></div>
   </div>
-  <p id="run-description" class="lead"></p>
+  <p id="run-description" class="headline"></p>
   <div class="numbers">
     <div><strong id="sample-count"></strong><span>samples</span></div>
     <div><strong id="mismatch-count"></strong><span>mismatches</span></div>
@@ -239,7 +285,7 @@
   </div>
   <div class="evidence-grid">
     <section class="card">
-      <div class="card-head"><h2>Camera</h2><span id="sample-state" class="help"></span></div>
+      <div class="card-head"><h2>Camera</h2><span id="sample-state" class="frame-state"></span></div>
       <div class="image-stage">
         <img id="frame-image" alt="Recorded frame" hidden>
         <p id="image-message">Select a frame.</p>
@@ -262,7 +308,7 @@
       <p id="measurement-note" class="help"></p>
       <h3>What Meta did</h3>
       <p id="model-role" class="copy"></p>
-      <span id="model-name" class="mono-pill"></span>
+      <span id="model-name" class="meta-chip"></span>
     </section>
   </div>
   <div id="step-list" class="step-list"></div>
@@ -288,7 +334,7 @@
     <li>Plans are at most 8 steps of 3 seconds with short uppercase labels. Meta proposes data; trusted local code renders the firmware.</li>
     <li>A camera verdict covers sampled settled windows in the recorded view, not continuous behaviour or electrical measurements.</li>
     <li>Unknown readings stay unknown. They never count as a pass or a fail.</li>
-    <li>Photo guidance is advice. A photo cannot establish continuity, voltage or polarity.</li>
+    <li>Meta's advice and photo descriptions are guidance, not a pass. A photo cannot establish continuity, voltage or polarity.</li>
     <li>The servo on the rig is never driven by this runtime and its angles are unmeasured.</li>
     <li>Browsing saved work makes no model call and touches no hardware. Every Meta request and every bench action is an explicit button.</li>
     <li>Evidence lives locally under <code>runs/</code> with integrity hashes. Changed or missing evidence is shown as unavailable.</li>

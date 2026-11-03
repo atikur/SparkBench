@@ -109,7 +109,7 @@ printf 'META_API_KEY=your_key\nMETA_MODEL=muse-spark-1.3-contributor\n' > .env
 
 Open http://127.0.0.1:8765. The dashboard is one linear flow: Projects → a project page (Describe) → Plan, build, verify → Evidence.
 
-![Projects page: the starting point, with saved projects and a New project button](docs/images/dashboard-projects.jpg)
+![Home page: the pitch, the four-step loop, proof cards from real runs, and saved projects](docs/images/dashboard-projects.jpg)
 
 Guides: [dashboard](docs/dashboard.md),
 [building a project](docs/build-guide.md), [intent planning](docs/intent-planning.md),

@@ -237,3 +237,135 @@ dialog img { display: block; max-width: 90vw; max-height: 80vh; object-fit: cont
   button, select, summary { min-height: 44px; }
   select { font-size: 16px !important; }
 }
+
+/* ---- Demo-aligned layer: hero, loop, proof, Meta marks, checklist, inline result ---- */
+:root {
+  --meta: light-dark(#0a5bd8, #8fb8ff);
+  --meta-bg: light-dark(#e8f0ff, #1b2a44);
+}
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.eyebrow:empty { display: none; }
+.headline { font-size: 18px; line-height: 1.5; font-weight: 500; max-width: 760px; }
+
+/* Topbar Meta status */
+.meta-status { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.meta-status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.meta-status[data-ok="true"] { color: var(--meta); }
+.meta-status[data-ok="true"]::before { background: var(--meta); }
+.meta-status[data-ok="false"]::before { background: var(--warning); }
+
+/* Meta chip: every place a Meta model contributes */
+.meta-chip { display: inline-flex; align-items: center; gap: 6px; font-family: inherit; font-style: normal; font-size: 12px; font-weight: 600; color: var(--meta); background: var(--meta-bg); padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.meta-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.meta-chip:empty { display: none; }
+#model-name { margin-top: 8px; }
+
+/* Hero */
+.hero { padding: 12px 0 8px; }
+.hero-title { font-size: 44px; line-height: 1.1; letter-spacing: -1.2px; font-weight: 700; margin: 4px 0 16px; }
+.hero .lead { font-size: 18px; margin-bottom: 8px; }
+.primary-button.large { padding: 12px 22px; font-size: 16px; border-radius: 10px; }
+
+/* How it works loop */
+.loop { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; counter-reset: none; }
+.loop li { position: relative; display: grid; gap: 4px; align-content: start; padding: 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); }
+.loop li strong { font-size: 16px; }
+.loop li > span:not(.loop-n) { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.loop .loop-n { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--soft); color: var(--accent); font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.loop li.meta { border-color: color-mix(in srgb, var(--meta) 35%, var(--line)); }
+.loop li.meta .loop-n { background: var(--meta-bg); color: var(--meta); }
+.loop .meta-chip { justify-self: start; margin-top: 8px; }
+
+/* Home sections */
+.home-section { display: grid; gap: 12px; margin-top: 18px; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.section-head h2 { margin: 0; }
+
+/* Proof cards */
+.proof-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.proof-card { display: grid; gap: 6px; align-content: start; text-align: left; padding: 20px; border-radius: 14px; border: 1px solid var(--line); border-top: 4px solid var(--line); background: var(--panel); min-width: 0; }
+.proof-card:hover { border-color: var(--accent); }
+.proof-card .proof-kind { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.proof-card .proof-number { font-size: 40px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -1px; margin-top: 4px; }
+.proof-card .proof-what { font-size: 14px; line-height: 1.5; }
+.proof-card .proof-run { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.proof-card.pass { border-top-color: var(--pass); }
+.proof-card.pass .proof-kind, .proof-card.pass .proof-number { color: var(--pass); }
+.proof-card.caught { border-top-color: var(--fail); }
+.proof-card.caught .proof-kind, .proof-card.caught .proof-number { color: var(--fail); }
+.proof-card.honest { border-top-color: var(--warning); }
+.proof-card.honest .proof-kind, .proof-card.honest .proof-number { color: var(--warning); }
+
+/* Read-only idea / instruction */
+.idea-quote { font-size: 16px; line-height: 1.6; padding: 4px 0 4px 16px; border-left: 3px solid var(--accent); white-space: pre-wrap; overflow-wrap: anywhere; }
+#project-details { margin-top: 14px; }
+#project-details[open] > summary { margin-bottom: 4px; }
+
+/* Clickable stepper */
+.stepper li[data-target] { cursor: pointer; }
+.stepper li[data-target]:hover { border-color: var(--accent); }
+
+/* Meta cards get a faint Meta edge */
+.meta-card { border-left: 3px solid color-mix(in srgb, var(--meta) 55%, var(--line)); }
+
+/* Bench checklist */
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; }
+.checklist li { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 14px; align-items: start; padding: 16px 0; border-top: 1px solid var(--line); }
+.checklist li:first-child { border-top: 0; padding-top: 4px; }
+.checklist .dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 13px; font-weight: 700; margin-top: 1px; }
+.checklist li[data-state="current"] .dot { border-color: var(--accent); box-shadow: inset 0 0 0 4px var(--panel); background: var(--accent); }
+.checklist li[data-state="done"] .dot { border-color: var(--pass); background: var(--pass); color: var(--accent-ink); }
+.checklist li[data-state="done"] .dot::after { content: "✓"; }
+.checklist li[data-state="fail"] .dot { border-color: var(--fail); background: var(--fail); color: #fff; }
+.checklist li[data-state="fail"] .dot::after { content: "!"; }
+.checklist li[data-state="todo"] .row-body strong { color: var(--muted); }
+.row-body { display: grid; gap: 2px; min-width: 0; }
+.row-body strong { font-size: 15px; }
+.row-body .field-row { margin-top: 6px; }
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+#inspect-job { margin-top: 4px; }
+
+/* Inline camera result */
+.test-result { margin-top: 16px; padding: 18px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); display: grid; gap: 14px; }
+.test-result-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.test-result .copy { flex: 1; min-width: 220px; font-weight: 500; }
+.numbers strong.bad { color: var(--fail); }
+.numbers strong.warn { color: var(--warning); }
+
+/* Run page: frame state and mismatch rows */
+.frame-state { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--line); color: var(--muted); }
+.frame-state.match { background: var(--pass-bg); color: var(--pass); }
+.frame-state.mismatch { background: var(--fail-bg); color: var(--fail); }
+.frame-state.unknown { background: var(--warning-bg); color: var(--warning); }
+#observations tr:has(td.mismatch) td { background: var(--fail-bg); }
+#observations tr:has(td.unknown) td { background: var(--warning-bg); }
+#observations td:first-child { padding-left: 6px; }
+.plan-table td:nth-child(2), .plan-table td:nth-child(3) { font-weight: 600; }
+.plan-table td.on-red { color: var(--fail); }
+.plan-table td.on-green { color: var(--pass); }
+.plan-table td.oled { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .5px; }
+
+@media (max-width: 900px) {
+  .loop { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .proof-cards { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .hero-title { font-size: 32px; }
+  .checklist li { grid-template-columns: 28px minmax(0, 1fr); }
+  .row-actions { grid-column: 2; justify-content: flex-start; }
+  .meta-status { font-size: 12px; }
+}
+
+/* Fixes after first look: keep the Meta status on one line, use a flat marker instead of a curved top border. */
+.meta-status { white-space: nowrap; }
+.proof-card, .proof-card.pass, .proof-card.caught, .proof-card.honest { border-top: 1px solid var(--line); }
+.proof-card::before { content: ""; width: 36px; height: 4px; border-radius: 4px; background: var(--line); margin-bottom: 6px; }
+.proof-card.pass::before { background: var(--pass); }
+.proof-card.caught::before { background: var(--fail); }
+.proof-card.honest::before { background: var(--warning); }
+@media (max-width: 760px) {
+  .meta-status { font-size: 0; gap: 0; }
+  .topbar { gap: 12px; }
+}
+
+.pill.neutral { background: var(--line); color: var(--muted); margin-top: 8px; }

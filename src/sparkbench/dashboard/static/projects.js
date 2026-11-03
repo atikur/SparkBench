@@ -4,7 +4,7 @@ const uid=()=>crypto.randomUUID().replaceAll('-','');
 function projectError(message){$('project-error').textContent=message;$('project-error').hidden=false;}
 function showGuide(){selectionVersion++;clearImage();current=null;showView('project');}
 async function refreshProjects(){const data=await api('/api/projects');projectCatalog=data.catalog;assemblySteps=data.assembly;$('project-list').replaceChildren(...(data.projects.length?data.projects.map(p=>{const b=node('button',undefined,'saved-plan-button');b.type='button';b.append(node('strong',p.title),node('small',p.busy?'Meta request in progress':date(p.updated_at_utc)));b.addEventListener('click',()=>openProject(p.id));return b;}):[node('p','Your saved builds appear here.','small muted')]));}
-function fillProfile(){const profile=project?.profile;$('project-idea').value=project?.idea||'';$('project-idea').disabled=!!project;$('project-experience').value=profile?.experience||'beginner';$('project-budget').value=profile?.budget||'';$('project-parts-notes').value=profile?.parts_notes||'';}
+function fillProfile(){const profile=project?.profile;$('project-idea').value=project?.idea||'';$('project-idea').disabled=!!project;$('project-experience').value=profile?.experience||'beginner';$('project-budget').value=profile?.budget||'';$('project-parts-notes').value=profile?.parts_notes||'';const has=!!project;$('project-idea').hidden=has;$('project-idea-view').hidden=!has;$('project-idea-view').textContent=project?.idea||'';$('project-details').open=!has;$('project-form-title').textContent=has?'The idea':'What should it do?';$('project-form-help').hidden=has;}
 async function openProject(id){showGuide();const version=++projectVersion;try{const p=await api('/api/projects/'+id);if(version!==projectVersion)return;project=p;fillProfile();clearProjectPhotos();renderProject();if(window.pollProjectFirmware)window.pollProjectFirmware(id,version);if(p.busy)pollProject(id,version);}catch(e){projectError(e.message);}}
 function listText(title,values,parent){if(!values?.length)return;const block=node('div',undefined,'guide-response-list');block.append(node('strong',title));const ul=node('ul');values.forEach(t=>ul.append(node('li',t)));block.append(ul);parent.append(block);}
 function renderProject(){
@@ -12,23 +12,23 @@ function renderProject(){
  const renderKey=JSON.stringify({project,capture:guideCapture,configured:plannerSession?.planning_available});if(renderKey===lastGuideRender)return;lastGuideRender=renderKey;
  const draft=project?.draft,accepted=project?.accepted,busy=project?.busy,brief=accepted?.brief||draft;
  $('project-title').textContent=brief?.title||'What would you like to build?';$('create-project').hidden=!!project;$('save-profile').hidden=!project;$('save-profile').disabled=!!busy;$('guide-conversation-card').hidden=!project;
- $('guide-summary').textContent=brief?.summary||'Meta will help clarify the project and propose a supported build.';
- $('brief-state').textContent=accepted?'Accepted · intended behavior fixed':draft?draft.decision==='planned'?'Draft · review before accepting':draft.decision==='clarify'?'Clarification needed':'Outside supported kit':'Waiting for your idea';
+ $('guide-summary').textContent=brief?.summary||'Muse Spark will clarify the idea and propose a supported build.';
+ $('brief-state').textContent=accepted?'Brief accepted':draft?draft.decision==='planned'?'Draft brief':draft.decision==='clarify'?'Needs an answer':'Outside the kit':'';
  $('guide-goals').replaceChildren(...(brief?.goals||[]).map(t=>node('li',t)));
  $('guide-questions').hidden=!draft?.questions?.length;$('guide-questions').replaceChildren(...(draft?.questions||[]).map(t=>node('p',t)));
  const latest=project?.turns.findLast(t=>t.status==='complete'),changed=accepted&&draft&&['title','summary','goals','components','firmware_instruction'].some(k=>JSON.stringify(draft[k])!==JSON.stringify(accepted.brief[k]));$('accept-brief').hidden=draft?.decision!=='planned'||!!accepted&&!changed;$('accept-brief').textContent=accepted?'Accept revised project brief':'Accept this project brief';$('guide-revision').hidden=!changed;$('guide-revision-copy').textContent=draft?[draft.summary,...draft.goals,'Firmware intent: '+(draft.firmware_instruction||'Unresolved')].join('\n\n'):'';$('accept-brief').disabled=!!busy;
  $('accept-brief').onclick=async()=>{try{project=await planningPost('/api/projects/'+project.id+'/accept',{turn_id:latest.id});renderProject();}catch(e){projectError(e.message);}};
- $('accepted-brief-note').textContent=accepted?'Accepted: '+accepted.brief.title+' · '+date(accepted.accepted_at_utc)+'. This accepted version stays fixed until you explicitly accept another brief.':'';
+ $('accepted-brief-note').textContent=accepted?'Accepted '+date(accepted.accepted_at_utc)+'. Changing the brief needs a new acceptance.':'';
  $('project-firmware').disabled=!accepted||!!busy;$('ask-guide').disabled=!!busy||guideCapture||!plannerSession?.planning_available;
  $('guide-request-status').textContent=busy?'Waiting for Meta…':'Saved locally';
  $('guide-conversation').replaceChildren();
  for(const turn of project?.turns||[]){
   const entry=node('article',undefined,'guide-turn');entry.append(node('p','YOU','turn-author'),node('p',turn.message,'guide-copy'));
-  const images=node('div',undefined,'turn-images');for(const a of turn.attachments||[]){const img=node('img');img.src='/api/projects/'+project.id+'/turns/'+turn.id+'/'+a.file;img.alt=a.name;images.append(img);}entry.append(images);if(turn.run_id){const evidence=node('button','Inspect attached historical test','button');evidence.type='button';evidence.addEventListener('click',()=>selectRun(turn.run_id));entry.append(evidence,node('p','Historical evidence is not a test of this project unless its requirements and execution are explicitly linked.','small muted'));}
-  entry.append(node('p','META CONTRIBUTOR','turn-author meta-author'));
+  const images=node('div',undefined,'turn-images');for(const a of turn.attachments||[]){const img=node('img');img.src='/api/projects/'+project.id+'/turns/'+turn.id+'/'+a.file;img.alt=a.name;images.append(img);}entry.append(images);if(turn.run_id){const evidence=node('button','Open the attached test','button');evidence.type='button';evidence.addEventListener('click',()=>selectRun(turn.run_id));entry.append(evidence,node('p','A recorded test, not a run of this project.','small muted'));}
+  entry.append(node('p','MUSE SPARK','turn-author meta-author'));
   if(turn.reply){entry.append(node('p',turn.reply.answer,'guide-copy'));listText('Visible in your attached photos',turn.reply.visible,entry);listText('Uncertain or needs a check',turn.reply.uncertain,entry);entry.append(node('div','Next: '+turn.reply.next_step,'next-step'));}
   else entry.append(node('p',turn.status==='generating'?'Reviewing your project…':turn.error||'Request interrupted; no automatic retry.','small muted'));
-  const usage=turn.usage;entry.append(node('p',[turn.latency_seconds!==undefined?turn.latency_seconds+' s':null,turn.api_requests!==undefined&&turn.api_requests!==null?turn.api_requests+' API request'+(turn.api_requests===1?'':'s'):null,usage?.total_tokens!==undefined?usage.total_tokens+' tokens':null,'Guidance only · no physical pass'].filter(Boolean).join(' · '),'small muted'));
+  const usage=turn.usage,meta=[typeof turn.latency_seconds==='number'?turn.latency_seconds.toFixed(1)+' s':null,typeof usage?.total_tokens==='number'?usage.total_tokens.toLocaleString()+' tokens':null].filter(Boolean).join(' · ');if(meta)entry.append(node('p',meta,'small muted'));
   $('guide-conversation').append(entry);
  }
  $('guide-parts').replaceChildren();
