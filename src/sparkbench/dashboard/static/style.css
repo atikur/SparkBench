@@ -433,3 +433,32 @@ details.card[open] > summary { margin-bottom: 16px; }
 .pill[data-state="bad"] { background: var(--fail-bg); color: var(--fail); }
 .pill[data-state="warn"] { background: var(--warning-bg); color: var(--warning); }
 .pill[data-state="stopped"] { background: var(--line); color: var(--muted); }
+
+/* Stage cards and the bench timeline */
+.stage-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.stage-head h2 { margin: 0; flex: 1; }
+.stage-n { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--soft); color: var(--accent); font-weight: 700; font-size: 14px; }
+.timeline { list-style: none; margin: 0 0 14px; padding: 0; display: grid; }
+.timeline li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px 0; position: relative; }
+.timeline li + li::before { content: ""; position: absolute; left: 13px; top: -8px; width: 2px; height: 18px; background: var(--line); }
+.tl-dot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 13px; font-weight: 700; background: var(--panel); margin-top: -1px; }
+.tl-body { display: grid; gap: 2px; min-width: 0; }
+.tl-body strong { font-size: 15px; }
+.tl-note:empty { display: none; }
+.timeline li[data-state="pending"] .tl-body strong { color: var(--muted); font-weight: 500; }
+.timeline li[data-state="running"] .tl-dot { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 4px var(--soft); animation: tl-pulse 1.2s ease-in-out infinite; }
+.timeline li[data-state="running"] .tl-body strong { color: var(--accent); }
+.timeline li[data-state="done"] .tl-dot { border-color: var(--pass); background: var(--pass); color: var(--accent-ink); }
+.timeline li[data-state="done"] .tl-dot::after { content: "✓"; }
+.timeline li[data-state="skipped"] .tl-dot { border-color: var(--pass-bg); background: var(--pass-bg); color: var(--pass); }
+.timeline li[data-state="skipped"] .tl-dot::after { content: "✓"; }
+.timeline li[data-state="warn"] .tl-dot { border-color: var(--warning); background: var(--warning-bg); color: var(--warning); }
+.timeline li[data-state="warn"] .tl-dot::after { content: "!"; }
+.timeline li[data-state="bad"] .tl-dot { border-color: var(--fail); background: var(--fail); color: #fff; }
+.timeline li[data-state="bad"] .tl-dot::after { content: "!"; }
+.timeline li[data-state="stopped"] .tl-dot { border-color: var(--muted); background: var(--line); color: var(--muted); }
+.timeline li[data-state="stopped"] .tl-dot::after { content: "–"; }
+@keyframes tl-pulse { 0%, 100% { box-shadow: 0 0 0 4px var(--soft); } 50% { box-shadow: 0 0 0 8px transparent; } }
+#manual-controls { margin-top: 18px; }
+#manual-controls .checklist { margin-top: 8px; }
+#execution-status:empty { display: none; }

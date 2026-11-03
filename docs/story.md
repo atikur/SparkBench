@@ -25,7 +25,7 @@ with nothing more than a board, a phone and a Meta key.
 | --- | --- | --- |
 | 1. Describe | A sentence about a desk status light | Muse Spark clarifies it, picks parts from the kit, writes a brief |
 | 2. Plan | A step table: red, green, OLED label, 3 s each | Muse Spark turns the brief into at most 8 steps, or asks one question |
-| 3. Build & install | Compile, connect, install, identity confirmed over USB | None. Trusted code only; Meta never writes C++ |
+| 3. Approve and run | One approval; the agent compiles, connects, installs and confirms identity, skipping what the records already prove | None. Trusted code only; Meta never writes C++ |
 | 4. Verify | The camera test passes: 45 samples, 0 mismatches, 0 unknown | Muse Spark reads each OLED frame blind |
 | 5. Catch | Two LED wires swapped on purpose; the verifier flags 36 mismatches | None. The verifier is deterministic |
 | 6. Explain | "Why?" Muse Spark reads the evidence and names the swap, with the frames it used | Muse Spark reasons over expected steps, measurements and images |
@@ -79,12 +79,14 @@ and 4 November, so say it once at the start, keep it on screen, and label record
 
 1. 0:00 Title card: "SparkBench. Built from scratch, 27 Oct – 4 Nov 2026." One line over the home
    page: "AI builds it. Who checks it?"
-2. 0:15 New project. Type the desk-light sentence. Muse Spark's brief appears. Accept and plan.
-3. 0:45 The plan table. Compile, connect, install. "Identity confirmed over USB" is not a pass.
-4. 1:10 Run camera test. The phone watches the board. Verdict: passed, with the numbers.
-5. 1:40 Swap the two LED wires. Run again. "Behavior mismatch, fault correctly detected." Open the
-   frame: expected green, observed red.
-6. 2:05 Press Explain. Muse Spark names the swap, cites the frames, proposes one check.
+2. 0:15 New project. Type the desk-light sentence, press "Plan it with Muse Spark". The brief and
+   the step table appear on the same page.
+3. 0:45 Press "Approve plan and run on the bench". The agent's timeline lights up: compile, connect,
+   install, identity, camera test, each with what it did or why it skipped it.
+4. 1:10 The phone watches the board. Verdict: verified on camera, with the numbers and the frame.
+5. 1:40 Swap the two LED wires. Press "Run again". The timeline turns at Camera test: mismatch.
+6. 2:05 The agent asks Muse Spark to explain; the Explain row names the swap, the Decision row says
+   check the wiring and refuses to bend the plan to a fault.
 7. 2:30 Evidence tab: pass, caught fault and an honest incomplete side by side. Limits dialog for
    two seconds.
 8. 2:45 Closing card: what Meta does (plans, reads the display, explains) and what it never does
