@@ -32,8 +32,12 @@ PROMPT = """You are SparkBench's evidence analyst. A camera test of an ESP32 boa
 and a small OLED did not pass. You receive the frozen expected steps, the measured findings per
 sample, and a few recorded frames named in the data. Explain, in plain language for a beginner,
 what most likely happened on the board. Return only the specified JSON.
-Rules: cite only the frame names you were given, in evidence, and only for things actually visible
-or stated in the data. Separate what the evidence shows (diagnosis) from what it suggests
+Rules: evidence is a list of bare frame names exactly as given (for example "frame-000008.jpg"),
+nothing else; put what each frame shows into the diagnosis. Cite only frames you were given and
+only for things actually visible or stated in the data. A frame with geometry_supported false was
+rejected before any reading because the camera view no longer matched the frozen reference from
+the last calibration; in that case the board's outputs are simply unmeasured, and the fix is to
+refresh the camera reference, not to change wiring. Separate what the evidence shows (diagnosis) from what it suggests
 (hypotheses). Give exactly one next_check: a single bounded, safe thing a person can look at or
 measure, such as checking which pin a wire goes to. Never propose changing thresholds, limits or
 the verifier, never claim the run passed, never propose code, commands, servo movement or power
@@ -73,12 +77,14 @@ def evidence_packet(run, frame_ids):
                 "oled_measured": bool(run.get("oled_evaluated")), "finding_unit": run.get("finding_unit")},
         "bench": {"red_led": "GPIO25 through 330 ohm", "green_led": "GPIO26 through 330 ohm", "oled": "I2C SDA 21 / SCL 22",
                   "led_measurement": "deterministic pixel measurement in sampled settled windows",
-                  "oled_measurement": "Muse Spark transcription of a cropped frame without the expected label"},
+                  "oled_measurement": "Muse Spark transcription of a cropped frame without the expected label",
+                  "geometry_supported": "false means the frame did not match the frozen camera reference, so nothing was measured in it"},
         "expected_steps": [steps[k] for k in sorted(steps)],
         "counts": {"evaluated_samples": run["evaluated_sample_count"], "mismatches": run["mismatch_count"], "unknown_readings": run["unknown_count"]},
         "findings": [_finding(x) for x in run.get("failures", [])][:40],
         "unknowns": [_finding(x) for x in run.get("unknowns", [])][:20],
         "frames": [{"name": by_id[i]["file"], "step": by_id[i].get("step"), "seconds": by_id[i].get("offset_seconds"),
+                    "geometry_supported": by_id[i].get("geometry_supported"),
                     "expected": by_id[i].get("expected"), "observed": by_id[i].get("observed")} for i in frame_ids],
     }
 
@@ -101,11 +107,15 @@ def validate_reply(value, frame_names):
         if not isinstance(items, list) or len(items) > count:
             raise ValueError(f"Invalid {key} list")
         out[key] = [_text(item, limit, key) for item in items]
-    unknown = [ref for ref in out["evidence"] if ref not in frame_names]
-    if unknown:
-        raise ValueError("Explanation cites evidence that was not supplied")
-    if not out["evidence"]:
+    cited = []
+    for ref in out["evidence"]:
+        names = [name for name in frame_names if name in ref]
+        if not names:
+            raise ValueError("Explanation cites evidence that was not supplied")
+        cited.extend(n for n in names if n not in cited)
+    if not cited:
         raise ValueError("Explanation cites no supplied frame")
+    out["evidence"] = cited
     return out
 
 

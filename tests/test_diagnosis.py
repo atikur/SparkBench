@@ -83,6 +83,16 @@ class ExplainTests(unittest.TestCase):
         manifest = json.loads((out / "integrity.json").read_text())["sha256"]
         self.assertIn("result.json", manifest); self.assertIn("response.json", manifest)
 
+    def test_sentence_citations_normalize_to_supplied_frame_names(self):
+        run, images = self.run_and_images(kind="negative")
+        names = [n for n, _ in images]
+        worded = {**REPLY, "evidence": [names[0] + " shows red lit where green was expected", "the same in " + names[0], "frame-000077.jpg"]}
+        with self.assertRaises(ValueError): validate_reply(worded, names)
+        worded["evidence"] = worded["evidence"][:2]
+        self.assertEqual(validate_reply(worded, names)["evidence"], [names[0]])
+        packet = evidence_packet(run, select_frames(run))
+        self.assertIn("geometry_supported", packet["frames"][0]); self.assertIn("geometry_supported", packet["bench"])
+
     def test_citing_an_unsupplied_frame_or_no_frame_is_invalid(self):
         run, images = self.run_and_images(kind="negative")
         for bad in ({**REPLY, "evidence": ["frame-000099.jpg"]}, {**REPLY, "evidence": []}, {**REPLY, "confidence": "certain"}, {**REPLY, "extra": 1}):
