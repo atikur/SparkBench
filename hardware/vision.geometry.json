@@ -3,35 +3,35 @@
   "image_width": 1920,
   "image_height": 1080,
   "coordinate_origin": "top_left",
-  "reference_frame": "runs/live/led-oled-resume-2026-11-03-v1/restored-view-connected/camera/frame-000004.jpg",
+  "reference_frame": "runs/dashboard-execution/77d52b8576bf4e529996ece8a808ab98/workflow/capture/camera/frame-000008.jpg",
   "leds": {
     "red": {
-      "center_x": 1133,
-      "center_y": 518,
+      "center_x": 1131,
+      "center_y": 362,
       "radius": 9
     },
     "green": {
-      "center_x": 1230,
-      "center_y": 427,
+      "center_x": 1181,
+      "center_y": 260,
       "radius": 9
     }
   },
   "oled_corners": [
     [
-      919,
-      769
-    ],
-    [
-      1067,
-      695
-    ],
-    [
-      1085,
+      597,
       745
     ],
     [
-      942,
-      817
+      820,
+      723
+    ],
+    [
+      828,
+      836
+    ],
+    [
+      604,
+      858
     ]
   ],
   "rectified_width": 1024,
@@ -46,7 +46,7 @@
   "maximum_registration_shift_pixels": 80,
   "minimum_registration_scale": 0.88,
   "maximum_registration_scale": 1.12,
-  "note": "Supervised current widened view; only geometry/reference/LED circles refreshed. Existing reader, guards, pixel-error/border/registration bounds and Meta policy unchanged. Label-only vertical crop refined on supervised source frames before independent evaluation; excludes header fragments and retains whole label.",
+  "note": "Supervised 4 November 2026 view after the rig was rearranged: reference frame, LED circles and OLED border corners refreshed from a saved frame of the 23:22 camera test. Label crop, reader, guards, pixel-error/border/registration bounds and Meta policy unchanged. Corners sit on the drawn OLED border, as before.",
   "registration_translation_pixels": 12,
   "maximum_registration_error": 35
 }

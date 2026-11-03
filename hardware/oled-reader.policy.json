@@ -8,10 +8,10 @@
   "preparer_source_sha256": "5d4fd8c5feab5f1674ddb09a341dab4447996fa08e1ed0270cc54f2530ec5b74",
   "preparer_wrapper_sha256": "04e6c95c4080cfb6a27d5e6b942b8a6567ba16b1790e9a6ddc297c0ac046a724",
   "analyzer_source_sha256": "86261e2a4ca0742b08a1be63cb25783a4a1183c5b7597fa57ac141393a5ac231",
-  "calibration": "runs/live/led-oled-resume-2026-11-03-v1/latest-label-calibration/calibration.json",
-  "calibration_sha256": "551dcbc61c87049eca2b0bb3b30796ed0692e2bd86947b7a43fa3996da92e985",
+  "calibration": "runs/live/led-oled-refresh-2026-11-04-v1/calibration.json",
+  "calibration_sha256": "229c11190073f6df1021371809ee25629f95b31e47fa799358500c4af448f77e",
   "development_result": "runs/live/led-oled-resume-2026-11-03-v1/03-calibration-v2/calibration.json",
   "integration_check": null,
-  "scope": "Frozen after supervised current-view calibration and before new independent LED/OLED checks; no limits or reader changes",
+  "scope": "Frozen after supervised geometry refresh of the new view; no limits or reader changes; thresholds carried from the previous validated calibration",
   "missing_reading_policy": "null remains incomplete; conclusive mismatch fails; no expected labels supplied to reader"
 }
