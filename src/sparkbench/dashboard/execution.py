@@ -128,6 +128,15 @@ class ExecutionService:
             raise ValueError("Recorded current application is unavailable or changed")
         return data,image
 
+    def board_summary(self):
+        """Read-only: the recorded active application, for deciding whether an install can be skipped."""
+        try:
+            board,_=self._board();active=board.get("active_firmware") or {}
+        except (OSError,ValueError,KeyError,TypeError):
+            return {"active_firmware_sha256":None,"plan_sha256":None,"proposal_id":None,"upload_status":None,"recorded":False,"scope":"No board record on this host"}
+        return {"active_firmware_sha256":active.get("firmware_sha256"),"plan_sha256":active.get("plan_sha256"),"proposal_id":active.get("proposal_id"),
+                "upload_status":active.get("upload_status"),"recorded":True,"scope":"Saved record of the last verified installation; not a live read of the board"}
+
     def start_photo(self, body):
         if set(body)!={'request_id','device_id'} or not isinstance(body['request_id'],str) or not IDENTIFIER.fullmatch(body['request_id']):raise ValueError('Explicit camera and request ID required')
         if not isinstance(body['device_id'],str) or not body['device_id']:raise ValueError('Select the iPhone camera')

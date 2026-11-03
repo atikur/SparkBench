@@ -13,6 +13,7 @@
 <script defer src="/lifecycle.js"></script>
 <script defer src="/projects.js"></script>
 <script defer src="/explain.js"></script>
+<script defer src="/autopilot.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -188,6 +189,13 @@
     </section>
 
     <section id="execution-panel" class="view" hidden aria-label="Bench">
+      <section class="card" id="autopilot-card">
+        <div class="card-head"><h2>Run the bench</h2><span id="autopilot-status" class="pill"></span></div>
+        <p class="help">One click runs the same jobs in order: compile, install, identity, camera test. If the test does not pass, Muse Spark explains the evidence and the autopilot decides what to do next. It stops wherever a person is needed and never touches wiring or limits.</p>
+        <div class="actions"><button id="run-bench" class="primary-button" type="button" disabled>Run the bench</button><button id="stop-bench" class="button danger" type="button" hidden>Stop</button></div>
+        <p id="autopilot-error" class="error-line" role="alert" hidden></p>
+        <ol id="autopilot-log" class="auto-log"></ol>
+      </section>
       <section class="card" id="build-card">
         <h2>Build &amp; install</h2>
         <ol class="checklist">
@@ -235,7 +243,7 @@
         <div class="card-head"><h2>Verify on camera</h2><span class="meta-chip">Muse Spark reads the OLED</span></div>
         <p class="help">The iPhone records the board while it runs. LEDs are measured from pixels. Muse Spark reads each OLED frame without being told what to expect.</p>
         <div class="actions wrap">
-          <button id="test-proposal" class="primary-button" type="button" disabled>Run camera test</button>
+          <button id="test-proposal" class="button" type="button" disabled>Run camera test</button>
           <button id="cancel-execution" class="button danger" type="button" hidden>Stop</button>
         </div>
         <div id="test-result" class="test-result" hidden>

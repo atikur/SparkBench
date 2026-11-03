@@ -7,7 +7,7 @@ function buildJob(){return matchingJobs().find(j=>j.action==='compile'&&j.status
 const rowDefaults={'row-compile':"Meta's steps go into a trusted C++ table. No model-written code.",'row-devices':'Choose the ESP32 USB port and the iPhone camera.','row-install':'Writes the app only and keeps the previous image.'};
 function setRow(id,state,note){$(id).dataset.state=state;$(id+'-note').textContent=note||rowDefaults[id];}
 const optionName=id=>($(id).selectedOptions[0]?.textContent||'').split(' · ')[0];
-function updateExecutionButtons(){const reviewed=executionPlan?.review_status==='reviewed',build=buildJob();$('execution-panel').hidden=!reviewed;if(!reviewed){setStepper('bench-stepper',2,[1]);return;}
+function updateExecutionButtons(){const reviewed=executionPlan?.review_status==='reviewed',build=buildJob();$('execution-panel').hidden=!reviewed;if(!reviewed){setStepper('bench-stepper',2,[1]);window.updateAutopilot?.();return;}
  const busy=!!activeExecution,port=$('execution-port').value,camera=$('execution-camera').value,jobs=matchingJobs(),running=a=>activeExecution?.action===a;
  const install=build&&jobs.find(j=>j.action==='install'&&j.status==='installed'&&j.firmware_sha256===build.firmware_sha256),installed=!!install;
  const identity=installed&&(install.runtime_identity?.status==='pass'||jobs.some(j=>j.action==='identity'&&j.status==='identity_confirmed'));
@@ -18,7 +18,7 @@ function updateExecutionButtons(){const reviewed=executionPlan?.review_status===
  setRow('row-compile',running('compile')?'current':build?'done':'current',running('compile')?'Compiling the trusted runtime…':build?'Compiled · firmware '+build.firmware_sha256.slice(0,12)+'…':'');
  setRow('row-devices',port&&camera?'done':build?'current':'todo',port&&camera?optionName('execution-port')+' + '+optionName('execution-camera'):port?optionName('execution-port')+' selected · choose the iPhone camera too':'');
  setRow('row-install',running('install')?'current':installed?'done':build&&port?'current':'todo',running('install')?'Installing and verifying…':installed?(identity?'Installed · flash verified · identity confirmed over USB':'Installed · flash verified · identity not confirmed yet'):'');
- setStepper('bench-stepper',installed?4:3,tested?[1,2,3,4]:installed?[1,2,3]:[1,2]);}
+ setStepper('bench-stepper',installed?4:3,tested?[1,2,3,4]:installed?[1,2,3]:[1,2]);window.updateAutopilot?.();}
 let testResultVersion=0;
 // Show the finished camera test on the plan page itself: verdict, numbers and the frame that tells the story.
 async function showTestResult(job){const version=++testResultVersion;$('test-result').hidden=true;$('open-test-evidence').hidden=true;$('open-test-explain').hidden=true;if(!job||job.action!=='test'||!job.evidence_available)return;

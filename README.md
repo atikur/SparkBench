@@ -38,6 +38,7 @@ Failures and unknowns are kept, not hidden.
 | Build + install | Trusted code validates the plan, renders a C++ data table, compiles with PlatformIO, flashes the application only, keeps the previous image, and confirms identity over UART with a single `ID` command. | Hashes and logs per job |
 | Verify | The iPhone records the board while the firmware runs. LED colours are measured from pixels; OLED text is read by Meta without being told the expected label. | 45 sampled observations, 0 mismatches, 0 unknowns |
 | Catch a fault | With the two LED wires deliberately swapped, the verifier reports the wrong channel. | 36 wrong-channel findings in 47 samples |
+| Autopilot | One click runs compile, install, identity and camera test, skipping what the records already prove, and acts on the outcome. | Decision log on the page; every step is a saved job |
 | Explain | On a failed run, Muse Spark reads the expected steps, the measured findings and the key frames, names the likely cause, cites the frames it used and proposes one check. It cannot change the verdict. | Strict JSON reply; citations must be among the supplied frames or the reply is rejected |
 | Stay honest | A badly framed capture is reported as *incomplete*, never as a pass. | 45 of 48 OLED readings unknown, result kept as incomplete |
 
@@ -74,6 +75,10 @@ the model explains it from the recorded evidence, and the explanation is advisor
   a per-session token and same-origin checks on every action. Browsing saved work never calls a
   model or touches hardware. Each hardware action (compile, install, camera test) is a separate
   explicit button.
+- **Autopilot**: one click runs those same jobs in order, skips what the saved records already
+  prove, reads a non-pass result with Muse Spark and decides the next step: refresh the camera
+  reference, check the wiring, or stop on unknown readings. It never changes wiring, mappings or
+  limits, and it stops wherever a person is needed.
 - **Firmware**: a fixed runtime on a classic ESP32 reads a generated data table. Serial protocol
   is `ID`, `VISUAL`, `DISCOVER`, `PING`, `STOP` with lease timeouts, so a lost host connection
   turns outputs off. No servo or PWM code exists in the LED/OLED runtime.

@@ -414,3 +414,22 @@ details.card[open] > summary { margin-bottom: 16px; }
 .frame-ref { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; padding: 5px 10px; }
 #explain-hypotheses { margin-top: 12px; }
 #explain-unknowns, #explain-usage { margin-top: 10px; }
+
+/* Bench autopilot log */
+.auto-log { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 6px; max-height: 360px; overflow-y: auto; }
+.auto-log:empty { display: none; }
+.auto-log li { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px; align-items: baseline; font-size: 14px; line-height: 1.5; padding: 6px 10px; border-radius: 8px; }
+.auto-log time { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--muted); }
+.auto-log .auto-plan { color: var(--muted); }
+.auto-log .auto-skip { color: var(--muted); }
+.auto-log .auto-ok { color: var(--pass); }
+.auto-log .auto-bad { color: var(--fail); }
+.auto-log .auto-warn { color: var(--warning); }
+.auto-log .auto-stop { color: var(--muted); font-style: italic; }
+.auto-log .auto-meta { background: var(--meta-bg); color: var(--meta); }
+.auto-log .auto-decide { background: var(--soft); color: var(--accent); font-weight: 600; }
+.pill[data-state="busy"] { background: var(--soft); color: var(--accent); }
+.pill[data-state="done"] { background: var(--pass-bg); color: var(--pass); }
+.pill[data-state="bad"] { background: var(--fail-bg); color: var(--fail); }
+.pill[data-state="warn"] { background: var(--warning-bg); color: var(--warning); }
+.pill[data-state="stopped"] { background: var(--line); color: var(--muted); }

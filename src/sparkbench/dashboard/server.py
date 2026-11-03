@@ -22,6 +22,7 @@ ASSETS['/projects.js']='projects.js'
 ASSETS['/wiring.svg']='wiring.svg'
 ASSETS['/lifecycle.js']='lifecycle.js'
 ASSETS['/explain.js']='explain.js'
+ASSETS['/autopilot.js']='autopilot.js'
 
 
 class DashboardServer(ThreadingHTTPServer):
@@ -90,6 +91,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200, {"mode": "recorded", "runs": self.server.store.list_runs()})
             elif path == "/api/devices":
                 self.json(200, self.server.execution.enumerate_devices())
+            elif path == "/api/board":
+                self.json(200, self.server.execution.board_summary())
             elif path == '/api/projects':
                 self.json(200,{'projects':self.server.projects.list(),'catalog':CATALOG,'assembly':ASSEMBLY})
             elif match := re.fullmatch(r'/api/projects/([0-9a-f]{32})',path):
