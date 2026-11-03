@@ -38,7 +38,7 @@ function renderProject(){
  $('guide-assembly').replaceChildren();
  for(const step of assemblySteps){const details=node('details',undefined,'assembly-step');const summary=node('summary');const input=node('input');input.type='checkbox';input.checked=project?.completed_steps.includes(step.id)||false;input.disabled=!project||!!busy;input.setAttribute('aria-label','I completed: '+step.title);input.addEventListener('click',e=>e.stopPropagation());input.addEventListener('change',()=>saveProject({completed_steps:input.checked?[...project.completed_steps,step.id]:project.completed_steps.filter(id=>id!==step.id)}));summary.append(input,node('span',step.title));details.append(summary,node('p',step.detail,'small muted'));$('guide-assembly').append(details);}
  $('guide-next-step').hidden=!draft;$('guide-next-step').textContent=draft?'Next: '+draft.next_step:'';
- requestAnimationFrame(()=>{$('guide-conversation').scrollTop=$('guide-conversation').scrollHeight;});
+ requestAnimationFrame(()=>{const c=$('guide-conversation'),last=c.lastElementChild;c.scrollTop=last?last.offsetTop:c.scrollHeight;});
  $('project-firmware-links').replaceChildren(...(project?.firmware_links||[]).map(link=>{const b=node('button','Open saved firmware proposal','button');b.type='button';b.addEventListener('click',()=>openSavedProposal(link.proposal_id));return b;}));
 }
 function profileValues(){return {experience:$('project-experience').value,budget:$('project-budget').value,parts_notes:$('project-parts-notes').value};}
