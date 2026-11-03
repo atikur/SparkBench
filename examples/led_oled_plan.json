@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "mapping": {"red": 25, "green": 26},
+  "steps": [
+    {"red": false, "green": false, "text": "DARK"},
+    {"red": true, "green": false, "text": "RED"},
+    {"red": false, "green": true, "text": "GREEN"},
+    {"red": true, "green": true, "text": "BOTH"},
+    {"red": false, "green": false, "text": "DARK END"}
+  ]
+}

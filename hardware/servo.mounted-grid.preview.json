@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "mode": "unverified_static_preview",
+  "source_capture": "runs/servo-tracking/mounted-grid-live-2026-11-03-v1/camera",
+  "reference_frame": "runs/servo-tracking/mounted-grid-live-2026-11-03-v1/camera/frame-000020.jpg",
+  "reference_sha256": "6a56cc67eef75a15cc9d815ee2179a524cc06c0752a5513cee2289f6758e96be",
+  "camera_id": "618E8741-BCAC-4C8E-AB5E-897800000001",
+  "image_width": 1920,
+  "image_height": 1080,
+  "roi_xywh": [
+    600,
+    140,
+    740,
+    610
+  ],
+  "body_reference": {
+    "shaft_center_px": [
+      744,
+      584
+    ],
+    "axis_endpoints_px": [
+      [
+        663,
+        681
+      ],
+      [
+        792,
+        559
+      ]
+    ],
+    "landmarks": [
+      {
+        "name": "left_screw",
+        "point": [
+          663,
+          681
+        ]
+      },
+      {
+        "name": "right_screw",
+        "point": [
+          792,
+          559
+        ]
+      }
+    ],
+    "source": "Supervised current saved-frame pixel landmarks; projected case axis is not mechanical zero"
+  },
+  "horn_tip_px": [
+    657,
+    633
+  ],
+  "plane_reference": null,
+  "angular_zero": null,
+  "angle_deg": null,
+  "measured_angle_calibration": null,
+  "eligible_for_verifier": false,
+  "servo_actuation": false,
+  "preview_card": {
+    "reference_kind": "reported_square_grid",
+    "corners_px": [
+      [
+        1290,
+        398
+      ],
+      [
+        1083,
+        554
+      ],
+      [
+        919,
+        352
+      ],
+      [
+        1125,
+        203
+      ]
+    ],
+    "width_mm": 50,
+    "height_mm": 50,
+    "dimensions_confirmed": false,
+    "reported_size_source": "User iPhone Measure report5cm x5cm; user adopted50x50mm reference-grid label and1:1 geometry",
+    "actual_width_to_height": null,
+    "nominal_design_width_to_height": 1,
+    "plane_relation_confirmed": false,
+    "paper_flat_user_report": true,
+    "plane_alignment_report": "paper on flat surface. the horn also looks mostly look aligned with tabletop, could be slightly downward at front",
+    "possible_horn_tilt": true,
+    "illustrative_width_to_height_ratios": [
+      1.0
+    ],
+    "render_assumed_width_to_height": 1.0,
+    "assumed_ratio_provenance": "1:1 square geometry adopted for grid-plane preview; horn-plane parallelism is not confirmed"
+  }
+}

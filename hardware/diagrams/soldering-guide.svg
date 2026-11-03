@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1680" viewBox="0 0 1200 1680">
+<defs>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill: #172b40; }
+    .title { font-size: 36px; font-weight: 700; }
+    .heading { font-size: 25px; font-weight: 700; }
+    .body { font-size: 21px; }
+    .small { font-size: 18px; }
+    .tiny { font-size: 15px; }
+    .label { font-size: 20px; font-weight: 700; }
+    .muted { fill: #506477; }
+    .card { fill: #fff; stroke: #d5dfe7; stroke-width: 2; }
+    .lead { stroke: #a57627; stroke-width: 9; stroke-linecap: round; }
+    .line { stroke: #506477; stroke-width: 2; fill: none; }
+  </style>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#506477"/></marker>
+</defs>
+<rect width="1200" height="1680" fill="#f2f6f9"/>
+<text x="50" y="65" class="title">SparkBench · Soldering guide for the shop</text>
+<text x="50" y="103" class="body muted">Prepare plug-in modules for breadboard assembly. Keep the circuit modular.</text>
+
+<!-- Universal header orientation -->
+<rect x="40" y="135" width="1120" height="330" rx="18" class="card"/>
+<text x="65" y="176" class="heading">1  Straight male headers: side view</text>
+<text x="65" y="209" class="small muted">Standard 2.54 mm pitch · short ends through the PCB · long ends down</text>
+<rect x="85" y="278" width="370" height="18" rx="3" fill="#2d8b72"/>
+<rect x="340" y="249" width="70" height="28" rx="3" fill="#283545"/>
+<line x1="155" y1="258" x2="155" y2="390" class="lead"/>
+<line x1="230" y1="258" x2="230" y2="390" class="lead"/>
+<path d="M141 278 Q155 253 169 278z M216 278 Q230 253 244 278z" fill="#aebbc6" stroke="#718596" stroke-width="1.5"/>
+<rect x="137" y="296" width="111" height="28" rx="3" fill="#263441"/>
+<path d="M300 246 L257 246 L235 270" class="line" marker-end="url(#arrow)"/>
+<text x="310" y="249" class="small">Solder joints</text>
+<path d="M315 335 L270 335 L242 312" class="line" marker-end="url(#arrow)"/>
+<text x="325" y="342" class="small">Plastic spacer below PCB</text>
+<text x="85" y="426" class="small muted">Long pins plug into the breadboard or female jumpers.</text>
+<line x1="585" y1="234" x2="585" y2="436" stroke="#e0e7ed" stroke-width="2"/>
+<text x="620" y="258" class="label">Assembly steps</text>
+<text x="620" y="296" class="body">1. Fit headers square to the board.</text>
+<text x="620" y="333" class="body">2. Tack one pin; check alignment.</text>
+<text x="620" y="370" class="body">3. Solder remaining pins separately.</text>
+<text x="620" y="407" class="body">4. Inspect for bridges and loose joints.</text>
+
+<!-- Converter -->
+<rect x="40" y="485" width="550" height="440" rx="18" class="card"/>
+<text x="65" y="526" class="heading">2  Logic-level converter</text>
+<text x="65" y="559" class="small muted">8-channel example: two 10-pin male headers</text>
+<rect x="85" y="610" width="460" height="168" rx="10" fill="#ad3d42"/>
+<rect x="101" y="624" width="428" height="25" rx="4" fill="#293644"/>
+<rect x="101" y="739" width="428" height="25" rx="4" fill="#293644"/>
+<g fill="#d8ad51">
+<circle cx="122" cy="636" r="5"/><circle cx="165" cy="636" r="5"/><circle cx="208" cy="636" r="5"/><circle cx="251" cy="636" r="5"/><circle cx="294" cy="636" r="5"/><circle cx="337" cy="636" r="5"/><circle cx="380" cy="636" r="5"/><circle cx="423" cy="636" r="5"/><circle cx="466" cy="636" r="5"/><circle cx="509" cy="636" r="5"/>
+<circle cx="122" cy="751" r="5"/><circle cx="165" cy="751" r="5"/><circle cx="208" cy="751" r="5"/><circle cx="251" cy="751" r="5"/><circle cx="294" cy="751" r="5"/><circle cx="337" cy="751" r="5"/><circle cx="380" cy="751" r="5"/><circle cx="423" cy="751" r="5"/><circle cx="466" cy="751" r="5"/><circle cx="509" cy="751" r="5"/>
+</g>
+<text x="315" y="686" text-anchor="middle" font-size="23" style="fill:white;font-weight:bold">HV side / 5V</text>
+<text x="315" y="722" text-anchor="middle" font-size="23" style="fill:white;font-weight:bold">LV side / 3.3V</text>
+<text x="65" y="816" class="body">Solder both rows; long pins underneath.</text>
+<text x="65" y="849" class="body">Keep HV, LV, GND and channel labels visible.</text>
+<text x="65" y="886" class="small muted">4-channel substitute: fit its matching header lengths.</text>
+
+<!-- USB -->
+<rect x="610" y="485" width="550" height="440" rx="18" class="card"/>
+<text x="635" y="526" class="heading">3  USB-A male power breakout</text>
+<text x="635" y="559" class="small muted">Use the male plug board from the breakout pair.</text>
+<rect x="675" y="631" width="148" height="93" rx="5" fill="#b8c4cd" stroke="#718596" stroke-width="2"/>
+<rect x="687" y="651" width="32" height="14" rx="2" fill="#6b7d8b"/>
+<rect x="687" y="691" width="32" height="14" rx="2" fill="#6b7d8b"/>
+<rect x="823" y="615" width="235" height="126" rx="5" fill="#2d8b72"/>
+<rect x="1007" y="628" width="29" height="100" rx="3" fill="#293644"/>
+<g fill="#d8ad51"><circle cx="1022" cy="642" r="5"/><circle cx="1022" cy="666" r="5"/><circle cx="1022" cy="690" r="5"/><circle cx="1022" cy="714" r="5"/></g>
+<text x="853" y="668" class="small" style="fill:white">Fit 4-pin</text>
+<text x="853" y="695" class="small" style="fill:white">male header</text>
+<text x="635" y="782" class="body">Identify VBUS (+5V) and GND.</text>
+<text x="635" y="815" class="body">Confirm polarity with a multimeter.</text>
+<text x="635" y="848" class="body">Leave D+ and D− unused.</text>
+<text x="635" y="886" class="small muted">Alternative: ready-made USB-A → screw terminals.</text>
+
+<!-- LCD -->
+<rect x="40" y="945" width="550" height="305" rx="18" class="card"/>
+<text x="65" y="986" class="heading">4  I²C LCD: check assembly</text>
+<rect x="85" y="1021" width="275" height="105" rx="5" fill="#2d8b72"/>
+<rect x="111" y="1044" width="211" height="58" rx="3" fill="#263441"/>
+<text x="127" y="1080" font-size="22" style="fill:white">I²C backpack</text>
+<path d="M360 1045 H403 M360 1066 H403 M360 1087 H403 M360 1108 H403" stroke="#a57627" stroke-width="6"/>
+<text x="421" y="1051" class="tiny">GND</text><text x="421" y="1072" class="tiny">VCC</text><text x="421" y="1093" class="tiny">SDA</text><text x="421" y="1114" class="tiny">SCL</text>
+<text x="65" y="1164" class="body">Backpack attached; four pins soldered.</text>
+<text x="65" y="1197" class="small muted">If already assembled, inspect only.</text>
+<text x="65" y="1225" class="small muted">Pin order varies: follow the actual board labels.</text>
+
+<!-- ESP -->
+<rect x="610" y="945" width="550" height="305" rx="18" class="card"/>
+<text x="635" y="986" class="heading">5  ESP32-S3: only if needed</text>
+<rect x="675" y="1020" width="139" height="110" rx="8" fill="#263441"/>
+<rect x="708" y="1038" width="73" height="49" rx="4" fill="#b8c4cd"/>
+<text x="744" y="1112" text-anchor="middle" class="small" style="fill:white">S3</text>
+<path d="M675 1036 H654 M675 1057 H654 M675 1078 H654 M675 1099 H654 M814 1036 H835 M814 1057 H835 M814 1078 H835 M814 1099 H835" stroke="#a57627" stroke-width="6"/>
+<text x="863" y="1053" class="small">Use the actual</text>
+<text x="863" y="1082" class="small">board to match</text>
+<text x="863" y="1111" class="small">header lengths.</text>
+<text x="635" y="1164" class="body">Fit missing headers; long pins down.</text>
+<text x="635" y="1197" class="small muted">Check breadboard clearance before soldering.</text>
+<text x="635" y="1225" class="small muted">If headers are fitted, inspect only.</text>
+
+<!-- Completion -->
+<rect x="40" y="1270" width="1120" height="307" rx="18" fill="#e8f2ee" stroke="#aacbbb" stroke-width="2"/>
+<text x="65" y="1313" class="heading">Before delivery</text>
+<text x="65" y="1352" class="body">□  Check solder joints and unintended shorts. Verify USB output is about +5V.</text>
+<text x="65" y="1388" class="body">□  Leave servo leads, LEDs, resistors and capacitors separate for breadboard assembly.</text>
+<text x="65" y="1424" class="body">□  Keep modules removable. Do not permanently wire the full circuit.</text>
+<text x="65" y="1469" class="label">Power arrangement for later assembly</text>
+<text x="65" y="1505" class="body">Laptop USB → ESP32-S3. Separate regulated 5V → servo and LCD. Share GND.</text>
+<text x="65" y="1541" class="body">Keep external +5V separate from the ESP32 USB/5V rail.</text>
+<text x="50" y="1613" class="small muted">Illustrative assembly views, not a pin map. Follow the actual PCB labels; underside views are mirrored.</text>
+<text x="50" y="1644" class="small muted">No ESP32 GPIO assignments are specified here. Solder only with all power disconnected.</text>
+</svg>

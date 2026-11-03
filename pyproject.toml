@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sparkbench"
+version = "0.1.0"
+description = "Physical verification for embedded coding agents"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+sparkbench = "sparkbench.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"sparkbench.dashboard" = ["static/*"]

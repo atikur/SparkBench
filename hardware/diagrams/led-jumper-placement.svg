@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680">
+<rect width="1200" height="680" fill="#f8fafc"/>
+<text x="40" y="49" font-family="Arial,sans-serif" font-size="34" fill="#172033">Where the two jumper pins go</text>
+<text x="260" y="128" font-family="Arial,sans-serif" font-size="24" fill="#172033">330 ohm resistor</text>
+<rect x="85" y="145" width="530" height="405" fill="#ffffff" stroke="#b8c2ce" stroke-width="2"/>
+<rect x="86" y="300" width="528" height="60" fill="#e5e9ee" stroke="none" stroke-width="1"/>
+<text x="390" y="337" font-family="Arial,sans-serif" font-size="22" fill="#5b6574">centre gap</text>
+<rect x="163" y="147" width="24" height="146" fill="#d1f0e5" stroke="none" stroke-width="1"/>
+<rect x="413" y="147" width="24" height="146" fill="#d1f0e5" stroke="none" stroke-width="1"/>
+<rect x="163" y="367" width="24" height="146" fill="#d1f0e5" stroke="none" stroke-width="1"/>
+<text x="105" y="168" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">A</text>
+<circle cx="175" cy="160" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="160" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="160" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="160" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="160" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="160" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="160" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="160" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="160" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<text x="105" y="198" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">B</text>
+<circle cx="175" cy="190" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="190" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="190" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="190" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="190" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="190" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="190" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="190" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="190" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<text x="105" y="228" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">C</text>
+<circle cx="175" cy="220" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="220" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="220" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="220" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="220" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="220" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="220" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="220" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="220" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<text x="105" y="258" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">D</text>
+<circle cx="175" cy="250" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="250" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="250" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="250" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="250" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="250" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="250" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="250" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="250" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<text x="105" y="288" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">E</text>
+<circle cx="175" cy="280" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="280" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="280" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="280" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="280" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="280" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="280" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="280" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="280" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<text x="105" y="388" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">F</text>
+<circle cx="175" cy="380" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="380" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="380" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="380" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="380" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="380" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="380" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="380" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="380" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<text x="105" y="418" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">G</text>
+<circle cx="175" cy="410" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="410" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="410" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="410" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="410" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="410" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="410" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="410" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="410" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<text x="105" y="448" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">H</text>
+<circle cx="175" cy="440" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="440" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="440" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="440" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="440" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="440" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="440" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="440" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="440" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<text x="105" y="478" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">I</text>
+<circle cx="175" cy="470" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="470" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="470" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="470" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="470" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="470" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="470" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="470" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="470" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<text x="105" y="508" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">J</text>
+<circle cx="175" cy="500" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="225" cy="500" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="275" cy="500" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="325" cy="500" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="375" cy="500" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="425" cy="500" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="475" cy="500" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="525" cy="500" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<circle cx="575" cy="500" r="5" fill="#667587" stroke="none" stroke-width="1"/>
+<polyline points="175,250 175,80 260,80" fill="none" stroke="#6b7280" stroke-width="4"/>
+<rect x="260" y="65" width="80" height="30" fill="#d7b58c" stroke="#866748" stroke-width="2"/>
+<rect x="272" y="66" width="5" height="28" fill="#ed7d25" stroke="none" stroke-width="1"/>
+<rect x="285" y="66" width="5" height="28" fill="#ed7d25" stroke="none" stroke-width="1"/>
+<rect x="305" y="66" width="5" height="28" fill="#795434" stroke="none" stroke-width="1"/>
+<rect x="328" y="66" width="5" height="28" fill="#ad8b36" stroke="none" stroke-width="1"/>
+<polyline points="340,80 425,80 425,250" fill="none" stroke="#6b7280" stroke-width="4"/>
+<polyline points="175,280 175,310" fill="none" stroke="#6b7280" stroke-width="4"/>
+<circle cx="175" cy="330" r="20" fill="#df2437" stroke="#a91628" stroke-width="2"/>
+<polyline points="175,350 175,380" fill="none" stroke="#6b7280" stroke-width="4"/>
+<text x="215" y="288" font-family="Arial,sans-serif" font-size="23" fill="#172033">long leg (+)</text>
+<text x="215" y="338" font-family="Arial,sans-serif" font-size="23" fill="#b0192b">RED LED</text>
+<text x="215" y="393" font-family="Arial,sans-serif" font-size="23" fill="#172033">short leg (-)</text>
+<circle cx="425" cy="220" r="12" fill="#f8cf32" stroke="#9b7000" stroke-width="3"/>
+<circle cx="175" cy="410" r="12" fill="#20252c" stroke="#20252c" stroke-width="3"/>
+<text x="680" y="180" font-family="Arial,sans-serif" font-size="30" fill="#8b6400">1  YELLOW WIRE</text>
+<text x="680" y="212" font-family="Arial,sans-serif" font-size="22" fill="#172033">Next to the resistor&#x27;s free leg.</text>
+<polyline points="675,235 445,220" fill="none" stroke="#b08700" stroke-width="4"/>
+<polygon points="445,220 459.8295269063573,213.99290987801697 458.92369709083647,227.88230038266957" fill="#b08700"/>
+<text x="680" y="415" font-family="Arial,sans-serif" font-size="30" fill="#172033">2  BLACK WIRE</text>
+<text x="680" y="447" font-family="Arial,sans-serif" font-size="22" fill="#172033">Next to the LED&#x27;s short leg.</text>
+<polyline points="675,470 195,410" fill="none" stroke="#20252c" stroke-width="4"/>
+<polygon points="195,410 210.15911317431085,404.8812806515267 208.43268646778478,418.69269430373527" fill="#20252c"/>
+<text x="45" y="599" font-family="Arial,sans-serif" font-size="24" fill="#172033">Each shaded strip connects five holes. Match the component legs on your board.</text>
+<text x="45" y="637" font-family="Arial,sans-serif" font-size="22" fill="#525d6e">Example positions only. Keep USB unplugged and the other wire ends loose.</text>
+</svg>

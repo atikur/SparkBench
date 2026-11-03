@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "project": "SparkBench",
+  "created_at_utc": "2026-10-30T03:58:34.718785+00:00",
+  "payload_file_count": 78,
+  "target": "MacBook Pro; user reports native iPhone 15 Continuity Camera works",
+  "excludes": [
+    "virtual environments",
+    "toolchain/build caches",
+    "credential files",
+    "compiled camera helper",
+    "camera/video captures",
+    "Git history"
+  ],
+  "scope": "Source snapshot plus manual/serial evidence and original flash backups; target camera capture untested",
+  "files": [
+    {
+      "path": ".gitignore",
+      "size_bytes": 108,
+      "sha256": "79b44b92990952bc3738fe21bd8813c9f3588680f590fdc121a41725eb3df9e4"
+    },
+    {
+      "path": "CONTINUE_PROMPT.txt",
+      "size_bytes": 2022,
+      "sha256": "7153b4ff76b3aa360205e81b0c3828c3b03865dea509422d948ea0506e8e87f8"
+    },
+    {
+      "path": "HANDOVER.txt",
+      "size_bytes": 8481,
+      "sha256": "1ee7745d342a0710e3319cb2be5ef409d8f4c7e4388c28d7cd72a56a9f1e225d"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 14070,
+      "sha256": "7917196a887804af0acebe1918b98f703442b419a42a74468a37e0b4f7ac84dc"
+    },
+    {
+      "path": "docs/day1.md",
+      "size_bytes": 6187,
+      "sha256": "1e84f3bc41daeb226d97c8ca9498faa4693a9015c8d853bd1a5ee220d415138e"
+    },
+    {
+      "path": "examples/synthetic_behavior_a.json",
+      "size_bytes": 733,
+      "sha256": "26ad570758b2a717f945c6a4eec1bb9545461861fe9a49016dcf912ba8889d66"
+    },
+    {
+      "path": "firmware/bringup/partitions.csv",
+      "size_bytes": 183,
+      "sha256": "1d87a00fd95f868b6fe08830f70cd3cd89ff489b2c39af681f63e468435820f1"
+    },
+    {
+      "path": "firmware/bringup/platformio.ini",
+      "size_bytes": 932,
+      "sha256": "e290af9687bf6eca5e8d2b186c1081f3cae5e222d648f1611ae0c40568e75b5b"
+    },
+    {
+      "path": "firmware/bringup/src/main.cpp",
+      "size_bytes": 643,
+      "sha256": "7d8d651b0a60e88ef2e88358f39af1fda5a7f6f037db873d28775bfa366bc508"
+    },
+    {
+      "path": "firmware/led_test/platformio.ini",
+      "size_bytes": 219,
+      "sha256": "ea8f8b467ebf5261292d215caf971539d72e507a15c70141148b9064570448a6"
+    },
+    {
+      "path": "firmware/led_test/src/main.cpp",
+      "size_bytes": 921,
+      "sha256": "2bd01d4ef909d143c82aca4d6ea3ef0e3dd661b96e5be6771202e9df7c91e724"
+    },
+    {
+      "path": "firmware/oled_probe/platformio.ini",
+      "size_bytes": 225,
+      "sha256": "dd1c4fdc7b4b8c8982cb6480754c40351bcd751a8ea2eb10b16d2ad826c264ef"
+    },
+    {
+      "path": "firmware/oled_probe/src/main.cpp",
+      "size_bytes": 1574,
+      "sha256": "1bd404b0e3458f9002ad2e04c8087f299ed0d032d4b827ac39e1dd2035f9803e"
+    },
+    {
+      "path": "firmware/oled_test/platformio.ini",
+      "size_bytes": 256,
+      "sha256": "e25802b4e55352ba5d0bb146bbc46d0045cee38083d61fb85067a91158933e98"
+    },
+    {
+      "path": "firmware/oled_test/src/main.cpp",
+      "size_bytes": 1609,
+      "sha256": "7a7da5e8caab708c3dd083e54a0c0ea9bdffcf6f3026d27c15ecb91a659d8cb4"
+    },
+    {
+      "path": "firmware/pin_probe/platformio.ini",
+      "size_bytes": 231,
+      "sha256": "9201249b222ae31d8842ee41b52ab3be5f5eb4f9a1b739b8892cfddac7cbf94f"
+    },
+    {
+      "path": "firmware/pin_probe/src/main.cpp",
+      "size_bytes": 2045,
+      "sha256": "a4eca2efef7e2a301fc6a08f3522a8ae29679510d637ada98e9e715f60c8c3b5"
+    },
+    {
+      "path": "firmware/rig_test/platformio.ini",
+      "size_bytes": 254,
+      "sha256": "e13e9253977c070955ebb5695888df7362f2ff53ca31fd946edefc2d58145834"
+    },
+    {
+      "path": "firmware/rig_test/src/main.cpp",
+      "size_bytes": 5182,
+      "sha256": "a5877dba5eaace22fecf17cb54c205ae9677b2900bbe53f43ee0760e2b1d4146"
+    },
+    {
+      "path": "firmware/servo_test/platformio.ini",
+      "size_bytes": 225,
+      "sha256": "0439809ca6f564e1da14c0398e4d588950d549286373557ccb14575f6108e0de"
+    },
+    {
+      "path": "firmware/servo_test/src/main.cpp",
+      "size_bytes": 3718,
+      "sha256": "a545eef228275ab38252a24c9a06db83da5c562aad3c985e4849e3c13374c4d6"
+    },
+    {
+      "path": "hardware/board.json",
+      "size_bytes": 4109,
+      "sha256": "bf5996390a53492b9d582622402f449205b6a857848b88e8c6dcb9337e0f5e3e"
+    },
+    {
+      "path": "hardware/boards/original-esp32s3.json",
+      "size_bytes": 913,
+      "sha256": "cad93c6fd2df94471b939024bc34c0879ad0b8c11218bcefd3199f12ef715b7c"
+    },
+    {
+      "path": "hardware/camera.json",
+      "size_bytes": 2784,
+      "sha256": "2c38cfd36826024066fc060d81f6f9b76016773e9b55ca27628ae6c1783f0e9b"
+    },
+    {
+      "path": "hardware/diagrams/led-jumper-placement.png",
+      "size_bytes": 122786,
+      "sha256": "cf0c7f474d0aa8a90ea3ce22a4ead80ea7883395f8adc0efa358cc2242055c1e"
+    },
+    {
+      "path": "hardware/diagrams/led-jumper-placement.svg",
+      "size_bytes": 11617,
+      "sha256": "8f8f57377cd41677f8c253b9cc349ab1061060d84cdb1861387c1e169d0e3199"
+    },
+    {
+      "path": "hardware/diagrams/soldering-guide.png",
+      "size_bytes": 656790,
+      "sha256": "c4195b3739ef172a6426f576de9c7a16572d5c60f51528535c9ceba5e2f93e68"
+    },
+    {
+      "path": "hardware/diagrams/soldering-guide.svg",
+      "size_bytes": 8653,
+      "sha256": "9c55ec567aa60b955fcf634130df6edcc50d61ddd81c64d434085da8b25b8388"
+    },
+    {
+      "path": "hardware/rig.pending.json",
+      "size_bytes": 11798,
+      "sha256": "dfff65c5971176601843470e1d18cee4e43fbdc3910a0aedb8438de424292a3b"
+    },
+    {
+      "path": "pyproject.toml",
+      "size_bytes": 351,
+      "sha256": "8f904087570c5851c975eddb76d8b4fad8657400d5b79904c2d4c0fa950432bf"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "size_bytes": 33,
+      "sha256": "d56f1bccb104cff0e635747e66a88b8cafad0a672623e99a17131ad742af0b94"
+    },
+    {
+      "path": "runs/backups/esp32-classic-before-bringup-2026-10-29.bin",
+      "size_bytes": 4194304,
+      "sha256": "ca054dad2ea5544b9eba5f83ea35f8c8278e0439ef3ab3bdb8de054745fec89b"
+    },
+    {
+      "path": "runs/backups/esp32s3-before-bringup-2026-10-27.bin",
+      "size_bytes": 16777216,
+      "sha256": "15db9b5f2ff9c88cb27abb632ca087987762dd5a38ce35be7c0e03b0bc2a660c"
+    },
+    {
+      "path": "runs/backups/manifest-esp32-classic-2026-10-29.json",
+      "size_bytes": 394,
+      "sha256": "4adc3a9423ca63007392053433741dd5787d510bc18db83a9330b753e48a10ea"
+    },
+    {
+      "path": "runs/backups/manifest.json",
+      "size_bytes": 245,
+      "sha256": "e30db9f9c5022822f28372f766eab9f89721eb96088e68b9a85735054430c914"
+    },
+    {
+      "path": "runs/bringup/build-record-classic-2026-10-29.json",
+      "size_bytes": 1085,
+      "sha256": "d46e2a9b7c552e6b83e5f7b47f32cf345a787b8fbd16c01f2f28ea2c0b776c92"
+    },
+    {
+      "path": "runs/bringup/build_record.json",
+      "size_bytes": 456,
+      "sha256": "72f3981c44b69c81a12963354ac815aa9b736af5de31cf5294034b1893533034"
+    },
+    {
+      "path": "runs/bringup/heartbeat-classic-2026-10-29-retry.json",
+      "size_bytes": 4372,
+      "sha256": "aeeb6eabafd3fba29e31b201db51015e083396778ab5fd81bc33697b1a01e187"
+    },
+    {
+      "path": "runs/bringup/heartbeat-classic-2026-10-29-settled.json",
+      "size_bytes": 3002,
+      "sha256": "d9626484cb05b4243d4dd20961be790858a11fb08a1737e2a0e6699737f4880e"
+    },
+    {
+      "path": "runs/bringup/heartbeat-classic-2026-10-29.json",
+      "size_bytes": 5259,
+      "sha256": "d4849983c0b7a45ddc76853cfba2fe9b05bc9062f7a1f0b63c4f473ac79cfeea"
+    },
+    {
+      "path": "runs/bringup/heartbeat-classic-carrier-2026-10-29.json",
+      "size_bytes": 6040,
+      "sha256": "6a09586f6a4200628745dd03703ce7213e87bc43675434856aa6fa97013752c1"
+    },
+    {
+      "path": "runs/bringup/heartbeat.json",
+      "size_bytes": 626,
+      "sha256": "88c12f99a14ebf50221d04ffdaca995493f28d56a8250d81107df655fcbe7a50"
+    },
+    {
+      "path": "runs/bringup/oled-display-build-record-2026-10-29.json",
+      "size_bytes": 698,
+      "sha256": "c02546c8e3d28e21b6b5994f1fd9677a2a82e4838955170a293027f6275ff5b1"
+    },
+    {
+      "path": "runs/bringup/oled-display-serial-2026-10-29.json",
+      "size_bytes": 1840,
+      "sha256": "783372adec94bad3fe12f5860cbc5dc0f804205d49c4be83850fef2515895c35"
+    },
+    {
+      "path": "runs/bringup/oled-display-visual-2026-10-29.json",
+      "size_bytes": 712,
+      "sha256": "8099be9e42f831d0294819112fc783fa6cc41a9cf3fc7f779574432ab5f32801"
+    },
+    {
+      "path": "runs/bringup/oled-i2c-probe-2026-10-29.json",
+      "size_bytes": 3874,
+      "sha256": "8affbbdff8cf49a540501b31d4450e9d0e335f2582240e289e9132433b80cfbc"
+    },
+    {
+      "path": "runs/bringup/oled-probe-build-record-2026-10-29.json",
+      "size_bytes": 227,
+      "sha256": "37e554f1d3b7898f56fef4227cf90b553e8d234874bd9e04fdd030c2ef95432e"
+    },
+    {
+      "path": "runs/bringup/red-led-build-record-2026-10-29.json",
+      "size_bytes": 409,
+      "sha256": "909190fc8a9c8745832898c9d4951db33530945217449f91b649a10d1f473568"
+    },
+    {
+      "path": "runs/bringup/red-led-manual-2026-10-29.json",
+      "size_bytes": 3105,
+      "sha256": "3bb9cbba4b3323f6c59cba9b2c106322f8ad37be0671f510bf95e22322f49a5e"
+    },
+    {
+      "path": "runs/bringup/red-led-pin-probe-build-record-2026-10-29.json",
+      "size_bytes": 601,
+      "sha256": "15d9cee3799ff5af601d81cc6694ffe275761270e0f7cd3fdf77c9e0d490eaf8"
+    },
+    {
+      "path": "runs/bringup/red-led-serial-2026-10-29.json",
+      "size_bytes": 1576,
+      "sha256": "b9569fc3d827f3ace7e67fc87c4ff596d444e9ae962b9a8f20387f1b7b357aa8"
+    },
+    {
+      "path": "runs/bringup/red-led-two-pin-probe-2026-10-29.json",
+      "size_bytes": 3843,
+      "sha256": "ef3da563f2acb437a2051174717c920bad43fdb1be6e877152470e7cbc11e7e2"
+    },
+    {
+      "path": "runs/bringup/rig-combined-2026-10-30.json",
+      "size_bytes": 2668,
+      "sha256": "31c49b0f6531e5b678b7f908f63a1c79db2042a9a2d562bf551c74b30c0ed6e1"
+    },
+    {
+      "path": "runs/bringup/rig-combined-replay-2026-10-30-01.json",
+      "size_bytes": 3912,
+      "sha256": "9ef8907f693539c6ab4b9fd2d66f00d1fc0e7251880bb12bc5ab9d3d46aa15d8"
+    },
+    {
+      "path": "runs/bringup/rig-combined-video-2026-10-30-01.json",
+      "size_bytes": 2710,
+      "sha256": "9706d8c3ca35ebfbab441c22036338a3c364fad4f8acd39e2479258df37ae714"
+    },
+    {
+      "path": "runs/bringup/rig-idle-2026-10-30.json",
+      "size_bytes": 1354,
+      "sha256": "84e4d6ad7e6288bb9de9ff468ca89c5f624cf1abc312ecd7ae332c108286bbdd"
+    },
+    {
+      "path": "runs/bringup/rig-test-build-record-2026-10-30.json",
+      "size_bytes": 1496,
+      "sha256": "072937c06486b8cf3cb69d9b8e711d78471a18e2bd1b831cad3426eedf244d85"
+    },
+    {
+      "path": "runs/bringup/servo-build-record-2026-10-29.json",
+      "size_bytes": 813,
+      "sha256": "640aab1a467245d53439b602d10d0fabfc06ee97546643bbd87b9d8cabab4ad6"
+    },
+    {
+      "path": "runs/bringup/servo-center-2026-10-30.json",
+      "size_bytes": 1737,
+      "sha256": "678a441fe4fa2face5dc53040b26d7fa1ca2c0b8ef13d393ddbd3ab159f605c2"
+    },
+    {
+      "path": "runs/bringup/servo-idle-2026-10-29.json",
+      "size_bytes": 1319,
+      "sha256": "cadd1c8422819dac206310d839378538266f4e87aef1cd66bcc82b43d47dec73"
+    },
+    {
+      "path": "runs/bringup/servo-movement-2026-10-30.json",
+      "size_bytes": 3240,
+      "sha256": "c406034159d8f5e945e72d99527d24a87ae3b2bb4834e704649ea720c80f1460"
+    },
+    {
+      "path": "runs/bringup/two-led-manual-2026-10-29.json",
+      "size_bytes": 669,
+      "sha256": "6843e8d8073a2f18b2886d0ccad7ec928b1f783c0cb0bb3db465b3e96f577b74"
+    },
+    {
+      "path": "specs/behavior_a.json",
+      "size_bytes": 710,
+      "sha256": "d6e340e4462420fa90e188fa2f8906bae45de03e6b9a89ecfebe954a9c2d039d"
+    },
+    {
+      "path": "specs/behavior_b.json",
+      "size_bytes": 360,
+      "sha256": "828c9f43ebf0583a92e3cd1538da2a4650a258ee255c2a6ad75ea1c1f2133e5c"
+    },
+    {
+      "path": "src/sparkbench/__init__.py",
+      "size_bytes": 65,
+      "sha256": "53408fec12bf3de80e43bd828f62270314873b4fe3e60e022a4471f89b89a1bd"
+    },
+    {
+      "path": "src/sparkbench/__main__.py",
+      "size_bytes": 2860,
+      "sha256": "f20596d4f94e99b6d7dce4cfa0e2513074395e9d5149c3ce15d5abd89efb3886"
+    },
+    {
+      "path": "src/sparkbench/camera.py",
+      "size_bytes": 3663,
+      "sha256": "e9847ffeac6691b652d20a5be7cc3584d0bfa05fb4a2caa3584acbadb17e06d2"
+    },
+    {
+      "path": "src/sparkbench/doctor.py",
+      "size_bytes": 1678,
+      "sha256": "f81371b7b4132730360e624354529c5a3630d5492578f41a6b368cd5736758eb"
+    },
+    {
+      "path": "src/sparkbench/verify.py",
+      "size_bytes": 4509,
+      "sha256": "c7759163bdb3ed0d1bb6602fa0d50238524f5ab8145ab5f51a27bde360365905"
+    },
+    {
+      "path": "tests/test_camera.py",
+      "size_bytes": 3923,
+      "sha256": "b1c407016444a0ca306d386b2f2ce495e86ddcb6f037b49c9d02fa860cac9aac"
+    },
+    {
+      "path": "tests/test_verify.py",
+      "size_bytes": 3261,
+      "sha256": "96b200e08179c2290e49c6038c09a2febca3cb4c6f7459ed209607c066cffa8d"
+    },
+    {
+      "path": "tools/bootstrap_macos.sh",
+      "size_bytes": 1768,
+      "sha256": "f745c609bd31a8b967a0f8fc82573e85de868146551300ac533b2f2e198e2698"
+    },
+    {
+      "path": "tools/check_heartbeat.py",
+      "size_bytes": 3057,
+      "sha256": "37009710d6b89e60e9362b5698b40ee973acae31dc70fbff54a0146f9f3611dd"
+    },
+    {
+      "path": "tools/check_led_blink.py",
+      "size_bytes": 2623,
+      "sha256": "ad432ba6bfc8608ad0e1f1d92b94dbfcd844e7247ed68ecabd0a56f029da96f2"
+    },
+    {
+      "path": "tools/check_oled_probe.py",
+      "size_bytes": 2447,
+      "sha256": "5361206664c84a0b400c977fd601614a41252096022c173d8e1e0782844b2ba6"
+    },
+    {
+      "path": "tools/macos_camera/Info.plist",
+      "size_bytes": 552,
+      "sha256": "034c11017a2634d92c837591ac2e775cd9b7de64ba68c09ed9507dbc48bd447c"
+    },
+    {
+      "path": "tools/macos_camera/main.swift",
+      "size_bytes": 9431,
+      "sha256": "c8a32936e75f07b4a4698eb1615518ee491633e1eba79a61fd5b8d14824cab51"
+    },
+    {
+      "path": "tools/package_handover.py",
+      "size_bytes": 4807,
+      "sha256": "3474a05478a82f07cc004fc8e21c020a26014ac818bf8382eeb5a1d59b126523"
+    }
+  ]
+}

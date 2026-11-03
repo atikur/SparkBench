@@ -1,0 +1,4 @@
+# Minimal bring-up image. No filesystem or OTA slots are needed yet.
+# Name, Type, SubType, Offset, Size, Flags
+nvs, data, nvs, 0x9000, 0x5000,
+app0, app, factory, 0x10000, 0x300000,

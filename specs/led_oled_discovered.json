@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "name": "led_oled_discovered_green_first",
+  "kind": "independent_behavior_specification",
+  "status": "expected_values_only",
+  "scope": "LED/OLED sampled settled windows only; no servo or overall rig pass",
+  "start_command": "VISUAL",
+  "nominal_step_duration_ms": 3000,
+  "servo_actuation": false,
+  "steps": [
+    {"step": 1, "red": false, "green": false, "oled_text": "DARK"},
+    {"step": 2, "red": false, "green": true, "oled_text": "GREEN"},
+    {"step": 3, "red": true, "green": true, "oled_text": "BOTH"},
+    {"step": 4, "red": true, "green": false, "oled_text": "RED"},
+    {"step": 5, "red": false, "green": false, "oled_text": "DARK END"}
+  ],
+  "measurements": null,
+  "full_behavior_verifier_compatible": false,
+  "note": "Color behavior is chosen before generation. GPIO mapping must come from the recorded camera discovery, not be supplied as a claimed observation by this specification."
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "mode": "unverified_passive_tracking",
+  "preview_config": "hardware/servo.preview.json",
+  "preview_config_sha256": "99fdee48b6bc7b4bec8954f5dd5bdd79e9442d07b2f72adbce364739f4f9c80e",
+  "source_capture": "runs/camera/servo-reference-object-2026-10-30-v2",
+  "settings": {
+    "horn_roi": [
+      1160,
+      340,
+      280,
+      285
+    ],
+    "pivot_hint": [
+      1295,
+      475
+    ],
+    "body_patches": [
+      [
+        1330,
+        673
+      ],
+      [
+        1195,
+        753
+      ],
+      [
+        1316,
+        770
+      ]
+    ],
+    "search_pixels": 8,
+    "patch_radius": 5,
+    "maximum_body_shift_pixels": 2.0,
+    "maximum_patch_spread_pixels": 2.0,
+    "maximum_patch_error": 14.0,
+    "minimum_patch_texture": 4.0,
+    "minimum_white_luma": 170.0,
+    "maximum_white_chroma": 45.0,
+    "minimum_component_area": 1800,
+    "maximum_component_area": 10000,
+    "minimum_elongation": 2.0,
+    "pivot_search_pixels": 14,
+    "minimum_pivot_contrast": 6.0,
+    "minimum_horn_length": 50.0,
+    "maximum_horn_length": 150.0,
+    "minimum_focus_ratio": 0.4,
+    "minimum_focus_variance": 3.0,
+    "minimum_area_ratio": 0.65,
+    "maximum_area_ratio": 1.35
+  },
+  "temporal_policy": {
+    "maximum_frame_gap_seconds": 1.0,
+    "maximum_heading_jump_deg": 45.0
+  },
+  "scope": "Frozen unverified static pixel-tracking replay; no calibrated angle accuracy or moving-servo validation",
+  "servo_actuation": false,
+  "angle_deg": null,
+  "eligible_for_verifier": false,
+  "initialization_note": "Discarded first candidate patch because reference texture stddev 1.46 is below unchanged minimum 4. Remaining three case-edge patches are non-collinear, texture stddev 15.10/18.56/20.58. Development-v1 retained.",
+  "settings_frozen_at_utc": "2026-10-30T12:24:24.432639+00:00",
+  "evaluation_role": "replay_of_development_static_capture_not_independent_live_validation",
+  "development_records": [
+    "runs/servo-tracking/passive-development-2026-10-30-v1/tracking.json",
+    "runs/servo-tracking/passive-development-2026-10-30-v2/tracking.json"
+  ]
+}

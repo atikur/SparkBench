@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "mode": "unverified_static_preview",
+  "source_capture": "runs/camera/servo-reference-object-2026-10-30-v2",
+  "reference_frame": "runs/camera/servo-reference-object-2026-10-30-v2/frame-000006.jpg",
+  "reference_sha256": "a7ee9cb096d9940aaca8415c06bb10730e2d407c9c8fe3b53182701027c7ab69",
+  "camera_id": "618E8741-BCAC-4C8E-AB5E-897800000001",
+  "image_width": 1920,
+  "image_height": 1080,
+  "roi_xywh": [
+    1160,
+    420,
+    240,
+    420
+  ],
+  "body_reference": {
+    "shaft_center_px": [
+      1295,
+      475
+    ],
+    "axis_endpoints_px": [
+      [
+        1269.5,
+        665
+      ],
+      [
+        1255.5,
+        761.5
+      ]
+    ],
+    "landmarks": [
+      {
+        "name": "L1",
+        "point": [
+          1209,
+          657
+        ]
+      },
+      {
+        "name": "R1",
+        "point": [
+          1330,
+          673
+        ]
+      },
+      {
+        "name": "L2",
+        "point": [
+          1195,
+          753
+        ]
+      },
+      {
+        "name": "R2",
+        "point": [
+          1316,
+          770
+        ]
+      }
+    ],
+    "source": "Manually selected current-view image points; not independently localized or calibrated"
+  },
+  "horn_tip_px": [
+    1262,
+    566
+  ],
+  "plane_reference": null,
+  "preview_card": {
+    "corners_px": [
+      [
+        1384,
+        722
+      ],
+      [
+        1710,
+        776
+      ],
+      [
+        1741,
+        989
+      ],
+      [
+        1372,
+        917
+      ]
+    ],
+    "shape": "rectangle, user confirmed",
+    "width_mm": null,
+    "height_mm": null,
+    "actual_width_to_height": null,
+    "dimensions_confirmed": false,
+    "plane_relation_confirmed": false,
+    "plane_relation_user_report": "approximately parallel",
+    "illustrative_width_to_height_ratios": [
+      1.25,
+      1.5,
+      2.0,
+      2.5
+    ],
+    "render_assumed_width_to_height": 1.5,
+    "assumed_ratio_provenance": "Arbitrary 3:2 illustration explicitly allowed as unverified preview; not inferred from image or measured"
+  },
+  "angular_zero": null,
+  "angle_deg": null,
+  "measured_angle_calibration": null,
+  "eligible_for_verifier": false,
+  "servo_actuation": false
+}

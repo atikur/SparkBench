@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "name": "behavior_a",
+  "angle_tolerance_deg": 6,
+  "steps": [
+    {"step": 1, "expected_angle": 45, "red": false, "green": true, "oled_text": "45"},
+    {"step": 2, "expected_angle": 60, "red": false, "green": true, "oled_text": "60"},
+    {"step": 3, "expected_angle": 75, "red": false, "green": true, "oled_text": "75"},
+    {"step": 4, "expected_angle": 90, "red": false, "green": true, "oled_text": "90"},
+    {"step": 5, "expected_angle": 105, "red": true, "green": false, "oled_text": "105"},
+    {"step": 6, "expected_angle": 120, "red": true, "green": false, "oled_text": "120"},
+    {"step": 7, "expected_angle": 135, "red": true, "green": false, "oled_text": "135"}
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "status": "provisional_nominal_square_reference_unmeasured_print",
+  "source_capture": "runs/servo-tracking/physical-occlusion-2026-10-30-v2/clear-before/camera",
+  "reference_frame": "runs/servo-tracking/physical-occlusion-2026-10-30-v2/clear-before/camera/frame-000010.jpg",
+  "reference_sha256": "95fc745d3e8ad871d930d1af3b5c7cee4566b92f0694d711fcc90817ca8e7c6b",
+  "camera_id": "618E8741-BCAC-4C8E-AB5E-897800000001",
+  "image_width": 1920,
+  "image_height": 1080,
+  "roi_xywh": [
+    875,
+    350,
+    560,
+    450
+  ],
+  "body_reference": {
+    "shaft_center_px": [
+      955,
+      453
+    ],
+    "axis_endpoints_px": [
+      [
+        958,
+        561
+      ],
+      [
+        959,
+        600
+      ]
+    ],
+    "landmarks": [
+      {
+        "name": "L1",
+        "point": [
+          926,
+          561
+        ]
+      },
+      {
+        "name": "R1",
+        "point": [
+          994,
+          561
+        ]
+      },
+      {
+        "name": "L2",
+        "point": [
+          927,
+          600
+        ]
+      },
+      {
+        "name": "R2",
+        "point": [
+          995,
+          600
+        ]
+      }
+    ],
+    "source": "Manual initialization after visibly changed phone framing; actual angle remains unverified"
+  },
+  "horn_tip_px": [
+    958,
+    539
+  ],
+  "plane_reference": null,
+  "provisional_grid_reference": {
+    "corners_order": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "corners_px": [
+      [
+        1066,
+        452
+      ],
+      [
+        1340,
+        459
+      ],
+      [
+        1372,
+        708
+      ],
+      [
+        1073,
+        704
+      ]
+    ],
+    "corner_source": "Supervised current-frame manual corners; printed size/aspect unmeasured",
+    "nominal_design_size_mm": [
+      50,
+      50
+    ],
+    "nominal_width_to_height": 1.0,
+    "design_file": "output/pdf/servo-reference-grid-50mm.pdf",
+    "design_file_sha256": "febeff14d0d36309c39b5c76e3e48b5363a80bcf6bacaacc2dd7a79671c0ec52",
+    "user_report_print_scale": "Printed at 100%; not measured",
+    "printed_measured_size_mm": null,
+    "printed_dimensions_confirmed": false,
+    "printed_aspect_independently_verified": false,
+    "flat_and_parallel_user_confirmation": "Yes, confirmed parallel",
+    "relation_to_horn_plane": "parallel_plane",
+    "plane_relation_confirmed_by_user": true,
+    "plane_relation_independently_verified": false,
+    "scale_units": "Nominal square units only; no millimetre measurement",
+    "provenance_timestamp_utc": "2026-10-30T16:39:18.433299+00:00",
+    "confirmation_scope": "Prior user flat/parallel confirmation retained; current physical relation not independently measured"
+  },
+  "angle_deg": null,
+  "measured_angle_calibration": null,
+  "angular_zero": null,
+  "eligible_for_verifier": false,
+  "servo_actuation": false,
+  "latest_view_updated_at_utc": "2026-10-30T16:59:03.330415+00:00",
+  "latest_view_note": "Current phone framing changed during physical-test preparation; supervised reference refreshed, dimensions/aspect still unmeasured. Prior overlay belongs older view."
+}

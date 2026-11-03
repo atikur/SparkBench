@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "image_width": 1920,
+  "image_height": 1080,
+  "coordinate_origin": "top_left",
+  "reference_frame": "runs/live/led-oled-resume-2026-11-03-v1/restored-view-connected/camera/frame-000004.jpg",
+  "leds": {
+    "red": {
+      "center_x": 1133,
+      "center_y": 518,
+      "radius": 9
+    },
+    "green": {
+      "center_x": 1230,
+      "center_y": 427,
+      "radius": 9
+    }
+  },
+  "oled_corners": [
+    [
+      919,
+      769
+    ],
+    [
+      1067,
+      695
+    ],
+    [
+      1085,
+      745
+    ],
+    [
+      942,
+      817
+    ]
+  ],
+  "rectified_width": 1024,
+  "rectified_height": 512,
+  "label_crop": [
+    0,
+    140,
+    995,
+    110
+  ],
+  "minimum_border_support": 0.85,
+  "maximum_registration_shift_pixels": 80,
+  "minimum_registration_scale": 0.88,
+  "maximum_registration_scale": 1.12,
+  "note": "Supervised current widened view; only geometry/reference/LED circles refreshed. Existing reader, guards, pixel-error/border/registration bounds and Meta policy unchanged. Label-only vertical crop refined on supervised source frames before independent evaluation; excludes header fragments and retains whole label.",
+  "registration_translation_pixels": 12,
+  "maximum_registration_error": 35
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "name": "led_oled_only",
+  "kind": "diagnostic_sequence_specification",
+  "status": "expected_values_only",
+  "scope": "LED/OLED acquisition and future visual measurements only; no servo or overall rig pass",
+  "start_command": "VISUAL",
+  "nominal_step_duration_ms": 3000,
+  "gpio": {"red": 25, "green": 26, "oled_sda": 21, "oled_scl": 22},
+  "oled_address_7bit": "0x3C",
+  "oled_working_profile": "SH1106_128X64",
+  "servo_actuation": false,
+  "steps": [
+    {"step": 1, "red": false, "green": false, "oled_text": "DARK"},
+    {"step": 2, "red": true, "green": false, "oled_text": "RED"},
+    {"step": 3, "red": false, "green": true, "oled_text": "GREEN"},
+    {"step": 4, "red": true, "green": true, "oled_text": "BOTH"},
+    {"step": 5, "red": false, "green": false, "oled_text": "DARK END"}
+  ],
+  "measurements": null,
+  "automatic_visual_verification": "not performed",
+  "full_behavior_verifier_compatible": false,
+  "note": "Independent expected values, not observations. The full behavior verifier still requires measured servo angles."
+}

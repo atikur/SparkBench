@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "mode": "unverified_passive_tracking",
+  "preview_config": "runs/servo-tracking/live-passive-2026-10-30-v3/reference-refresh/preview.config.json",
+  "preview_config_sha256": "eb7795c47a6b0175404d1db3ba9552c41ba6adb6c1080805fd221cf2db040f3e",
+  "source_capture": "runs/servo-tracking/live-passive-2026-10-30-v4/camera",
+  "settings": {
+    "horn_roi": [
+      1090,
+      330,
+      250,
+      270
+    ],
+    "pivot_hint": [
+      1205,
+      454
+    ],
+    "body_patches": [
+      [
+        1120,
+        696
+      ],
+      [
+        1224,
+        707
+      ],
+      [
+        1210,
+        772
+      ]
+    ],
+    "search_pixels": 8,
+    "patch_radius": 5,
+    "maximum_body_shift_pixels": 2.0,
+    "maximum_patch_spread_pixels": 2.0,
+    "maximum_patch_error": 14.0,
+    "minimum_patch_texture": 4.0,
+    "minimum_white_luma": 170.0,
+    "maximum_white_chroma": 45.0,
+    "minimum_component_area": 1800,
+    "maximum_component_area": 10000,
+    "minimum_elongation": 2.0,
+    "pivot_search_pixels": 14,
+    "minimum_pivot_contrast": 6.0,
+    "minimum_horn_length": 50.0,
+    "maximum_horn_length": 150.0,
+    "minimum_focus_ratio": 0.4,
+    "minimum_focus_variance": 3.0,
+    "minimum_area_ratio": 0.65,
+    "maximum_area_ratio": 1.35,
+    "camera_registration": {
+      "background_patches": [
+        [
+          779,
+          341
+        ],
+        [
+          1033,
+          411
+        ],
+        [
+          975,
+          664
+        ],
+        [
+          1644,
+          1027
+        ]
+      ],
+      "maximum_shift_pixels": 4,
+      "model": "similarity",
+      "maximum_rotation_degrees": 0.5,
+      "maximum_scale_change": 0.01
+    }
+  },
+  "temporal_policy": {
+    "maximum_frame_gap_seconds": 1.0,
+    "maximum_heading_jump_deg": 45.0
+  },
+  "scope": "Offline candidate, unverified preview only; fresh independent camera validation pending",
+  "servo_actuation": false,
+  "angle_deg": null,
+  "eligible_for_verifier": false,
+  "initialization_note": "Four independent background anchors, bounded similarity fit without discarding any anchors. Existing body residual/error/texture/spread and horn/temporal limits unchanged.",
+  "settings_frozen_at_utc": "2026-10-30T13:15:11.418147+00:00",
+  "evaluation_role": "Retrospective tuned saved-frame evaluation, not independent live validation",
+  "development_records": [
+    "runs/servo-tracking/passive-development-2026-10-30-v1/tracking.json",
+    "runs/servo-tracking/passive-development-2026-10-30-v2/tracking.json"
+  ]
+}

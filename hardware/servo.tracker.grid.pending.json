@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "mode": "unverified_passive_tracking",
+  "preview_config": "hardware/servo.grid.preview.json",
+  "preview_config_sha256": "fc1dd873b0fea3fd0ddfef3951f0097aa2ecf4d1bd435e83539e8faf0cc93ae8",
+  "source_capture": "runs/servo-tracking/physical-occlusion-2026-10-30-v3/clear-after/camera",
+  "settings": {
+    "horn_roi": [
+      895,
+      360,
+      130,
+      210
+    ],
+    "pivot_hint": [
+      955,
+      453
+    ],
+    "body_patches": [
+      [
+        931,
+        563
+      ],
+      [
+        985,
+        563
+      ],
+      [
+        958,
+        592
+      ]
+    ],
+    "search_pixels": 8,
+    "patch_radius": 5,
+    "maximum_body_shift_pixels": 2.0,
+    "maximum_patch_spread_pixels": 2.0,
+    "maximum_patch_error": 14.0,
+    "minimum_patch_texture": 4.0,
+    "minimum_white_luma": 170.0,
+    "maximum_white_chroma": 45.0,
+    "minimum_component_area": 1800,
+    "maximum_component_area": 10000,
+    "minimum_elongation": 2.0,
+    "pivot_search_pixels": 14,
+    "minimum_pivot_contrast": 6.0,
+    "minimum_horn_length": 50.0,
+    "maximum_horn_length": 150.0,
+    "minimum_focus_ratio": 0.4,
+    "minimum_focus_variance": 3.0,
+    "minimum_area_ratio": 0.65,
+    "maximum_area_ratio": 1.35,
+    "camera_registration": {
+      "background_patches": [
+        [
+          623,
+          298
+        ],
+        [
+          797,
+          447
+        ],
+        [
+          1066,
+          452
+        ],
+        [
+          1372,
+          708
+        ]
+      ],
+      "maximum_shift_pixels": 4,
+      "model": "similarity",
+      "maximum_rotation_degrees": 0.5,
+      "maximum_scale_change": 0.01
+    },
+    "patch_matching": "bilinear_subpixel",
+    "body_patch_radius": 9
+  },
+  "temporal_policy": {
+    "maximum_frame_gap_seconds": 1.0,
+    "maximum_heading_jump_deg": 45.0
+  },
+  "scope": "Unverified static pixel tracking only; printed dimensions/aspect and actual shaft angles unmeasured",
+  "servo_actuation": false,
+  "angle_deg": null,
+  "eligible_for_verifier": false,
+  "initialization_note": "Final v4 view: supervised ROI/hub/body/background initialization only; all detector and rejection settings unchanged",
+  "settings_frozen_at_utc": "2026-10-30T17:00:15.310338+00:00",
+  "evaluation_role": "Current changed view, qualified before/covered/after broad scene obstruction; actual angles unverified",
+  "development_records": [
+    "runs/servo-tracking/passive-development-2026-10-30-v1/tracking.json",
+    "runs/servo-tracking/passive-development-2026-10-30-v2/tracking.json"
+  ]
+}

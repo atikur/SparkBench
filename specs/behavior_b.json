@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "behavior_b",
+  "angle_tolerance_deg": 6,
+  "steps": [
+    {"step": 1, "expected_angle": 135, "red": true, "green": false, "oled_text": "HIGH"},
+    {"step": 2, "expected_angle": 90, "red": true, "green": true, "oled_text": "MID"},
+    {"step": 3, "expected_angle": 45, "red": false, "green": true, "oled_text": "LOW"}
+  ]
+}

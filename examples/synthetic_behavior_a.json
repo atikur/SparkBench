@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "provenance": {"kind": "synthetic", "note": "Hand-authored test data. Not captured from hardware."},
+  "measurements": [
+    {"step": 1, "angle_deg": 46, "red": false, "green": true, "oled_text": "45"},
+    {"step": 2, "angle_deg": 59, "red": false, "green": true, "oled_text": "60"},
+    {"step": 3, "angle_deg": 74, "red": false, "green": true, "oled_text": "75"},
+    {"step": 4, "angle_deg": 91, "red": false, "green": true, "oled_text": "90"},
+    {"step": 5, "angle_deg": 104, "red": true, "green": false, "oled_text": "105"},
+    {"step": 6, "angle_deg": 121, "red": true, "green": false, "oled_text": "120"},
+    {"step": 7, "angle_deg": 134, "red": true, "green": false, "oled_text": "135"}
+  ]
+}

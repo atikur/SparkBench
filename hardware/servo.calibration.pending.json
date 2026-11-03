@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "physical",
+  "status": "pending_physical_measurements",
+  "approved_pulse_bounds_us": [
+    1300,
+    1700
+  ],
+  "independent_reader_uncertainty_deg": null,
+  "geometry": {
+    "camera_id": "618E8741-BCAC-4C8E-AB5E-897800000001",
+    "reference_frame": "runs/servo-tracking/mounted-grid-live-2026-11-03-v1/camera/frame-000020.jpg",
+    "reference_sha256": "6a56cc67eef75a15cc9d815ee2179a524cc06c0752a5513cee2289f6758e96be",
+    "tracker_settings_sha256": "0ac80838b2a9dea95266774c08ea5c18347d0ec5f54c2ed59835b4e5fe31d30b",
+    "tracker_temporal_policy_sha256": "7c5c9d3f6850586f9ed5be344e69e10c14be41061cdf81a364b0ff16261ff9b5",
+    "measurement_sources_sha256": {
+      "src/sparkbench/servo_calibration.py": "bd6adfb93bc47104178a56a64e6231805e7cd1a8416b8311a8f6c52e8839acf8",
+      "src/sparkbench/servo_geometry.py": "e58b260cd615735e3562114ca86173885746f7c1bfa78a4382d39fc279e5e651",
+      "src/sparkbench/servo_preview.py": "468472bc2872364d7367fbf22f93e8adbc7a96a266c13300290e7bb6a46215ac",
+      "src/sparkbench/servo_tracking.py": "fda40c525d6777a84a1820b61702bfcc62df0d02862115319307a90b8557f2e7",
+      "tools/macos_servo_tracker/Tracker.swift": "01b876819e1b4d27782a58327143777795078748350b6d4a5f18a3f9e16ee71c",
+      "tools/macos_servo_tracker/main.swift": "b6ea1894755749d3e5a87a3b4374ac050b098c543498004365215799c4832407"
+    },
+    "plane_reference": null,
+    "zero_reference": null
+  },
+  "observations": [],
+  "eligible_for_hardware": false,
+  "note": "Fill from independent physical observations. Never derive reference angles from commands or expected behavior. Existing approved envelope is not new movement authorization."
+}

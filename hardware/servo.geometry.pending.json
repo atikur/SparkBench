@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "image_reference_only_metric_perspective_pending",
+  "source_capture": "runs/camera/servo-passive-2026-10-30-v2",
+  "reference_frame": "runs/camera/servo-passive-2026-10-30-v2/frame-000005.jpg",
+  "reference_sha256": "a5c4a1ab21314f53959f714910f35f07f4af37ebd880c0f31196ebb9c3d44f3a",
+  "camera_id": "618E8741-BCAC-4C8E-AB5E-897800000001",
+  "image_width": 1920,
+  "image_height": 1080,
+  "coordinate_origin": "top_left",
+  "roi_xywh": [
+    1220,
+    630,
+    240,
+    450
+  ],
+  "body_reference": {
+    "source": "agent_selected_landmarks_on_saved_real_frame",
+    "shaft_center_px": [
+      1328,
+      700
+    ],
+    "landmarks": [
+      {
+        "name": "L1",
+        "point": [
+          1248,
+          934
+        ]
+      },
+      {
+        "name": "R1",
+        "point": [
+          1402,
+          934
+        ]
+      },
+      {
+        "name": "L2",
+        "point": [
+          1246,
+          1027
+        ]
+      },
+      {
+        "name": "R2",
+        "point": [
+          1394,
+          1027
+        ]
+      }
+    ],
+    "axis_endpoints_px": [
+      [
+        1325,
+        934
+      ],
+      [
+        1320,
+        1027
+      ]
+    ],
+    "axis_definition": "Projected midpoint line between opposite visible case-edge samples; not assumed coplanar with horn",
+    "selection_uncertainty": "Not independently measured; manually selected on a soft image"
+  },
+  "horn_tip_px": [
+    1300,
+    858
+  ],
+  "horn_tip_scope": "Manually selected current static pose only, not a mechanical zero or known angle",
+  "plane_reference": null,
+  "perspective_status": "incomplete: no confirmed metric plane parallel to horn rotation plane",
+  "required_reference": "Four ordered corners of a known rectangle or square in the horn plane, or a confirmed parallel plane; known aspect ratio and provenance required",
+  "angular_zero": null,
+  "angle_deg": null,
+  "servo_actuation": false,
+  "full_behavior_verification": "incomplete_required_servo_measurements_missing"
+}

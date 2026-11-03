@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "mode": "unverified_static_preview",
+  "source_capture": "runs/servo-tracking/physical-occlusion-2026-10-30-v2/clear-before/camera",
+  "reference_frame": "runs/servo-tracking/physical-occlusion-2026-10-30-v2/clear-before/camera/frame-000010.jpg",
+  "reference_sha256": "95fc745d3e8ad871d930d1af3b5c7cee4566b92f0694d711fcc90817ca8e7c6b",
+  "camera_id": "618E8741-BCAC-4C8E-AB5E-897800000001",
+  "image_width": 1920,
+  "image_height": 1080,
+  "roi_xywh": [
+    875,
+    385,
+    170,
+    255
+  ],
+  "body_reference": {
+    "shaft_center_px": [
+      955,
+      453
+    ],
+    "axis_endpoints_px": [
+      [
+        958,
+        561
+      ],
+      [
+        959,
+        600
+      ]
+    ],
+    "landmarks": [
+      {
+        "name": "L1",
+        "point": [
+          926,
+          561
+        ]
+      },
+      {
+        "name": "R1",
+        "point": [
+          994,
+          561
+        ]
+      },
+      {
+        "name": "L2",
+        "point": [
+          927,
+          600
+        ]
+      },
+      {
+        "name": "R2",
+        "point": [
+          995,
+          600
+        ]
+      }
+    ],
+    "source": "Manual initialization after visibly changed phone framing; actual angle remains unverified"
+  },
+  "horn_tip_px": [
+    958,
+    539
+  ],
+  "plane_reference": null,
+  "angular_zero": null,
+  "angle_deg": null,
+  "measured_angle_calibration": null,
+  "eligible_for_verifier": false,
+  "servo_actuation": false,
+  "preview_card": {
+    "reference_kind": "nominal_printed_square",
+    "corners_px": [
+      [
+        1066,
+        452
+      ],
+      [
+        1340,
+        459
+      ],
+      [
+        1372,
+        708
+      ],
+      [
+        1073,
+        704
+      ]
+    ],
+    "width_mm": null,
+    "height_mm": null,
+    "dimensions_confirmed": false,
+    "actual_width_to_height": null,
+    "nominal_design_width_to_height": 1.0,
+    "plane_relation_confirmed": true,
+    "plane_relation_user_report": "Yes, confirmed parallel",
+    "illustrative_width_to_height_ratios": [
+      1.0
+    ],
+    "render_assumed_width_to_height": 1.0,
+    "assumed_ratio_provenance": "Supplied square design printed at100%, actual dimensions/aspect unmeasured; provisional only"
+  }
+}

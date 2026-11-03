@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "mode": "unverified_static_preview",
+  "source_capture": "runs/camera/taped-fixed-2026-11-02-v1",
+  "reference_frame": "runs/camera/taped-fixed-2026-11-02-v1/frame-000010.jpg",
+  "reference_sha256": "145038f287f8dba14146dc479f41de448c78f9151f3d0f13d88697a28591708c",
+  "camera_id": "618E8741-BCAC-4C8E-AB5E-897800000001",
+  "image_width": 1920,
+  "image_height": 1080,
+  "roi_xywh": [
+    830,
+    600,
+    300,
+    230
+  ],
+  "body_reference": {
+    "shaft_center_px": [
+      1010,
+      709
+    ],
+    "axis_endpoints_px": [
+      [
+        902,
+        758
+      ],
+      [
+        1075,
+        724
+      ]
+    ],
+    "landmarks": [
+      {
+        "name": "left_screw",
+        "point": [
+          889,
+          739
+        ]
+      },
+      {
+        "name": "right_screw",
+        "point": [
+          1063,
+          705
+        ]
+      }
+    ],
+    "source": "Supervised approximate pixel initialization in fresh taped-mount view; not measured geometry"
+  },
+  "horn_tip_px": [
+    914,
+    731
+  ],
+  "plane_reference": null,
+  "angular_zero": null,
+  "angle_deg": null,
+  "measured_angle_calibration": null,
+  "eligible_for_verifier": false,
+  "servo_actuation": false,
+  "preview_card": null,
+  "geometry_mode": "image_only"
+}

@@ -1,0 +1,15 @@
+.venv/
+.cache/
+dist/
+.platformio/
+.pio/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.env.*
+runs/*
+!runs/.gitkeep
+build/
+tmp/
+.DS_Store

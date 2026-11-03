@@ -1,0 +1,25 @@
+{
+  "family": "esp32s3",
+  "family_source": "user reported S3 on October 27, 2026",
+  "board_model": "exact carrier board unknown; ESP32-S3 hardware identified via esptool",
+  "module_marking": null,
+  "flash_size_mb": 16,
+  "psram_size_mb": 8,
+  "chip_revision": "v0.2",
+  "flash_interface": "quad, 3.3 V (eFuse report)",
+  "psram_interface": "AP_3v3 (esptool feature report)",
+  "usb_connection": "native USB-Serial/JTAG",
+  "last_seen_port": "/dev/cu.usbmodem21101",
+  "identification_method": "esptool 5.6.0 flash-id on October 27, 2026",
+  "pin_map_status": "pending exact board identification",
+  "bringup": {
+    "status": "pass",
+    "date": "2026-10-27",
+    "firmware": "firmware/bringup",
+    "capture": "runs/bringup/heartbeat.json",
+    "heartbeat_count": 9,
+    "interval_ms": 1000,
+    "psram_enabled": false,
+    "original_flash_backup": "runs/backups/esp32s3-before-bringup-2026-10-27.bin"
+  }
+}
