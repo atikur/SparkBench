@@ -34,15 +34,20 @@
   <div class="hero">
     <p class="eyebrow">Proof beyond the build</p>
     <h1 class="hero-title">Describe it. Meta plans it.<br>The camera proves it.</h1>
-    <p class="lead">SparkBench turns a plain-language idea into ESP32 firmware with Meta Muse Spark, installs it on a real board, and checks on camera what the hardware actually did.</p>
-    <div class="actions"><button id="open-guide" class="primary-button large" type="button">Start a project</button></div>
+    <p class="lead">You describe it. Muse Spark plans it. The agent builds, installs and tests it. The camera proves what the board actually did, and when it fails, Muse Spark explains why.</p>
+    <form id="home-plan-form" class="home-plan">
+      <label for="home-idea" class="sr-only">What should the board do?</label>
+      <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
+      <div class="actions wrap"><button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button><button id="open-guide" class="link-button" type="button">Start with more details</button></div>
+    </form>
   </div>
 
   <ol class="loop" aria-label="How it works">
     <li><span class="loop-n">1</span><strong>Describe</strong><span>Your idea in plain words</span></li>
-    <li class="meta"><span class="loop-n">2</span><strong>Plan</strong><span>Muse Spark writes up to 8 steps</span><em class="meta-chip">Muse Spark</em></li>
-    <li><span class="loop-n">3</span><strong>Build &amp; install</strong><span>Trusted code compiles and flashes</span></li>
-    <li class="meta"><span class="loop-n">4</span><strong>Verify</strong><span>The iPhone camera watches the board</span><em class="meta-chip">Muse Spark</em></li>
+    <li class="meta"><span class="loop-n">2</span><strong>Plan</strong><span>Muse Spark writes up to 8 steps; you approve them</span><em class="meta-chip">Muse Spark</em></li>
+    <li><span class="loop-n">3</span><strong>Run</strong><span>The agent builds, installs and tests, skipping what is already proven</span></li>
+    <li class="meta"><span class="loop-n">4</span><strong>Prove</strong><span>The camera watches the board; Muse Spark reads the display without knowing the answer</span><em class="meta-chip">Muse Spark</em></li>
+    <li class="meta"><span class="loop-n">5</span><strong>Explain</strong><span>When it fails, Muse Spark says why from the frames and proposes one check</span><em class="meta-chip">Muse Spark</em></li>
   </ol>
 
   <section class="home-section" aria-labelledby="proof-heading">
@@ -63,7 +68,7 @@
   <ol class="stepper" id="project-stepper">
     <li data-step="1" data-target="#project-form-card" class="current"><span>1</span>Describe</li>
     <li data-step="2" data-target="#plan-stage"><span>2</span>Plan</li>
-    <li data-step="3" data-target="#bench-stage"><span>3</span>Bench</li>
+    <li data-step="3" data-target="#bench-stage"><span>3</span>Prove</li>
   </ol>
   <p id="project-error" class="error-line" role="alert" hidden></p>
 
@@ -125,7 +130,7 @@
   </section>
 
   <section class="card stage-card" id="bench-stage" hidden>
-    <div class="stage-head"><span class="stage-n">3</span><h2>On the bench</h2><span id="autopilot-status" class="pill"></span></div>
+    <div class="stage-head"><span class="stage-n">3</span><h2>Prove it on the bench</h2><span id="autopilot-status" class="pill"></span></div>
     <p class="help">The agent runs the same jobs a person would click, skips what the records already prove, and stops wherever a person is needed. It never touches wiring or limits.</p>
     <ol id="timeline" class="timeline"></ol>
     <div class="actions wrap"><button id="run-bench" class="primary-button" type="button" disabled>Run on the bench</button><button id="stop-bench" class="button danger" type="button" hidden>Stop</button><span id="execution-status" class="help" role="status"></span></div>
@@ -138,6 +143,14 @@
         <div><strong id="test-mismatches"></strong><span>mismatches</span></div>
         <div><strong id="test-unknowns"></strong><span>unknown</span></div>
       </div>
+      <dl class="roles" aria-label="Who did what">
+        <div><dt>Plan</dt><dd class="role-meta">Muse Spark</dd></div>
+        <div><dt>Firmware</dt><dd>trusted local code</dd></div>
+        <div><dt>LEDs</dt><dd>pixel measurement</dd></div>
+        <div><dt>OLED text</dt><dd class="role-meta">Muse Spark, blind</dd></div>
+        <div><dt>Verdict</dt><dd>independent verifier</dd></div>
+        <div><dt>Explanation</dt><dd class="role-meta">Muse Spark, advisory</dd></div>
+      </dl>
     </div>
     <img id="execution-image" class="test-frame" alt="Camera test frame" hidden>
     <p id="execution-image-label" class="help"></p>
@@ -292,9 +305,29 @@
 </main>
 
 <footer class="footer">
-  <span>Describe → Plan → Bench</span>
+  <span>Describe → Plan → Run → Prove → Explain</span>
   <button id="open-limits" class="link-button" type="button">Limits</button>
 </footer>
+
+<dialog id="plan-dialog" aria-label="Plan">
+  <div class="dialog-header"><div><p class="eyebrow">Plan</p><strong id="dlg-title">Planning your build</strong></div><button id="dlg-close" class="button" type="button">Close</button></div>
+  <p id="dlg-state" class="dlg-state"></p>
+  <p id="dlg-error" class="error-line" role="alert" hidden></p>
+  <p id="dlg-summary" class="copy"></p>
+  <ul id="dlg-goals" class="goals"></ul>
+  <div id="dlg-question" class="question-box" hidden></div>
+  <form id="dlg-reply-form" hidden>
+    <label for="dlg-reply">Your answer</label>
+    <textarea id="dlg-reply" rows="2" maxlength="3000" required placeholder="Type your answer and Muse Spark will update the plan."></textarea>
+    <div class="actions"><button class="primary-button" type="submit">Reply to Muse Spark</button></div>
+  </form>
+  <table id="dlg-table" class="plan-table" hidden><thead><tr><th>Step</th><th>Red</th><th>Green</th><th>OLED</th><th>Time</th></tr></thead><tbody id="dlg-steps"></tbody></table>
+  <p id="dlg-usage" class="help"></p>
+  <div class="actions wrap">
+    <button id="dlg-approve" class="primary-button" type="button" hidden>Approve plan and run on the bench →</button>
+    <button id="dlg-open" class="button" type="button">Open the project</button>
+  </div>
+</dialog>
 
 <dialog id="limits-dialog" aria-label="Limits">
   <div class="dialog-header"><strong>What SparkBench does and does not claim</strong><button id="close-limits" class="button" type="button">Close</button></div>

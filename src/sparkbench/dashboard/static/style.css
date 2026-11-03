@@ -462,3 +462,31 @@ details.card[open] > summary { margin-bottom: 16px; }
 #manual-controls { margin-top: 18px; }
 #manual-controls .checklist { margin-top: 8px; }
 #execution-status:empty { display: none; }
+
+/* Story alignment: five-beat loop, project outcomes, who-did-what */
+.loop { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .loop { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .loop { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.saved-plan-button { justify-content: space-between; }
+.saved-plan-button > span:first-child { min-width: 0; }
+.saved-plan-button .pill { flex-shrink: 0; }
+.roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 16px; margin: 4px 0 0; font-size: 13px; }
+.roles div { display: flex; gap: 8px; align-items: baseline; }
+.roles dt { color: var(--muted); }
+.roles dd { margin: 0; font-weight: 600; }
+.roles .role-meta { color: var(--meta); }
+@media (max-width: 760px) { .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Home idea box and the plan modal */
+.home-plan { margin-top: 18px; max-width: 760px; }
+.home-plan textarea { font-size: 16px; padding: 14px 16px; border-radius: 12px; background: var(--panel); }
+.home-plan .actions { margin-top: 12px; }
+#plan-dialog { width: min(96vw, 760px); }
+#plan-dialog .dialog-header strong { font-size: 20px; }
+#plan-dialog .eyebrow { margin-bottom: 2px; }
+.dlg-state { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+.dlg-state:empty { display: none; }
+.dlg-state[data-busy="true"]::after { content: ""; display: inline-block; width: 10px; height: 10px; margin-left: 10px; border-radius: 50%; border: 2px solid var(--accent); border-top-color: transparent; animation: dlg-spin .8s linear infinite; vertical-align: middle; }
+@keyframes dlg-spin { to { transform: rotate(360deg); } }
+#dlg-summary:empty, #dlg-usage:empty { display: none; }
+#dlg-table { margin-top: 12px; }

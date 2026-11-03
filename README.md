@@ -33,7 +33,7 @@ Failures and unknowns are kept, not hidden.
 
 | Beat | What happens | Evidence |
 | --- | --- | --- |
-| Describe | "Show READY in green, BUSY in red, then DONE with both off, 3 s each." Meta clarifies the idea, picks parts from the supported kit and drafts the behavior. | Project page (Projects → New project) |
+| Describe | Type "Show READY in green, BUSY in red, then DONE with both off, 3 s each." into the box on the home page. Muse Spark clarifies the idea, picks parts from the supported kit and drafts the behavior; a panel shows the brief and then the step table. | Home page box and plan panel |
 | Plan | Meta's intent planner returns up to 8 steps as strict JSON. Ambiguous requests get one question; unsupported hardware is refused, not approximated. | 8/8 frozen benchmark cases matched the independently written expectations |
 | Approve and run | One click marks the plan reviewed and hands it to the agent, which compiles (a C++ data table rendered by trusted code), connects, flashes the application only, confirms identity over UART, and skips any step the saved records already prove. A live timeline shows each decision. | Hashes and logs per job; the timeline on the page |
 | Verify | The iPhone records the board while the firmware runs. LED colours are measured from pixels; OLED text is read by Meta without being told the expected label. | 45 sampled observations, 0 mismatches, 0 unknowns |
