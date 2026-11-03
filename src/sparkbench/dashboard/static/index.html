@@ -12,6 +12,7 @@
 <script defer src="/execution.js"></script>
 <script defer src="/lifecycle.js"></script>
 <script defer src="/projects.js"></script>
+<script defer src="/explain.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -247,7 +248,7 @@
         </div>
         <img id="execution-image" class="test-frame" alt="Camera test frame" hidden>
         <p id="execution-image-label" class="help"></p>
-        <div class="actions"><button id="open-test-evidence" class="button" type="button" hidden>Open full evidence →</button></div>
+        <div class="actions"><button id="open-test-explain" class="button" type="button" hidden>Explain with Muse Spark →</button><button id="open-test-evidence" class="button" type="button" hidden>Open full evidence →</button></div>
       </section>
     </section>
 
@@ -303,6 +304,20 @@
       <span id="model-name" class="meta-chip"></span>
     </section>
   </div>
+  <section id="explain-card" class="card meta-card" hidden aria-label="Explanation">
+    <div class="card-head"><h2>Why did this happen?</h2><span class="meta-chip">Muse Spark reads the evidence</span></div>
+    <p class="help">Muse Spark receives the expected steps, the measured findings and the key frames. It explains and proposes one check. It cannot change the verdict.</p>
+    <div class="actions"><button id="explain-run" class="primary-button" type="button">Explain with Muse Spark</button><span id="explain-status" class="help"></span></div>
+    <p id="explain-error" class="error-line" role="alert" hidden></p>
+    <div id="explanation" hidden>
+      <div class="explain-head"><span id="explain-confidence" class="pill"></span><p id="explain-diagnosis" class="copy"></p></div>
+      <div id="explain-evidence" class="frame-refs"></div>
+      <div id="explain-hypotheses" class="guide-response-list"></div>
+      <div id="explain-next" class="next-step"></div>
+      <p id="explain-unknowns" class="help"></p>
+      <p id="explain-usage" class="help mono"></p>
+    </div>
+  </section>
   <div id="step-list" class="step-list"></div>
   <details class="quiet">
     <summary>Provenance <span id="integrity-label" class="muted"></span></summary>

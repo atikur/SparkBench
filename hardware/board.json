@@ -49,13 +49,13 @@
     "date": "2026-11-03",
     "firmware": "firmware/runtime",
     "environment": "classic-led-oled-runtime",
-    "firmware_sha256": "5aad1bf94e84a28a86cc960d5033ece116dfa40a80fe35b0758b769ad437ea18",
-    "plan_sha256": "a460f936cde4ba8709ca9a54a93db10aba8673cf2d57f10bca37d85010f5ba9d",
-    "application_binary": "runs/dashboard-execution/0dc928877d5a401eb4eae0d576727216/installation/application.bin",
-    "artifact": "runs/dashboard-execution/2f5d899e66f44ede98dba3320a808c41/artifact",
-    "installation_record": "runs/dashboard-execution/0dc928877d5a401eb4eae0d576727216/installation/installation.json",
+    "firmware_sha256": "ac0689101c8dbb9db42d205092ede71536c915c903ad2590e37a2311e3de68b3",
+    "plan_sha256": "8f0aff6677172eaae0d7b9db0f347c2c28662f8a118f7331658b6df8089a399c",
+    "application_binary": "runs/dashboard-execution/3b5b040a31aa44abab996001aa8edd74/installation/application.bin",
+    "artifact": "runs/dashboard-execution/ae97811f88964c218aa49c38b4703b79/artifact",
+    "installation_record": "runs/dashboard-execution/3b5b040a31aa44abab996001aa8edd74/installation/installation.json",
     "upload_status": "installed_hash_verified",
-    "proposal_id": "0be6a10d991d4ee8835e709e01166f83",
+    "proposal_id": "35013f9732c94e1c8d56c67c081bc3a5",
     "servo_actuation": false,
     "servo_gpio27_used": false,
     "servo_policy": "LED/OLED-only runtime; GPIO27 never driven; no servo movement authorized.",
@@ -65,16 +65,16 @@
       "status": "pass",
       "scope": "UART identity only; not physical output verification",
       "port": "/dev/cu.usbserial-0001",
-      "plan_sha256": "a460f936cde4ba8709ca9a54a93db10aba8673cf2d57f10bca37d85010f5ba9d",
-      "expected": "SPARKBENCH LED_OLED_RUNTIME V:1 PLAN:a460f936cde4ba8709ca9a54a93db10aba8673cf2d57f10bca37d85010f5ba9d MODE:IDLE OLED:ACK SERVO:UNUSED",
-      "observed": "SPARKBENCH LED_OLED_RUNTIME V:1 PLAN:a460f936cde4ba8709ca9a54a93db10aba8673cf2d57f10bca37d85010f5ba9d MODE:IDLE OLED:ACK SERVO:UNUSED",
+      "plan_sha256": "8f0aff6677172eaae0d7b9db0f347c2c28662f8a118f7331658b6df8089a399c",
+      "expected": "SPARKBENCH LED_OLED_RUNTIME V:1 PLAN:8f0aff6677172eaae0d7b9db0f347c2c28662f8a118f7331658b6df8089a399c MODE:IDLE OLED:ACK SERVO:UNUSED",
+      "observed": "SPARKBENCH LED_OLED_RUNTIME V:1 PLAN:8f0aff6677172eaae0d7b9db0f347c2c28662f8a118f7331658b6df8089a399c MODE:IDLE OLED:ACK SERVO:UNUSED",
       "serial_commands_sent": [
         "ID"
       ],
       "servo_actuation": false,
-      "checked_at_utc": "2026-11-03T15:09:35.600402+00:00"
+      "checked_at_utc": "2026-11-03T17:22:00.404251+00:00"
     },
-    "runtime_identity_record": "runs/dashboard-execution/0dc928877d5a401eb4eae0d576727216/identity/identity.json"
+    "runtime_identity_record": "runs/dashboard-execution/3b5b040a31aa44abab996001aa8edd74/identity/identity.json"
   },
   "target_host_enumeration": {
     "date": "2026-11-02",
@@ -334,6 +334,37 @@
       "servo_policy": "LED/OLED-only runtime; GPIO27 never driven; no servo movement authorized.",
       "full_behavior_verification": "incomplete_required_servo_measurements_missing",
       "last_seen_port": "/dev/cu.usbserial-0001"
+    },
+    {
+      "date": "2026-11-03",
+      "firmware": "firmware/runtime",
+      "environment": "classic-led-oled-runtime",
+      "firmware_sha256": "5aad1bf94e84a28a86cc960d5033ece116dfa40a80fe35b0758b769ad437ea18",
+      "plan_sha256": "a460f936cde4ba8709ca9a54a93db10aba8673cf2d57f10bca37d85010f5ba9d",
+      "application_binary": "runs/dashboard-execution/0dc928877d5a401eb4eae0d576727216/installation/application.bin",
+      "artifact": "runs/dashboard-execution/2f5d899e66f44ede98dba3320a808c41/artifact",
+      "installation_record": "runs/dashboard-execution/0dc928877d5a401eb4eae0d576727216/installation/installation.json",
+      "upload_status": "installed_hash_verified",
+      "proposal_id": "0be6a10d991d4ee8835e709e01166f83",
+      "servo_actuation": false,
+      "servo_gpio27_used": false,
+      "servo_policy": "LED/OLED-only runtime; GPIO27 never driven; no servo movement authorized.",
+      "full_behavior_verification": "incomplete_required_servo_measurements_missing",
+      "last_seen_port": "/dev/cu.usbserial-0001",
+      "runtime_identity": {
+        "status": "pass",
+        "scope": "UART identity only; not physical output verification",
+        "port": "/dev/cu.usbserial-0001",
+        "plan_sha256": "a460f936cde4ba8709ca9a54a93db10aba8673cf2d57f10bca37d85010f5ba9d",
+        "expected": "SPARKBENCH LED_OLED_RUNTIME V:1 PLAN:a460f936cde4ba8709ca9a54a93db10aba8673cf2d57f10bca37d85010f5ba9d MODE:IDLE OLED:ACK SERVO:UNUSED",
+        "observed": "SPARKBENCH LED_OLED_RUNTIME V:1 PLAN:a460f936cde4ba8709ca9a54a93db10aba8673cf2d57f10bca37d85010f5ba9d MODE:IDLE OLED:ACK SERVO:UNUSED",
+        "serial_commands_sent": [
+          "ID"
+        ],
+        "servo_actuation": false,
+        "checked_at_utc": "2026-11-03T15:09:35.600402+00:00"
+      },
+      "runtime_identity_record": "runs/dashboard-execution/0dc928877d5a401eb4eae0d576727216/identity/identity.json"
     }
   ],
   "previous_working_led_oled_firmware": {

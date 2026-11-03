@@ -31,6 +31,7 @@ Failures and unknowns are kept, not hidden.
 | Build + install | Trusted code validates the plan, renders a C++ data table, compiles with PlatformIO, flashes the application only, keeps the previous image, and confirms identity over UART with a single `ID` command. | Hashes and logs per job |
 | Verify | The iPhone records the board while the firmware runs. LED colours are measured from pixels; OLED text is read by Meta without being told the expected label. | 45 sampled observations, 0 mismatches, 0 unknowns |
 | Catch a fault | With the two LED wires deliberately swapped, the verifier reports the wrong channel. | 36 wrong-channel findings in 47 samples |
+| Explain | On a failed run, Muse Spark reads the expected steps, the measured findings and the key frames, names the likely cause, cites the frames it used and proposes one check. It cannot change the verdict. | Strict JSON reply; citations must be among the supplied frames or the reply is rejected |
 | Stay honest | A badly framed capture is reported as *incomplete*, never as a pass. | 45 of 48 OLED readings unknown, result kept as incomplete |
 
 ![Recorded wiring-swap test where the verifier flagged the fault](docs/images/dashboard-wiring-fault.jpg)
@@ -49,12 +50,14 @@ token count saved to disk with integrity hashes.
 | **Build guide** (text + up to 3 photos) | idea, experience, parts on hand, a fixed component catalog, the capability contract | decision (planned / clarify / unsupported), goals, parts list, what is visible and what is uncertain in the photos, one next step | any authority over pass or fail |
 | **Intent planner** (text) | the instruction and the capability contract | ready steps, one clarification question, or unsupported | the expected answer and the test oracle |
 | **OLED reader** (vision) | one cropped OLED frame | `{readable, text}` | the expected label |
+| **Evidence analyst** (vision + reasoning) | frozen expected steps, measured findings, up to three recorded frames | diagnosis, confidence, cited frames, one next check, what cannot be determined | the verifier's thresholds and pass logic; any power to change a verdict |
 | **Behavior generator** (CLI) | a structured spec and a measured pin mapping | a bounded plan | pins, timing and code outside the contract |
 
 Why this is more than a chat wrapper: the model proposes *data*, never code, and never grades
 itself. Trusted local code enforces a pin allowlist, step limits and a fixed runtime, and an
 independent verifier compares the physical result with the frozen plan. When the model cannot read
-the display, the sample stays *unknown* rather than becoming a pass or a fail.
+the display, the sample stays *unknown* rather than becoming a pass or a fail. When a run fails,
+the model explains it from the recorded evidence, and the explanation is advisory.
 
 ## Architecture
 
@@ -115,7 +118,7 @@ Guides: [dashboard](docs/dashboard.md),
 [building a project](docs/build-guide.md), [intent planning](docs/intent-planning.md),
 [software pipeline and trust boundary](docs/software-pipeline.md), [live validation](docs/live-validation.md).
 
-Host tests (222, no hardware, no network):
+Host tests (232, no hardware, no network):
 
 ```bash
 .venv/bin/python -m unittest discover -s tests -v
@@ -143,10 +146,10 @@ quoted above are summarised in [docs/live-validation.md](docs/live-validation.md
 
 | Path | Contents |
 | --- | --- |
-| `src/sparkbench/` | CLI, Meta clients (`meta.py`, `intent.py`, `guide.py`, `generation.py`), verifier, build and install, camera and servo tooling |
+| `src/sparkbench/` | CLI, Meta clients (`meta.py`, `intent.py`, `guide.py`, `diagnosis.py`, `generation.py`), verifier, build and install, camera and servo tooling |
 | `src/sparkbench/dashboard/` | local server, project and job state, static UI |
 | `firmware/` | PlatformIO projects: the LED/OLED runtime and the bring-up diagnostics |
-| `tests/` | 222 host tests plus native C++ and Swift simulation tests |
+| `tests/` | 232 host tests plus native C++ and Swift simulation tests |
 | `tools/` | macOS camera, vision and tracker helpers, bootstrap and packaging scripts |
 | `hardware/` | board, camera and calibration records, wiring diagrams |
 | `docs/` | guides, contest audit, and the full [project history](docs/history.md) |

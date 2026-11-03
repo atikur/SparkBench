@@ -10,6 +10,7 @@ from urllib.parse import unquote, urlsplit
 
 from .evidence import EvidenceError, EvidenceStore
 from .planning import BusyError, PlanningService
+from .diagnosis import ExplanationService
 from .execution import ExecutionService
 from .projects import ProjectService
 from ..guide import CATALOG, ASSEMBLY
@@ -20,13 +21,15 @@ ASSETS = {"/": "index.html", "/app.js": "app.js", "/planning.js": "planning.js",
 ASSETS['/projects.js']='projects.js'
 ASSETS['/wiring.svg']='wiring.svg'
 ASSETS['/lifecycle.js']='lifecycle.js'
+ASSETS['/explain.js']='explain.js'
 
 
 class DashboardServer(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self, port=8765, store=None, planner=None, execution=None, projects=None):
+    def __init__(self, port=8765, store=None, planner=None, execution=None, projects=None, explanations=None):
         self.store = store or EvidenceStore()
+        self.explanations = explanations or ExplanationService(self.store.root/"runs/diagnosis", self.store)
         self.planner = planner or PlanningService(self.store.root/"runs/planning/intent-v1")
         self.execution = execution or ExecutionService(self.store.root,self.planner,self.store)
         self.projects = projects or ProjectService(self.store.root,self.planner,self.store,execution=self.execution)
@@ -122,6 +125,10 @@ class Handler(BaseHTTPRequestHandler):
             elif match := re.fullmatch(r"/api/runs/([a-z0-9-]+)", path):
                 self.server.execution.register_evidence()
                 self.json(200, self.server.store.load(match[1]))
+            elif match := re.fullmatch(r"/api/runs/([a-z0-9-]+)/explanations", path):
+                self.json(200, {"explanations": self.server.explanations.list_for_run(match[1])})
+            elif match := re.fullmatch(r"/api/explanations/([0-9a-f]{32})", path):
+                self.json(200, self.server.explanations.get(match[1]))
             elif match := re.fullmatch(r"/api/runs/([a-z0-9-]+)/frames/([1-9][0-9]{0,5})/image", path):
                 self.send_data(200, self.server.store.image(match[1], int(match[2])), "image/jpeg", {"X-SparkBench-Image-Integrity": "verified"})
             else:
@@ -137,7 +144,8 @@ class Handler(BaseHTTPRequestHandler):
         operation = re.fullmatch(r"/api/execute/(compile|install|test|identity)",path)
         cancellation = re.fullmatch(r"/api/jobs/([0-9a-f]{32})/cancel",path)
         project_action=re.fullmatch(r'/api/projects/([0-9a-f]{32})/(update|ask|accept|firmware)',path)
-        if path not in ("/api/plans",'/api/projects','/api/guide/photo') and not review and not operation and not cancellation and not project_action:
+        explain=re.fullmatch(r"/api/runs/([a-z0-9-]+)/explain",path)
+        if path not in ("/api/plans",'/api/projects','/api/guide/photo') and not review and not operation and not cancellation and not project_action and not explain:
             self.method_rejected();return
         if not self.local_request(mutation=True): return
         try:
@@ -162,6 +170,10 @@ class Handler(BaseHTTPRequestHandler):
                     if set(body)!={'turn_id'}:raise ValueError('Guide turn ID required')
                     self.json(200,self.server.projects.accept(project_id,body['turn_id']))
                 else:self.json(202,{'id':self.server.projects.firmware(project_id,body)})
+            elif explain:
+                if set(body)!={"request_id"}:raise ValueError("Request ID required")
+                self.server.execution.register_evidence()
+                self.json(202,{"id":self.server.explanations.start(explain[1],body["request_id"])})
             elif cancellation:
                 if body!={}:raise ValueError("Empty cancellation object required")
                 self.json(200,self.server.execution.cancel(cancellation[1]))
@@ -177,7 +189,9 @@ class Handler(BaseHTTPRequestHandler):
         except BusyError as exc:
             self.json(409, {"error": str(exc)})
         except KeyError:
-            self.json(404, {"error": "Unknown proposal"})
+            self.json(404, {"error": "Unknown proposal or run"})
+        except EvidenceError as exc:
+            self.json(409, {"error": str(exc)})
         except (ValueError, TypeError) as exc:
             self.json(400, {"error": str(exc)[:300]})
         except OSError:

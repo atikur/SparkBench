@@ -403,3 +403,14 @@ details.card[open] > summary { margin-bottom: 16px; }
 #project-details summary .muted { font-weight: 400; }
 #project-form-card .actions { margin-top: 12px; }
 #project-firmware.link-button { font-size: 13px; padding: 0 4px; }
+
+/* Explanation card */
+.explain-head { display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; margin-top: 16px; }
+.explain-head .copy { flex: 1; min-width: 240px; font-weight: 500; }
+.pill[data-state="high"] { background: var(--pass-bg); color: var(--pass); }
+.pill[data-state="medium"] { background: var(--warning-bg); color: var(--warning); }
+.pill[data-state="low"] { background: var(--line); color: var(--muted); }
+.frame-refs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.frame-ref { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; padding: 5px 10px; }
+#explain-hypotheses { margin-top: 12px; }
+#explain-unknowns, #explain-usage { margin-top: 10px; }
