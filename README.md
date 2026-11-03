@@ -122,7 +122,7 @@ Host tests (222, no hardware, no network):
 ```
 
 Recorded evidence (about 7 GB of frames and logs under `runs/`) is not in this repository, so a
-fresh clone shows the Projects page and planner but an empty Evidence tab. The reports
+fresh clone shows the Projects page but an empty Evidence tab and no proof cards. The reports
 quoted above are summarised in [docs/live-validation.md](docs/live-validation.md) and
 [docs/demo.md](docs/demo.md).
 

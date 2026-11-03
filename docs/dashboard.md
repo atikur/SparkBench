@@ -24,7 +24,7 @@ Source report, frozen specification, camera metadata and frame index are checked
 
 The catalog is explicit in `src/sparkbench/dashboard/catalog.py`; the incomplete analysis intentionally references its original `restored-positive-control/capture` images. No current calibration/default file is substituted for a recorded run's frozen specification.
 
-The plan page is the [Meta intent planner](intent-planning.md). It opens from a project's **Open plan & bench →** button, or from **Quick plan without a project** on the Projects page. Saved proposals and recorded evidence remain read-only to browse. **Ask Meta for a plan** makes a planning request; **Run camera test** makes separate Meta OLED-reading requests. The current servo angle and full-rig acceptance remain unmeasured/incomplete. Evidence-grounded failure diagnosis remains pending.
+The plan page is the [Meta intent planner](intent-planning.md). It opens from a project's **Open plan & bench →** button. Every plan belongs to a project: the planner receives the accepted brief's firmware intent, and changing that intent means revising the brief. Saved proposals and recorded evidence remain read-only to browse. **Prepare firmware plan** on a project makes a planning request; **Run camera test** makes separate Meta OLED-reading requests. The current servo angle and full-rig acceptance remain unmeasured/incomplete. Evidence-grounded failure diagnosis remains pending.
 
 ## Run a reviewed LED/OLED plan
 

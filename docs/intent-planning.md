@@ -1,13 +1,13 @@
 # Natural-language planning workspace
 
-Start `.venv/bin/python -m sparkbench dashboard`, then choose **Quick plan without a project → New quick plan** on the Projects page, or **Open plan & bench →** from a project. Enter an instruction and select **Ask Meta for a plan**. This is an explicit paid API action using the existing `muse-spark-1.3-contributor` configuration. Opening the dashboard or a saved proposal makes no model request.
+Start `.venv/bin/python -m sparkbench dashboard`, open a project, accept its brief and select **Prepare firmware plan**. SparkBench sends the brief's firmware intent to the planner. This is an explicit paid API action using the existing `muse-spark-1.3-contributor` configuration. Opening the dashboard or a saved plan makes no model request. The dashboard no longer offers a separate quick-plan entry; the planner's HTTP endpoint and the command-line benchmark are unchanged.
 
 Meta receives the instruction and a fixed capability contract. It does not receive the benchmark's expected answer, an existing completed step table, camera measurements or a pass/fail oracle. It interprets order, counting, parity and other finite rules into up to eight LED/OLED steps. Every step has a fixed three-second duration; labels have 1–16 uppercase ASCII characters within the existing trusted data language. A proposed mapping is supplied by local code, never chosen by the model; any future live use still needs the appropriate hardware identity/mapping checks.
 
 Possible results:
 
 - **Ready for review:** locally valid step data. This is not semantic or physical acceptance. Inspect the steps and optionally mark the exact proposal reviewed.
-- **Clarification needed:** answer the displayed question by editing the instruction and explicitly submitting again. No executable plan is saved.
+- **Clarification needed:** answer the displayed question in the project conversation, accept the revised brief, then prepare the plan again. No executable plan is saved.
 - **Unsupported:** hardware, timing, code or sequence length exceeds the supported contract. No executable plan is saved.
 - **Invalid response / request failed:** retained as a failure. There is no retry, provider fallback or automatic repair request.
 

@@ -51,12 +51,6 @@
   <section class="home-section" aria-labelledby="projects-heading">
     <div class="section-head"><h2 id="projects-heading">Your projects</h2></div>
     <nav id="project-list" class="card-list" aria-label="Saved projects"></nav>
-    <details class="quiet">
-      <summary>Quick plan without a project</summary>
-      <p class="help">Send one instruction straight to the planner, then build and test it.</p>
-      <div class="actions"><button id="open-planner" class="button" type="button">New quick plan</button></div>
-      <nav id="saved-plan-list" class="card-list compact" aria-label="Saved quick plans"></nav>
-    </details>
   </section>
 </section>
 
@@ -157,8 +151,8 @@
 
 <!-- Plan, build, verify: steps 2–4 -->
 <section id="planning-workspace" class="view" hidden aria-label="Plan, build and verify">
-  <button id="planner-back" class="back-link" type="button">← Back</button>
-  <div class="page-head"><div><p class="eyebrow">Plan, build, verify</p><h1 id="planner-title">Quick plan</h1></div><span id="proposal-status" class="pill">No plan</span></div>
+  <button id="planner-back" class="back-link" type="button">← Project</button>
+  <div class="page-head"><div><p class="eyebrow">Plan, build, verify</p><h1 id="planner-title">Plan</h1></div><span id="proposal-status" class="pill">No plan</span></div>
   <ol class="stepper" id="bench-stepper">
     <li data-step="1" data-target="back" class="done"><span>1</span>Describe</li>
     <li data-step="2" data-target="#plan-card" class="current"><span>2</span>Plan</li>
@@ -168,17 +162,9 @@
   <p id="planner-error" class="error-line" role="alert" hidden></p>
 
   <section class="card" id="instruction-card">
-    <div class="card-head"><h2>Instruction</h2><button id="edit-instruction" class="link-button" type="button" hidden>Change</button></div>
-    <p id="instruction-view" class="idea-quote" hidden></p>
-    <form id="intent-form">
-      <label for="intent-input" class="sr-only">Instruction</label>
-      <textarea id="intent-input" maxlength="2000" rows="3" required placeholder="Count 0 to 3 on the OLED. Green for even numbers, red for odd, then both off and DONE."></textarea>
-      <div class="actions">
-        <button id="generate-plan" class="primary-button" type="submit" disabled>Ask Meta for a plan</button>
-        <span id="instruction-count" class="help">0 / 2000</span>
-      </div>
-    </form>
-    <div id="planner-empty"><p class="help">Muse Spark turns the instruction into up to 8 steps. You review them before anything is built.</p></div>
+    <div class="card-head"><h2>From the accepted brief</h2></div>
+    <p id="instruction-view" class="idea-quote"></p>
+    <p class="help">Muse Spark turns this into up to 8 steps. To change it, revise the brief in the project.</p>
   </section>
 
   <div id="planner-result" hidden>
@@ -190,6 +176,7 @@
       <p id="proposal-validation" class="help"></p>
       <div class="actions">
         <button id="review-plan" class="primary-button" type="button" hidden>Looks right, mark reviewed</button>
+        <button id="plan-back-to-project" class="primary-button" type="button" hidden>Back to the project</button>
         <span id="review-status" class="help"></span>
       </div>
     </section>
