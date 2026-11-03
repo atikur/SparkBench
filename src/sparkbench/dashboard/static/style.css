@@ -388,3 +388,18 @@ dialog img { display: block; max-width: 90vw; max-height: 80vh; object-fit: cont
 .kit-step p { margin: 0; padding: 0 12px 12px 40px; }
 .kit-grid .wiring { display: block; width: 100%; max-width: none; border-radius: 10px; border: 1px solid var(--line); }
 @media (max-width: 900px) { .kit-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Project page: folded helper cards and the single next-action line */
+details.card > summary { display: flex; align-items: center; gap: 12px; cursor: pointer; list-style: none; color: var(--text); }
+details.card > summary::-webkit-details-marker { display: none; }
+details.card > summary::before { content: "▸"; color: var(--muted); font-size: 15px; width: 12px; transition: transform .15s; }
+details.card[open] > summary::before { transform: rotate(90deg); }
+details.card > summary .summary-title { flex: 1; font-weight: 600; font-size: 16px; }
+details.card[open] > summary { margin-bottom: 16px; }
+.next-line { font-size: 15px; font-weight: 500; margin-top: 16px; }
+.next-line:empty { display: none; }
+#brief-reply-form { margin-top: 12px; }
+#project-details { margin-top: 14px; }
+#project-details summary .muted { font-weight: 400; }
+#project-form-card .actions { margin-top: 12px; }
+#project-firmware.link-button { font-size: 13px; padding: 0 4px; }

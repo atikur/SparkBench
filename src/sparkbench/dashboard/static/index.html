@@ -57,7 +57,7 @@
 <!-- Project page: step 1 -->
 <section id="guide-workspace" class="view" hidden aria-label="Project">
   <button class="back-link" type="button" data-view="projects">← Projects</button>
-  <div class="page-head"><div><p class="eyebrow">Project</p><h1 id="project-title">New project</h1></div><span id="brief-state" class="pill"></span></div>
+  <div class="page-head"><div><p class="eyebrow">Project</p><h1 id="project-title">New project</h1></div><span id="brief-state" class="pill"></span><span id="lifecycle-state" class="pill" hidden></span></div>
   <ol class="stepper" id="project-stepper">
     <li data-step="1" data-target="#project-form-card" class="current"><span>1</span>Describe</li>
     <li data-step="2" data-target="open-plan"><span>2</span>Plan</li>
@@ -72,58 +72,44 @@
       <label for="project-idea" class="sr-only">Idea</label>
       <textarea id="project-idea" rows="3" maxlength="2000" required placeholder="A desk indicator that shows READY in green, BUSY in red, then DONE with both lights off. Three seconds each."></textarea>
       <p id="project-idea-view" class="idea-quote" hidden></p>
-      <details id="project-details" class="quiet" open>
-        <summary>Experience, budget and parts</summary>
-        <div class="field-row">
-          <label>Experience<select id="project-experience"><option value="beginner">New to electronics</option><option value="some_experience">Some experience</option></select></label>
-          <label>Budget or constraints<input id="project-budget" maxlength="120" placeholder="Use the parts I already have"></label>
-        </div>
-        <label for="project-parts-notes">Parts you have <span class="muted">(optional)</span></label>
-        <textarea id="project-parts-notes" rows="2" maxlength="1500" placeholder="Classic ESP32, two LEDs, 330 Ω resistors, I²C OLED"></textarea>
-        <div class="actions"><button id="save-profile" class="button" type="button" hidden>Save details</button></div>
-      </details>
       <div class="actions">
         <button id="create-project" class="primary-button" type="submit">Ask Meta to plan it</button>
         <span id="project-form-help" class="help">Supported bench: classic ESP32, red and green LEDs, one small OLED. Up to 8 steps of 3 seconds.</span>
       </div>
+      <details id="project-details" class="quiet">
+        <summary>Experience, budget and parts <span class="muted">(optional)</span></summary>
+        <div class="field-row">
+          <label>Experience<select id="project-experience"><option value="beginner">New to electronics</option><option value="some_experience">Some experience</option></select></label>
+          <label>Budget or constraints<input id="project-budget" maxlength="120" placeholder="Use the parts I already have"></label>
+        </div>
+        <label for="project-parts-notes">Parts you have</label>
+        <textarea id="project-parts-notes" rows="2" maxlength="1500" placeholder="Classic ESP32, two LEDs, 330 Ω resistors, I²C OLED"></textarea>
+        <div class="actions"><button id="save-profile" class="button" type="button" hidden>Save details</button></div>
+      </details>
     </form>
   </section>
 
-  <section class="card meta-card">
+  <section class="card meta-card" id="brief-card" hidden>
     <div class="card-head"><h2>Meta's brief</h2><span class="meta-chip">Muse Spark</span></div>
-    <p id="guide-summary" class="copy muted">Muse Spark will clarify the idea and propose a supported build.</p>
+    <p id="guide-summary" class="copy muted"></p>
     <ul id="guide-goals" class="goals"></ul>
     <div id="guide-questions" class="question-box" hidden></div>
+    <form id="brief-reply-form" hidden>
+      <label for="brief-reply" id="brief-reply-label">Your answer</label>
+      <textarea id="brief-reply" rows="2" maxlength="3000" required placeholder="Type your answer and Muse Spark will update the brief."></textarea>
+      <div class="actions"><button class="primary-button" type="submit">Reply to Muse Spark</button></div>
+    </form>
     <div id="guide-next-step" class="next-step" hidden></div>
     <details id="guide-revision" class="quiet" hidden><summary>Review the revised brief</summary><p id="guide-revision-copy" class="copy muted"></p></details>
+    <p id="lifecycle-next" class="next-line"></p>
     <div class="actions">
-      <button id="accept-brief" class="primary-button" type="button" hidden>Accept this brief</button>
+      <button id="accept-brief" class="primary-button" type="button" hidden>Accept and plan firmware →</button>
       <button id="lifecycle-open" class="primary-button" type="button" hidden>Open plan &amp; bench →</button>
-      <button id="project-firmware" class="button" type="button" disabled>Prepare firmware plan</button>
+      <button id="project-firmware" class="button" type="button" hidden>Plan firmware →</button>
     </div>
     <p id="accepted-brief-note" class="help"></p>
     <div id="project-firmware-links" hidden></div>
-  </section>
-
-  <section id="build-kit-card" class="card" hidden aria-label="Parts and wiring">
-    <div class="card-head"><h2>Parts and wiring</h2><span id="kit-progress" class="help"></span></div>
-    <div class="kit-grid">
-      <div>
-        <h3>Parts</h3>
-        <ul id="guide-parts" class="kit-list"></ul>
-      </div>
-      <div>
-        <h3>Wiring</h3>
-        <img class="wiring" src="/wiring.svg" alt="ESP32 wiring: GPIO25 through a 330-ohm resistor to the red LED and GPIO26 through another to the green LED, both LED short legs to GND; OLED SDA to GPIO21, SCL to GPIO22, VCC to 3.3 V and GND to GND.">
-        <ol id="guide-assembly" class="kit-steps"></ol>
-      </div>
-    </div>
-  </section>
-
-  <section id="project-firmware-status" class="card" hidden aria-label="Project status">
-    <div class="card-head"><h2>Status</h2><span id="lifecycle-state" class="pill"></span></div>
-    <p id="lifecycle-next" class="copy"></p>
-    <details class="quiet">
+    <details id="project-firmware-status" class="quiet" hidden>
       <summary>Details and recent jobs</summary>
       <dl id="lifecycle-fields" class="fields"></dl>
       <div id="lifecycle-jobs" class="job-list"></div>
@@ -131,8 +117,8 @@
     </details>
   </section>
 
-  <section id="guide-conversation-card" class="card meta-card" hidden>
-    <div class="card-head"><h2>Ask Meta</h2><span class="meta-chip">Muse Spark · text + photos</span></div>
+  <details id="guide-conversation-card" class="card quiet" hidden>
+    <summary><span class="summary-title">Ask Meta about this build</span><span class="meta-chip">Muse Spark · text + photos</span></summary>
     <div id="guide-conversation" class="conversation" aria-live="polite"></div>
     <form id="guide-question-form">
       <label for="guide-question" class="sr-only">Your question</label>
@@ -150,8 +136,22 @@
       </div>
       <div id="guide-attachments" class="attachments"></div>
     </form>
-  </section>
+  </details>
 
+  <details id="build-kit-card" class="card quiet" hidden>
+    <summary><span class="summary-title">Parts and wiring</span><span id="kit-progress" class="help"></span></summary>
+    <div class="kit-grid">
+      <div>
+        <h3>Parts</h3>
+        <ul id="guide-parts" class="kit-list"></ul>
+      </div>
+      <div>
+        <h3>Wiring</h3>
+        <img class="wiring" src="/wiring.svg" alt="ESP32 wiring: GPIO25 through a 330-ohm resistor to the red LED and GPIO26 through another to the green LED, both LED short legs to GND; OLED SDA to GPIO21, SCL to GPIO22, VCC to 3.3 V and GND to GND.">
+        <ol id="guide-assembly" class="kit-steps"></ol>
+      </div>
+    </div>
+  </details>
 </section>
 
 <!-- Plan, build, verify: steps 2–4 -->
