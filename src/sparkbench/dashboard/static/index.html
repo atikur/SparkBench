@@ -105,6 +105,21 @@
     <div id="project-firmware-links" hidden></div>
   </section>
 
+  <section id="build-kit-card" class="card" hidden aria-label="Parts and wiring">
+    <div class="card-head"><h2>Parts and wiring</h2><span id="kit-progress" class="help"></span></div>
+    <div class="kit-grid">
+      <div>
+        <h3>Parts</h3>
+        <ul id="guide-parts" class="kit-list"></ul>
+      </div>
+      <div>
+        <h3>Wiring</h3>
+        <img class="wiring" src="/wiring.svg" alt="ESP32 wiring: GPIO25 through a 330-ohm resistor to the red LED and GPIO26 through another to the green LED, both LED short legs to GND; OLED SDA to GPIO21, SCL to GPIO22, VCC to 3.3 V and GND to GND.">
+        <ol id="guide-assembly" class="kit-steps"></ol>
+      </div>
+    </div>
+  </section>
+
   <section id="project-firmware-status" class="card" hidden aria-label="Project status">
     <div class="card-head"><h2>Status</h2><span id="lifecycle-state" class="pill"></span></div>
     <p id="lifecycle-next" class="copy"></p>
@@ -137,16 +152,6 @@
     </form>
   </section>
 
-  <details class="card quiet">
-    <summary>Parts and wiring checklist</summary>
-    <div id="guide-parts" class="parts"></div>
-    <button id="save-inventory" class="button" type="button">Save checklist</button>
-    <div id="guide-assembly" class="assembly"></div>
-    <details class="quiet">
-      <summary>Wiring reference</summary>
-      <img class="wiring" src="/wiring.svg" alt="Logical ESP32 wiring: GPIO25 through a 330-ohm resistor to the red LED; GPIO26 through a separate resistor to the green LED; cathodes to ground; OLED SDA21, SCL22, VCC 3.3 V and ground.">
-    </details>
-  </details>
 </section>
 
 <!-- Plan, build, verify: steps 2–4 -->
@@ -321,6 +326,7 @@
     <li>Plans are at most 8 steps of 3 seconds with short uppercase labels. Meta proposes data; trusted local code renders the firmware.</li>
     <li>A camera verdict covers sampled settled windows in the recorded view, not continuous behaviour or electrical measurements.</li>
     <li>Unknown readings stay unknown. They never count as a pass or a fail.</li>
+    <li>Parts and wiring ticks are your own report. They save automatically and do not check the hardware.</li>
     <li>Meta's advice and photo descriptions are guidance, not a pass. A photo cannot establish continuity, voltage or polarity.</li>
     <li>The servo on the rig is never driven by this runtime and its angles are unmeasured.</li>
     <li>Browsing saved work makes no model call and touches no hardware. Every Meta request and every bench action is an explicit button.</li>

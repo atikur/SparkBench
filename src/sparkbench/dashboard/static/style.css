@@ -369,3 +369,22 @@ dialog img { display: block; max-width: 90vw; max-height: 80vh; object-fit: cont
 }
 
 .pill.neutral { background: var(--line); color: var(--muted); margin-top: 8px; }
+
+/* Parts and wiring: tick lists beside the diagram */
+.kit-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 28px; align-items: start; }
+.kit-grid h3 { margin: 0 0 8px; font-size: 14px; }
+.kit-list, .kit-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.kit-row label, .kit-step label { display: flex; gap: 12px; align-items: flex-start; margin: 0; padding: 8px 10px; border-radius: 8px; color: var(--text); font-size: 14px; cursor: pointer; }
+.kit-row label:hover, .kit-step label:hover { background: var(--bg); }
+.kit-row input, .kit-step input { width: 18px; height: 18px; margin: 2px 0 0; flex-shrink: 0; accent-color: var(--accent); }
+.kit-row span { display: grid; gap: 1px; min-width: 0; }
+.kit-row strong { font-weight: 600; }
+.kit-row small { font-size: 12px; line-height: 1.4; color: var(--muted); }
+.kit-row .tag { justify-self: start; margin-top: 3px; font-style: normal; font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; }
+.kit-steps { margin-top: 12px; }
+.kit-step.done label span { color: var(--muted); text-decoration: line-through; }
+.kit-step.current { background: var(--soft); border-radius: 10px; }
+.kit-step.current label span { font-weight: 600; color: var(--accent); }
+.kit-step p { margin: 0; padding: 0 12px 12px 40px; }
+.kit-grid .wiring { display: block; width: 100%; max-width: none; border-radius: 10px; border: 1px solid var(--line); }
+@media (max-width: 900px) { .kit-grid { grid-template-columns: minmax(0, 1fr); } }
