@@ -26,7 +26,7 @@ Failures and unknowns are kept, not hidden.
 
 | Beat | What happens | Evidence |
 | --- | --- | --- |
-| Describe | "Show READY in green, BUSY in red, then DONE with both off, 3 s each." Meta clarifies the idea, picks parts from the supported kit and drafts the behavior. | `Build with me` workspace |
+| Describe | "Show READY in green, BUSY in red, then DONE with both off, 3 s each." Meta clarifies the idea, picks parts from the supported kit and drafts the behavior. | Project page (Projects → New project) |
 | Plan | Meta's intent planner returns up to 8 steps as strict JSON. Ambiguous requests get one question; unsupported hardware is refused, not approximated. | 8/8 frozen benchmark cases matched the independently written expectations |
 | Build + install | Trusted code validates the plan, renders a C++ data table, compiles with PlatformIO, flashes the application only, keeps the previous image, and confirms identity over UART with a single `ID` command. | Hashes and logs per job |
 | Verify | The iPhone records the board while the firmware runs. LED colours are measured from pixels; OLED text is read by Meta without being told the expected label. | 45 sampled observations, 0 mismatches, 0 unknowns |
@@ -73,7 +73,7 @@ the display, the sample stays *unknown* rather than becoming a pass or a fail.
 - **Evidence**: every run keeps raw frames, UART timestamps, request and response records and
   SHA-256 manifests. The dashboard refuses to display evidence that fails its integrity check.
 
-![Build with me workspace with the accepted project brief and firmware status](docs/images/dashboard-build-with-me.jpg)
+![Project page with the four-step tracker, Meta's brief and the firmware status](docs/images/dashboard-build-with-me.jpg)
 
 ![A reviewed proposal with its step table and the compile, install and camera-test actions](docs/images/dashboard-proposal-bench.jpg)
 
@@ -107,8 +107,12 @@ printf 'META_API_KEY=your_key\nMETA_MODEL=muse-spark-1.3-contributor\n' > .env
 .venv/bin/python -m sparkbench dashboard
 ```
 
-Open http://127.0.0.1:8765. Guides: [dashboard](docs/dashboard.md),
-[Build with me](docs/build-guide.md), [intent planning](docs/intent-planning.md),
+Open http://127.0.0.1:8765. The dashboard is one linear flow: Projects → a project page (Describe) → Plan, build, verify → Evidence.
+
+![Projects page: the starting point, with saved projects and a New project button](docs/images/dashboard-projects.jpg)
+
+Guides: [dashboard](docs/dashboard.md),
+[building a project](docs/build-guide.md), [intent planning](docs/intent-planning.md),
 [software pipeline and trust boundary](docs/software-pipeline.md), [live validation](docs/live-validation.md).
 
 Host tests (222, no hardware, no network):
@@ -118,7 +122,7 @@ Host tests (222, no hardware, no network):
 ```
 
 Recorded evidence (about 7 GB of frames and logs under `runs/`) is not in this repository, so a
-fresh clone shows the planner and Build-with-me workspaces but an empty Bench History. The reports
+fresh clone shows the Projects page and planner but an empty Evidence tab. The reports
 quoted above are summarised in [docs/live-validation.md](docs/live-validation.md) and
 [docs/demo.md](docs/demo.md).
 

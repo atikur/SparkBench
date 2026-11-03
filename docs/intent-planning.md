@@ -1,6 +1,6 @@
 # Natural-language planning workspace
 
-Start `.venv/bin/python -m sparkbench dashboard`, then choose **New AI proposal**. Enter an instruction and select **Ask Meta for a plan**. This is an explicit paid API action using the existing `muse-spark-1.3-contributor` configuration. Opening the dashboard or a saved proposal makes no model request.
+Start `.venv/bin/python -m sparkbench dashboard`, then choose **Quick plan without a project → New quick plan** on the Projects page, or **Open plan & bench →** from a project. Enter an instruction and select **Ask Meta for a plan**. This is an explicit paid API action using the existing `muse-spark-1.3-contributor` configuration. Opening the dashboard or a saved proposal makes no model request.
 
 Meta receives the instruction and a fixed capability contract. It does not receive the benchmark's expected answer, an existing completed step table, camera measurements or a pass/fail oracle. It interprets order, counting, parity and other finite rules into up to eight LED/OLED steps. Every step has a fixed three-second duration; labels have 1–16 uppercase ASCII characters within the existing trusted data language. A proposed mapping is supplied by local code, never chosen by the model; any future live use still needs the appropriate hardware identity/mapping checks.
 
