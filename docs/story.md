@@ -62,7 +62,7 @@ with proof cards; the Limits dialog.
    confidence, and one bounded next check. It never receives the verdict logic and cannot mark
    anything passed. This closes the loop and is the strongest single answer to "went beyond a
    basic integration".
-2. **A camera pass on the hero project.** Refresh the camera reference and run the test on the
+2. **A camera pass on the hero project.** Done: calibrate the phone position and run the test on the
    installed READY/BUSY/DONE firmware so the project a judge opens first ends in a verified pass,
    not "installed".
 3. **A fresh wiring-swap run on the hero project, if time allows,** so the caught fault and its
