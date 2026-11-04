@@ -104,7 +104,7 @@
     <form id="brief-reply-form" hidden>
       <label for="brief-reply" id="brief-reply-label">Your answer</label>
       <textarea id="brief-reply" rows="2" maxlength="3000" required placeholder="Type your answer and Muse Spark will update the plan."></textarea>
-      <div class="actions"><button class="primary-button" type="submit">Reply to Muse Spark</button></div>
+      <div class="actions wrap"><button class="primary-button" type="submit">Reply to Muse Spark</button><button id="brief-defaults" class="button" type="button">Go with the defaults</button></div>
     </form>
     <details id="guide-revision" class="quiet" hidden><summary>Review the revised brief</summary><p id="guide-revision-copy" class="copy muted"></p></details>
     <p id="instruction-view" class="idea-quote" hidden></p>
@@ -319,7 +319,7 @@
   <form id="dlg-reply-form" hidden>
     <label for="dlg-reply">Your answer</label>
     <textarea id="dlg-reply" rows="2" maxlength="3000" required placeholder="Type your answer and Muse Spark will update the plan."></textarea>
-    <div class="actions"><button class="primary-button" type="submit">Reply to Muse Spark</button></div>
+    <div class="actions wrap"><button class="primary-button" type="submit">Reply to Muse Spark</button><button id="dlg-defaults" class="button" type="button">Go with the defaults</button></div>
   </form>
   <table id="dlg-table" class="plan-table" hidden><thead><tr><th>Step</th><th>Red</th><th>Green</th><th>OLED</th><th>Time</th></tr></thead><tbody id="dlg-steps"></tbody></table>
   <p id="dlg-usage" class="help"></p>
