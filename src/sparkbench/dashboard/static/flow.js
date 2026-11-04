@@ -34,7 +34,7 @@ function runPhases(){const job=activeExecution?.action==='test'?activeExecution:
  const stage=job?.stage,reading=stage==='analysis';
  if(testActive&&!reading){const n=job?.capture_step;set('recorded','running',n?'Step '+n+' of '+steps:'Starting the plan');percent=20+15*((n||0)/steps);}
  else if(reading||testEnded)set('recorded','done',steps+' step'+(steps===1?'':'s')+' on camera');
- else if(test==='stopped')set('recorded','stopped','Stopped');
+ else if(test==='stopped')set('recorded','stopped','This recording could not be used');
  else set('recorded','pending');
  if(reading){const p=job.reading_progress;set('reading','running',readingNote(p));percent=35+60*(p&&p.total?p.done/p.total:0);}
  else if(testEnded)set('reading','done','Read without being told what to expect');
@@ -46,9 +46,10 @@ function runPhases(){const job=activeExecution?.action==='test'?activeExecution:
  else set('verdict','pending');
  return {phases:out,percent:Math.round(percent)};}
 function renderFrame(img,label,url,text){if(url&&img.dataset.url!==url){img.dataset.url=url;img.src=url;}$(label).textContent=text;}
+let flowPeak=0;
 function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-check').hidden;let active=RUN_PHASES.find(([id])=>phases[id].state==='running')||RUN_PHASES.find(([id])=>phases[id].state==='stopped');
  $('run-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':active?RUN_TITLES[active[0]]:'Starting';
- $('run-bar').style.width=Math.max(percent,2)+'%';$('run-view').classList.toggle('blocked',blocked);$('run-ended').hidden=!flowHold;
+ flowPeak=Math.max(flowPeak,percent);$('run-bar').style.width=Math.max(flowPeak,2)+'%';$('run-view').classList.toggle('blocked',blocked);$('run-ended').hidden=!flowHold;
  $('run-phases').replaceChildren(...RUN_PHASES.map(([id,name])=>{const p=phases[id],li=node('li');li.dataset.state=p.state;li.append(node('span',undefined,'phase-dot'));const body=node('div');body.append(node('strong',name));if(p.note)body.append(node('span',p.note,'help'));li.append(body);return li;}));
  const job=activeExecution?.action==='test'?activeExecution:null,progress=job?.stage==='analysis'?job.reading_progress:null,steps=planSteps();
  if(job?.latest_frame){const said=progress?.last_text;renderFrame($('run-frame'),'run-frame-label',job.latest_frame.url,job.latest_frame.live?'Live camera':progress?(said?'Muse Spark read "'+said+'"':'Muse Spark found this frame unreadable'):'Recorded frame');}
@@ -90,7 +91,7 @@ function renderFlowNow(){flowQueued=false;if(typeof lifecycleSnapshot==='undefin
  $('flow-back').hidden=!(state==='plan'&&flowOverride==='plan'&&currentTest());renderStatus();}
 window.renderFlow=function(){if(flowQueued)return;flowQueued=true;requestAnimationFrame(renderFlowNow);};
 window.resetFlow=function(){flowOverride=null;flowHold=null;flowRun=null;flowRunId=null;flowStep=null;flowLastState=null;window.renderFlow();};
-window.flowRunStarted=function(){flowOverride=null;flowHold=null;flowRunId=null;window.renderFlow();};
+window.flowRunStarted=function(){flowPeak=0;$('autopilot-error').hidden=true;flowOverride=null;flowHold=null;flowRunId=null;window.renderFlow();};
 // A run that ends without a test result stays on the running screen, so the reason is not lost.
 window.flowRunEnded=function(text,hold){flowHold=hold?text:null;window.renderFlow();};
 function startAgain(){flowHold=null;runBench();}

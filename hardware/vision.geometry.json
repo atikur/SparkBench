@@ -3,35 +3,35 @@
   "image_width": 1920,
   "image_height": 1080,
   "coordinate_origin": "top_left",
-  "reference_frame": "runs/live/led-oled-view-2026-11-04-v4/capture/camera/frame-000140.jpg",
+  "reference_frame": "runs/live/led-oled-view-2026-11-04-v5/capture/camera/frame-000060.jpg",
   "leds": {
     "red": {
-      "center_x": 1660,
-      "center_y": 651,
+      "center_x": 975,
+      "center_y": 500,
       "radius": 9
     },
     "green": {
-      "center_x": 1744,
-      "center_y": 574,
+      "center_x": 1009,
+      "center_y": 378,
       "radius": 9
     }
   },
   "oled_corners": [
     [
-      1040,
-      829
+      395,
+      504
     ],
     [
-      1253,
-      925
+      616,
+      552
     ],
     [
-      1210,
-      1035
+      588,
+      656
     ],
     [
-      992,
-      933
+      362,
+      608
     ]
   ],
   "rectified_width": 1024,
