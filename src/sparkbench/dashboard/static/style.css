@@ -326,6 +326,11 @@ dialog img { display: block; max-width: 90vw; max-height: 80vh; object-fit: cont
 #inspect-job { margin-top: 4px; }
 
 /* Inline camera result */
+.view-check { margin-top: 12px; display: grid; gap: 12px; }
+.view-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.view-compare figure { margin: 0; display: grid; gap: 6px; }
+.view-compare img { width: 100%; border-radius: 8px; display: block; background: var(--soft); }
+@media (max-width: 640px) { .view-compare { grid-template-columns: 1fr; } }
 .test-result { margin-top: 16px; padding: 18px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); display: grid; gap: 14px; }
 .test-result-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .test-result .copy { flex: 1; min-width: 220px; font-weight: 500; }

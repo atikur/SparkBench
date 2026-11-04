@@ -10,6 +10,9 @@ function runHeadline(r){const n=r.evaluated_sample_count,m=r.mismatch_count,u=r.
  if(r.behavior_verdict==='pass')return 'All '+n+' sampled observations matched the plan.'+(r.oled_evaluated?' Muse Spark read the OLED text without being told what to expect.':'');
  if(r.qualification_outcome==='fault_detected')return 'The camera caught the fault: '+m+' mismatched '+unit+' across '+n+' samples.';
  if(r.behavior_verdict==='fail')return m+' mismatched '+unit+' across '+n+' samples. The board did not do what the plan said.';
+ const rejected=r.geometry_rejected_sample_count||0;
+ if(r.behavior_verdict==='incomplete'&&rejected===n&&n)return 'The camera was not in its calibrated position, so none of the '+n+' samples could be measured. This says nothing against the board.';
+ if(r.behavior_verdict==='incomplete'&&rejected)return 'The camera left its calibrated position for '+rejected+' of '+n+' samples, so SparkBench reports incomplete instead of a pass.';
  if(r.behavior_verdict==='incomplete')return u+' unknown readings across '+n+' samples, so SparkBench reports incomplete instead of a pass.';
  return 'Evidence unavailable.';}
 function frameKeys(r){return ['red','green',...(r.oled_evaluated?['oled_text']:[])];}

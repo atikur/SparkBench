@@ -3,35 +3,35 @@
   "image_width": 1920,
   "image_height": 1080,
   "coordinate_origin": "top_left",
-  "reference_frame": "runs/dashboard-execution/77d52b8576bf4e529996ece8a808ab98/workflow/capture/camera/frame-000008.jpg",
+  "reference_frame": "runs/live/led-oled-view-2026-11-04-v3/capture/camera/frame-000140.jpg",
   "leds": {
     "red": {
-      "center_x": 1131,
-      "center_y": 362,
+      "center_x": 1660,
+      "center_y": 651,
       "radius": 9
     },
     "green": {
-      "center_x": 1181,
-      "center_y": 260,
+      "center_x": 1744,
+      "center_y": 574,
       "radius": 9
     }
   },
   "oled_corners": [
     [
-      597,
-      745
+      1040,
+      829
     ],
     [
-      820,
-      723
+      1253,
+      925
     ],
     [
-      828,
-      836
+      1210,
+      1035
     ],
     [
-      604,
-      858
+      992,
+      933
     ]
   ],
   "rectified_width": 1024,
@@ -46,7 +46,7 @@
   "maximum_registration_shift_pixels": 80,
   "minimum_registration_scale": 0.88,
   "maximum_registration_scale": 1.12,
-  "note": "Supervised 4 November 2026 view after the rig was rearranged: reference frame, LED circles and OLED border corners refreshed from a saved frame of the 23:22 camera test. Label crop, reader, guards, pixel-error/border/registration bounds and Meta policy unchanged. Corners sit on the drawn OLED border, as before.",
+  "note": "Supervised 4 November 2026 view: phone position at the end of camera test 9f10fb2b. Reference frame, LED circles and OLED border corners set from saved frames of a copy of that capture. Label crop, reader, guards and Meta policy unchanged.",
   "registration_translation_pixels": 12,
   "maximum_registration_error": 35
 }

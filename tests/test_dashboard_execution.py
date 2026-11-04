@@ -155,6 +155,32 @@ class ExecutionTests(unittest.TestCase):
             artifact.assert_not_called();serial.assert_not_called()
 
 
+    def view_setup(self,matches):
+        calibration=self.root/'cal.json';geometry={'minimum_border_support':.85,'reference_frame':'ref.jpg'}
+        calibration.write_text(json.dumps({'camera_id':'iphone','geometry':geometry}));(self.root/'ref.jpg').write_bytes(b'\xff\xd8\xffref')
+        def capture(device,seconds,fps,output):
+            output.mkdir(parents=True);rows=[{'frame':i,'file':'frame-%06d.jpg'%i,'sample_pts_seconds':i,'host_uptime_seconds':i} for i in range(1,6)]
+            (output/'frames.jsonl').write_text('\n'.join(json.dumps(r) for r in rows)+'\n')
+            for r in rows:(output/r['file']).write_bytes(b'\xff\xd8\xffframe')
+        self.service.view_reader=Mock(side_effect=lambda run,g,frames,out,read_labels:{r['file']:({'status':'measured','oled_border_support':[1,1,1,1]} if matches else {'status':'unknown','error':'Static border pixels do not match reference'}) for r in frames})
+        return patch('sparkbench.dashboard.execution.capture_frames',side_effect=capture),patch('sparkbench.dashboard.execution.check_policy',return_value=({},calibration))
+    def test_view_check_reports_match_and_moved_without_serial_or_meta(self):
+        for matches,status,count in [(True,'view_ok',3),(False,'view_moved',0)]:
+            a,b=self.view_setup(matches)
+            with a,b:
+                job=self.wait(self.service.start_view({'request_id':__import__('uuid').uuid4().hex,'device_id':'iphone'}))
+            self.assertEqual(job['status'],status);self.assertEqual((job['frames_checked'],job['frames_matched']),(3,count))
+            self.assertEqual((job['serial_commands_sent'],job['meta_requests']),([],0))
+            self.assertFalse(self.service.view_reader.call_args.kwargs['read_labels'])
+            self.runner.assert_not_called();self.installer.assert_not_called()
+    def test_view_check_refuses_another_camera_and_serves_reference(self):
+        a,b=self.view_setup(True)
+        with a as capture,b:
+            job=self.wait(self.service.start_view({'request_id':__import__('uuid').uuid4().hex,'device_id':'other-camera'}))
+            self.assertEqual(job['status'],'incomplete');self.assertIn('differs',job['error']);capture.assert_not_called()
+            self.assertEqual(self.service.reference_image(),b'\xff\xd8\xffref')
+
+
 class RuntimeCancellationTests(unittest.TestCase):
     def scenario(self,ack=True,cancel_on_start=True):
         from sparkbench.runtime_io import identity

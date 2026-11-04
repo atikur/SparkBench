@@ -139,6 +139,11 @@
     <div class="stage-head"><span class="stage-n">3</span><h2>Prove it on the bench</h2><span id="autopilot-status" class="pill"></span></div>
     <p class="help">The agent runs the same jobs a person would click, skips what the records already prove, and stops wherever a person is needed. It never touches wiring or limits.</p>
     <ol id="timeline" class="timeline"></ol>
+    <div id="view-check" class="view-check" hidden>
+      <p id="view-check-text" class="next-step"></p>
+      <div class="view-compare"><figure><img id="view-reference" alt="The calibrated camera view"><figcaption class="help">Calibrated view</figcaption></figure><figure><img id="view-live" alt="What the camera sees now"><figcaption class="help">Camera now</figcaption></figure></div>
+      <div class="actions wrap"><button id="view-again" class="button" type="button">Check the camera again</button></div>
+    </div>
     <div class="actions wrap"><button id="run-bench" class="primary-button" type="button" disabled>Run on the bench</button><button id="stop-bench" class="button danger" type="button" hidden>Stop</button><span id="execution-status" class="help" role="status"></span></div>
     <p id="autopilot-error" class="error-line" role="alert" hidden></p>
     <p id="execution-error" class="error-line" role="alert" hidden></p>

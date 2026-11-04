@@ -111,7 +111,7 @@ Cerebral Valley platform. Late submissions are not considered.
 - [ ] **Meta Model API use stated plainly:** `muse-spark-1.3-contributor` (Muse Spark series) for
       the brief, the plan, the blind OLED read and the explanation; every request saved on disk.
 - [ ] **$150 Meta credits** claimed by each participant individually by the same deadline.
-- [ ] **Bonus prizes to tick:** Best Agentic Use-Case (the bench autopilot: one click runs compile,
+- [ ] **Bonus prizes to tick:** Best Agentic Use-Case (the bench agent: one click runs compile,
       install, identity and camera test, skips what the records already prove, reads a non-pass
       result with Muse Spark and decides the next step, stopping wherever a person is needed); Community Vote (share the gallery
       link after submitting); Most Viral (post the video on X and submit the post link).
@@ -131,4 +131,4 @@ hours, so it is not in the plan.
   reasoning, with every input and output on disk. Judges can see what the model saw.
 - **Demo 25%.** Six beats, each one screen, the last one a payoff.
 - **Technical depth 20%.** A trust boundary that keeps the model out of the actuation path, a
-  deterministic verifier, integrity-checked evidence, 232 tests. Say it once, show it in the Limits.
+  deterministic verifier, integrity-checked evidence, 235 tests. Say it once, show it in the Limits.

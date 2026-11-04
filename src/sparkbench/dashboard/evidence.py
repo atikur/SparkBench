@@ -158,6 +158,7 @@ class EvidenceStore:
             "acquisition_status": metadata.get("status"), "behavior_verdict": behavior,
             "measurement_status": "incomplete" if unknowns else "complete",
             "qualification_outcome": "fault_detected" if e.kind == "negative" and report.get("status") == "pass" and behavior == "fail" else None,
+            "geometry_rejected_sample_count": sum(o.get("geometry_supported") is False for _,o in measured.values()),
             "frame_count": len(frames), "evaluated_sample_count": evaluated, "mismatch_count": len(failures), "unknown_count": len(unknowns),
             "finding_unit": "channel readings" if e.kind == "negative" else "field readings", "failures": failures, "unknowns": unknowns,
             "servo_angle_deg": None, "full_behavior_verdict": "incomplete", "oled_evaluated": has_text,

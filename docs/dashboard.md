@@ -22,9 +22,13 @@ The initial catalog includes:
 
 Source report, frozen specification, camera metadata and frame index are checked against local integrity manifests. Each image is checked before display, including its measurement hash when evaluated. Changed, missing or inconsistent evidence becomes unavailable. These are local integrity checks, not origin authentication or proof of continuous behavior.
 
-## Refresh the camera reference
+## Camera position
 
-A camera test is measured only on frames that still match the frozen reference view. When the phone or the rig moves, every frame is rejected by the geometry guard and the run ends incomplete with unknown readings; the explanation says so. To refresh: take a saved frame of the new view (any recent capture; the first frame of a capture is camera startup), supervise `hardware/vision.geometry.json` on it (reference frame, the two LED circle centres, the four OLED border corners; `tools/geometry_overlay.mjs` draws a labelled grid and the markers over a frame to check them), then run `tools/refresh_reference.py --capture <run> --previous-calibration <calibration.json> --output runs/live/<name>`. It checks the new geometry on real frames with the native reader, refuses unless every checked frame has full border support and reads LEDs off, writes a calibration that carries the previous validated thresholds, and writes a policy candidate; `--promote` installs it. Thresholds are not refit by this step, and a fresh camera test is still required.
+A camera test is measured only on frames that match the calibrated camera position, so the phone has to stay still for the whole run. The agent checks this first: it records a few seconds, compares them with the calibrated view, and stops before anything is flashed if they differ. The panel shows the calibrated view beside the current one, so the phone can be put back. The check sends no serial commands and makes no Meta requests.
+
+If the phone moves during a test, the geometry guard rejects those frames. The result says the camera moved, reports incomplete, and does not blame the board. A rejected frame is never read or guessed.
+
+To calibrate a new phone position, run one test there so a capture shows the LEDs lit, then use `tools/calibrate_view.py`. It copies the capture, sets the view from checked markers (`tools/geometry_overlay.mjs` helps place them), and fits LED thresholds from frames labelled by inspection. It makes no Meta request and touches no hardware. The next capture is the held-out test. `tools/refresh_reference.py` is the narrower option: it moves the view and keeps the thresholds, using frames with the LEDs off.
 
 ## Run the bench (autopilot)
 

@@ -91,6 +91,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200, {"mode": "recorded", "runs": self.server.store.list_runs()})
             elif path == "/api/devices":
                 self.json(200, self.server.execution.enumerate_devices())
+            elif path == "/api/camera/reference":
+                self.send_data(200, self.server.execution.reference_image(), "image/jpeg")
             elif path == "/api/board":
                 self.json(200, self.server.execution.board_summary())
             elif path == '/api/projects':
@@ -148,7 +150,7 @@ class Handler(BaseHTTPRequestHandler):
         cancellation = re.fullmatch(r"/api/jobs/([0-9a-f]{32})/cancel",path)
         project_action=re.fullmatch(r'/api/projects/([0-9a-f]{32})/(update|ask|accept|firmware)',path)
         explain=re.fullmatch(r"/api/runs/([a-z0-9-]+)/explain",path)
-        if path not in ("/api/plans",'/api/projects','/api/guide/photo') and not review and not operation and not cancellation and not project_action and not explain:
+        if path not in ("/api/plans",'/api/projects','/api/guide/photo','/api/camera/check') and not review and not operation and not cancellation and not project_action and not explain:
             self.method_rejected();return
         if not self.local_request(mutation=True): return
         try:
@@ -165,6 +167,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(201,self.server.projects.get(self.server.projects.create(body)))
             elif path=='/api/guide/photo':
                 self.json(202,{'id':self.server.execution.start_photo(body)})
+            elif path=='/api/camera/check':
+                self.json(202,{'id':self.server.execution.start_view(body)})
             elif project_action:
                 project_id,action=project_action.groups()
                 if action=='update':self.json(200,self.server.projects.update(project_id,body))

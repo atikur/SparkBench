@@ -20,7 +20,7 @@ from ..installation import install, verify_identity
 from ..intent import save
 from ..plans import plan_hash
 from ..policy import check_policy
-from ..vision import digest
+from ..vision import digest, geometry_valid, read_images
 from ..workflow import execute
 from .catalog import Run
 from .planning import BusyError, IDENTIFIER
@@ -47,11 +47,11 @@ class Cancelled(ValueError): pass
 
 
 class ExecutionService:
-    def __init__(self, root, planner, store, *, builder=build_artifact, installer=install, runner=execute, enumerate_devices=devices, identity_checker=verify_identity):
+    def __init__(self, root, planner, store, *, builder=build_artifact, installer=install, runner=execute, enumerate_devices=devices, identity_checker=verify_identity, view_reader=read_images):
         self.root=Path(root).resolve();self.directory=self.root/"runs/dashboard-execution"
         self.planner,self.store=planner,store
         self.builder,self.installer,self.runner,self.enumerate_devices=builder,installer,runner,enumerate_devices
-        self.identity_checker=identity_checker
+        self.identity_checker=identity_checker;self.view_reader=view_reader
         self.lock=threading.RLock();self.active=None;self.cancel_event=None;self.thread=None;self.jobs={}
         if self.directory.is_dir():
             for folder in self.directory.iterdir():
@@ -160,6 +160,54 @@ class ExecutionService:
             self._set(job_id,status='cancelled' if cancel.is_set() else 'captured',stage='finished',ended_at_utc=datetime.now(timezone.utc).isoformat(),serial_commands_sent=[],meta_requests=0)
         except Exception:
             self._set(job_id,status='incomplete',stage='finished',error='Progress photo unavailable in this host context; check camera permission and availability. No serial commands sent.')
+        finally:
+            with self.lock:self.active=None
+
+    # Camera view check: a short capture compared with the frozen view, before anything is flashed. It sends no serial
+    # commands and makes no Meta requests. It only says whether a test could be measured from here.
+    def _frozen_calibration(self):
+        _,calibration=check_policy(self.root/"hardware/oled-reader.policy.json")
+        return json.loads(Path(calibration).read_text())
+
+    def reference_image(self):
+        file=self.root/self._frozen_calibration()["geometry"]["reference_frame"]
+        if file.is_symlink() or not file.is_file():raise KeyError("Reference frame unavailable")
+        return file.read_bytes()
+
+    def start_view(self, body):
+        if set(body)!={'request_id','device_id'} or not isinstance(body['request_id'],str) or not IDENTIFIER.fullmatch(body['request_id']):raise ValueError('Explicit camera and request ID required')
+        if not isinstance(body['device_id'],str) or not body['device_id']:raise ValueError('Select the iPhone camera')
+        with self.lock:
+            for job in self.jobs.values():
+                if job.get('request_id')==body['request_id']:
+                    if job.get('action')!='view' or job.get('request')!=body:raise ValueError('Request ID already used')
+                    return job['id']
+            if self.active:raise BusyError('Another job owns the bench; wait before checking the camera')
+            job_id=uuid.uuid4().hex;folder=self._folder(job_id);folder.mkdir(parents=True)
+            self.jobs[job_id]={'id':job_id,'action':'view','proposal_id':None,'plan_sha256':None,'request_id':body['request_id'],'request':body,'status':'running','stage':'capture','physical_verification':'not_performed','servo_actuation':False,'started_at_utc':datetime.now(timezone.utc).isoformat(),'updated_at_utc':datetime.now(timezone.utc).isoformat(),'shutdown':False,'failures':0,'unknowns':0,'error':None}
+            save(folder/'job.json',self.jobs[job_id]);self.active=job_id;self.cancel_event=threading.Event()
+            self.thread=threading.Thread(target=self._view,args=(job_id,body['device_id'],self.cancel_event),daemon=False);self.thread.start();return job_id
+
+    def _view(self, job_id, device_id, cancel):
+        try:
+            calibration=self._frozen_calibration();geometry=calibration["geometry"]
+            if calibration["camera_id"]!=device_id:raise ValueError("Selected camera differs from the frozen measurement policy")
+            if device_id not in [d['id'] for d in self.enumerate_devices()['cameras']]:raise ValueError('Selected iPhone absent in this process context; no fallback camera')
+            if cancel.is_set():raise Cancelled('Cancelled before camera access')
+            run=self._folder(job_id)/'workflow/capture';output=run/'camera';run.mkdir(parents=True)
+            capture_frames(device_id,seconds=5,fps=2,output=output)
+            from ..led_oled import frame_rows
+            chosen=frame_rows(output/'frames.jsonl')[-3:]
+            if not chosen:raise ValueError('No camera frames')
+            analysis=run.parent/'view';analysis.mkdir()
+            native=self.view_reader(run,geometry,chosen,analysis,read_labels=False)
+            matched=sum(geometry_valid(native[row['file']],geometry) for row in chosen)
+            self._set(job_id,status='view_ok' if matched==len(chosen) else 'view_moved',stage='finished',frames_checked=len(chosen),frames_matched=matched,ended_at_utc=datetime.now(timezone.utc).isoformat(),serial_commands_sent=[],meta_requests=0)
+        except Cancelled:
+            self._set(job_id,status='cancelled',stage='finished',error='Cancelled before camera access. No serial commands sent.')
+        except Exception as exc:
+            detail=str(exc) if isinstance(exc,ValueError) else 'check camera permission and availability'
+            self._set(job_id,status='incomplete',stage='finished',error='Camera check unavailable: '+detail+'. No serial commands sent.')
         finally:
             with self.lock:self.active=None
 
