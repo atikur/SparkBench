@@ -41,7 +41,7 @@
   <div class="hero hero-grid">
     <div class="hero-copy">
       <h1 class="hero-title">Describe it. Meta plans it.<br><em class="hero-em">The camera proves it.</em></h1>
-      <p class="lead">A phone watches the real board. If the test doesn’t pass, Muse Spark can suggest what to check before you test again.</p>
+      <p class="lead">An agent plans your idea, sets up the camera, flashes the board and checks the result on a phone. If something is wrong, it shows you why and tests again once you fix it.</p>
       <form id="home-plan-form" class="home-plan">
         <label for="home-idea" class="sr-only">What should the board do?</label>
         <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
@@ -66,14 +66,14 @@
   </div>
 
   <ol class="loop" aria-label="How it works">
-    <li><span class="loop-n">1</span><strong>Describe</strong><span>Your idea in plain words, typed or spoken</span></li>
-    <li class="meta"><span class="loop-n">2</span><strong>Plan</strong><span>Muse Spark writes up to 8 steps; you approve them</span></li>
-    <li><span class="loop-n">3</span><strong>Run</strong><span>The agent builds, installs and tests, skipping what is already proven</span></li>
-    <li class="meta"><span class="loop-n">4</span><strong>Prove</strong><span>The camera watches the board; Muse Spark reads the display blind</span></li>
-    <li class="meta"><span class="loop-n">5</span><strong>Explain</strong><span>Muse Spark can suggest what to check from the frames</span></li>
-    <li><span class="loop-n">6</span><strong>Retest</strong><span>Check the bench and run the same plan again</span></li>
+    <li class="meta"><span class="loop-n">1</span><strong>Describe</strong><span>Type your idea, or say it and edit the text.</span><em class="loop-tool">Muse Voice</em></li>
+    <li class="meta"><span class="loop-n">2</span><strong>Plan</strong><span>Up to 8 steps. Nothing runs until you approve.</span><em class="loop-tool">Muse Spark</em></li>
+    <li class="meta"><span class="loop-n">3</span><strong>Set up</strong><span>Finds the OLED and LEDs when the camera view has changed.</span><em class="loop-tool">SAM 3.1</em></li>
+    <li><span class="loop-n">4</span><strong>Install</strong><span>Builds, flashes and confirms the board runs this plan.</span><em class="loop-tool">Local code</em></li>
+    <li class="meta"><span class="loop-n">5</span><strong>Prove</strong><span>Pixels measure the LEDs. The OLED is read without seeing the plan.</span><em class="loop-tool">Camera + Muse Spark</em></li>
+    <li class="meta"><span class="loop-n">6</span><strong>Recover</strong><span>Explains a failure from its frames, then tests again after your fix.</span><em class="loop-tool">Muse Spark</em></li>
   </ol>
-  <p class="loop-legend help"><span class="loop-n meta-dot" aria-hidden="true"></span> are where Muse Spark works. The rest is trusted local code and the camera.</p>
+  <p class="loop-legend help"><span class="loop-n meta-dot" aria-hidden="true"></span>Orange steps use Meta models. Trusted local code controls the bench and works out every verdict.</p>
 
   <section class="home-section" aria-labelledby="projects-heading">
     <div class="section-head"><h2 id="projects-heading">Your projects</h2></div>

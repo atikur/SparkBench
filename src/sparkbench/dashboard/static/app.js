@@ -29,7 +29,7 @@ async function renderHero(runs){const ok=runs.filter(r=>r.available),newest=list
  const fallback=()=>{$('hero-frame').src='/api/camera/reference';$('hero-badge').textContent='';$('hero-caption').textContent='The bench as the phone sees it';};
  if(!latest){fallback();return;}
  try{const run=await api('/api/runs/'+encodeURIComponent(latest.id));const f=run.frames.find(x=>x.evaluated&&x.step===1&&!frameMismatch(x,run)&&!frameUnknown(x,run))||run.frames.find(x=>x.evaluated);if(!f)return fallback();
-  $('hero-frame').src=f.image_url;$('hero-badge').textContent='Verified on camera';$('hero-badge').dataset.state='pass';const when=new Date(run.recorded_at);$('hero-caption').textContent=run.title+' · '+(Number.isNaN(when.getTime())?'':when.toLocaleDateString(undefined,{day:'numeric',month:'short'})+', '+when.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  $('hero-frame').src=f.image_url;$('hero-badge').textContent='Verified on camera';$('hero-badge').dataset.state='pass';const when=new Date(run.recorded_at);$('hero-caption').textContent=run.title+(Number.isNaN(when.getTime())?'':' · '+when.toLocaleDateString(undefined,{day:'numeric',month:'short'}));
   const b=$('hero-bench');b.classList.add('clickable');b.onclick=()=>selectRun(run.id);}catch(e){fallback();}}
 async function renderProof(runs){const ok=runs.filter(r=>r.available),newest=list=>[...list].sort((a,b)=>String(b.recorded_at).localeCompare(String(a.recorded_at)))[0];const picks=[
  ['pass','Passed',newest(ok.filter(r=>r.behavior_verdict==='pass'&&r.id.startsWith('test-')))||ok.find(r=>r.behavior_verdict==='pass'),r=>[r.evaluated_sample_count,'samples matched the plan, with '+r.mismatch_count+' mismatches and '+r.unknown_count+' unknown']],
@@ -40,6 +40,8 @@ async function renderProof(runs){const ok=runs.filter(r=>r.available),newest=lis
  $('proof-cards').replaceChildren(...picks.filter(p=>p[2]).map(([kind,label,run,text])=>{const [n,what]=text(run);const b=node('button',undefined,'proof-card '+kind);b.type='button';b.append(node('span',label,'proof-kind'),node('span',String(n),'proof-number'),node('span',what,'proof-what'),node('span',run.title+' →','proof-run'));b.addEventListener('click',()=>selectRun(run.id));return b;}));
  $('proof-cards').closest('section').hidden=!$('proof-cards').children.length;}
 function node(tag, text, className){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n;}
+// For lists people scan: no year or time zone, and today says so.
+function shortDate(value){const d=new Date(value||'');if(Number.isNaN(d.getTime()))return 'Date unavailable';const time=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});return (d.toDateString()===new Date().toDateString()?'Today':d.toLocaleDateString(undefined,{day:'numeric',month:'short'}))+', '+time;}
 function date(value){if(!value)return 'Date unavailable';const d=new Date(value);return Number.isNaN(d.getTime())?'Date unavailable':d.toLocaleString(undefined,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'});}
 function value(v, evaluated, enabled=true){if(!enabled)return 'Unmeasured';if(!evaluated)return 'Not evaluated';if(v===null||v===undefined)return 'Unknown';if(typeof v==='boolean')return v?'On':'Off';return String(v);}
 async function api(path){const r=await fetch(path,{cache:'no-store'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Evidence unavailable');return d;}
