@@ -10,7 +10,7 @@ const STAGES=[['connect','Connect'],['view','Camera view'],['compile','Compile']
 function autoLog(kind,text){const li=node('li',undefined,'auto-'+kind);li.append(node('time',new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})),node('span',text));$('autopilot-log').append(li);$('autopilot-log').scrollTop=$('autopilot-log').scrollHeight;}
 function setAutoState(text,state){$('autopilot-status').textContent=text;$('autopilot-status').dataset.state=state||'';}
 // Timeline: one row per stage with a state (pending, running, done, skipped, warn, bad, stopped) and a note.
-function setStage(id,state,note){let li=document.querySelector('#timeline li[data-stage="'+id+'"]');if(!li){li=node('li');li.dataset.stage=id;const body=node('div',undefined,'tl-body');body.append(node('strong',STAGES.find(s=>s[0]===id)[1]),node('span',undefined,'help tl-note'));li.append(node('span',undefined,'tl-dot'),body);$('timeline').append(li);}li.dataset.state=state;li.querySelector('.tl-note').textContent=note||'';}
+function setStage(id,state,note){let li=document.querySelector('#timeline li[data-stage="'+id+'"]');if(!li){li=node('li');li.dataset.stage=id;const body=node('div',undefined,'tl-body');body.append(node('strong',STAGES.find(s=>s[0]===id)[1]),node('span',undefined,'help tl-note'));li.append(node('span',undefined,'tl-dot'),body);$('timeline').append(li);}li.dataset.state=state;li.querySelector('.tl-note').textContent=note||'';window.renderFlow?.();}
 function resetTimeline(){$('timeline').replaceChildren();for(const [id] of STAGES)setStage(id,'pending','');}
 // What the records already prove, shown while no run is in progress.
 window.syncStages=function(){if(autopilot)return;if(!executionPlan||executionPlan.status!=='ready'){resetTimeline();return;}
@@ -42,7 +42,7 @@ async function ensureDevices(){if(!($('execution-port').value&&$('execution-came
   updateExecutionButtons();}
  const ok=!!($('execution-port').value&&$('execution-camera').value);
  setStage('connect',ok?'done':'stopped',ok?optionName('execution-port')+' + '+optionName('execution-camera'):'choose the ESP32 port and the iPhone camera under Manual controls, then run again');
- autoLog(ok?'ok':'stop',ok?'Devices: '+optionName('execution-port')+' + '+optionName('execution-camera'):'I will not guess a device. Choose the ESP32 port and the iPhone camera, then run again.');if(!ok)$('manual-controls').open=true;return ok;}
+ autoLog(ok?'ok':'stop',ok?'Devices: '+optionName('execution-port')+' + '+optionName('execution-camera'):'I will not guess a device. Choose the ESP32 port and the iPhone camera, then run again.');if(!ok){$('flow-details').open=true;$('manual-controls').open=true;}return ok;}
 // Camera check: every part in frame and the OLED readable before the plan runs. When something is wrong the
 // agent says what, waits for the person to fix it, checks again and carries on with the same run.
 let viewWait=null;
@@ -62,8 +62,8 @@ async function checkViewUntilClear(){for(;;){if(await checkView())return;if(auto
 $('view-again').addEventListener('click',async()=>{if(viewWait){const resolve=viewWait;viewWait=null;resolve(true);return;}if(autopilot||activeExecution)return;$('view-again').disabled=true;try{if(await checkView())setAutoState('Camera clear. Run on the bench when ready.','done');}catch(e){$('autopilot-error').textContent=e.message;$('autopilot-error').hidden=false;}finally{$('view-again').disabled=false;}});
 async function explainRun(run){const started=await planningPost('/api/runs/'+encodeURIComponent(run.id)+'/explain',{request_id:newId()});let r;for(;;){await wait(800);r=await api('/api/explanations/'+started.id);if(r.status!=='generating')return r;}}
 async function runBench(){if(autopilot||!executionPlan||executionPlan.review_status!=='reviewed'||activeExecution)return;
- autopilot={cancelled:false};$('autopilot-log').replaceChildren();$('autopilot-error').hidden=true;$('agent-decision').hidden=true;$('view-check').hidden=true;testResultVersion++;$('test-result').hidden=true;$('execution-image').hidden=true;$('execution-image-label').textContent='';$('stop-bench').hidden=false;resetTimeline();window.updateAutopilot();window.updateProjectActions?.();
- const finish=(state,text)=>{setAutoState(text,state);autopilot=null;$('stop-bench').hidden=true;window.updateAutopilot();window.updateProjectActions?.();};
+ autopilot={cancelled:false,plan:executionPlan.id,testDone:false};window.flowRunStarted?.();$('autopilot-log').replaceChildren();$('autopilot-error').hidden=true;$('agent-decision').hidden=true;$('view-check').hidden=true;testResultVersion++;$('test-result').hidden=true;$('execution-image').hidden=true;$('execution-image-label').textContent='';$('stop-bench').hidden=false;resetTimeline();window.updateAutopilot();window.updateProjectActions?.();
+ const finish=(state,text)=>{setAutoState(text,state);const hold=!autopilot?.testDone&&!autopilot?.cancelled&&state!=='done';autopilot=null;window.flowRunEnded?.(text,hold);$('stop-bench').hidden=true;window.updateAutopilot();window.updateProjectActions?.();};
  const decide=(state,text)=>{setStage('decide',state,text);autoLog('decide',text);};
  const stopped=()=>{if(autopilot?.cancelled)throw new Error('Stopped');};
  try{
@@ -82,7 +82,7 @@ async function runBench(){if(autopilot||!executionPlan||executionPlan.review_sta
   // Flashing takes a while and restarts the board, so look again right before the plan runs.
   if(flashed){stopped();setAutoState('Checking the camera…','busy');await checkViewUntilClear();}
   stopped();setAutoState('Running the camera test…','busy');setStage('test','running','recording the board while the plan runs');autoLog('do','Camera test: recording the board while the plan runs');
-  const test=await runJob('test','test');
+  const test=await runJob('test','test');autopilot.testDone=!!test.evidence_available&&test.status!=='cancelled';
   if(test.status==='cancelled'){setStage('test','stopped','cancelled');return finish('stopped','Test cancelled; no pass claimed.');}
   if(test.status==='pass'){setStage('test','done','verified on camera');setStage('explain','skipped','not needed');showTestResult(test);autoLog('ok','Verified on camera');decide('done','Verified on camera: the board did what the plan said.');return finish('done','Verified on camera');}
   setStage('test',test.status==='fail'?'bad':'warn',(test.status==='fail'?'behavior mismatch':'incomplete')+(test.error?' · '+test.error:''));autoLog(test.status==='fail'?'bad':'warn','Camera test: '+test.status);

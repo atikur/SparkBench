@@ -60,7 +60,7 @@ def inspect_frame(current, reference, output, *, config=None, post=None):
     output.mkdir(parents=True, exist_ok=False)
     request = {"model": config.model, "messages": [{"role": "system", "content": PROMPT}, {"role": "user", "content": content}],
                "response_format": {"type": "json_schema", "json_schema": {"name": "SparkBenchFrameCheck", "strict": True, "schema": SCHEMA}},
-               "max_completion_tokens": 1024, "reasoning_effort": "low"}
+               "max_completion_tokens": 4096, "reasoning_effort": "low"}
     audit = copy.deepcopy(request)
     for item in audit["messages"][1]["content"][1:]:
         item["image_url"]["url"] = "[local frame bytes; see images]"

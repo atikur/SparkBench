@@ -81,13 +81,12 @@ and 4 November, so say it once at the start, keep it on screen, and label record
    page: "AI builds it. Who checks it?"
 2. 0:15 On the home page, type the desk-light sentence into the box and press "Plan it with Muse
    Spark". A panel opens: Muse Spark's brief, then the step table.
-3. 0:45 Press "Approve plan and run on the bench" in the panel. The project opens on the agent's
-   timeline: connect, camera check, compile, install, identity, camera test, each with what it did or why it
-   skipped it.
+3. 0:45 Press "Approve plan and run on the bench" in the panel. The project opens on the running
+   screen: the camera frame, five phases and one chip per plan step, filling in as the agent works.
 4. 1:10 The phone watches the board. Verdict: verified on camera, with the numbers and the frame.
-5. 1:40 Swap the two LED wires. Press "Run again". The timeline turns at Camera test: mismatch.
-6. 2:05 The agent asks Muse Spark to explain; the Explain row names the swap, the Decision row says
-   check the wiring and refuses to bend the plan to a fault.
+5. 1:40 Swap the two LED wires. Press "Run again". The result screen shows mismatch, with the failing steps marked.
+6. 2:05 The agent asks Muse Spark to explain; its explanation names the swap and gives one next check,
+   and the plan stays unchanged.
 7. 2:30 Evidence tab: pass, caught fault and an honest incomplete side by side. Limits dialog for
    two seconds.
 8. 2:45 Closing card: what Meta does (plans, reads the display, explains) and what it never does
@@ -131,4 +130,4 @@ hours, so it is not in the plan.
   reasoning, with every input and output on disk. Judges can see what the model saw.
 - **Demo 25%.** Six beats, each one screen, the last one a payoff.
 - **Technical depth 20%.** A trust boundary that keeps the model out of the actuation path, a
-  deterministic verifier, integrity-checked evidence, 244 tests. Say it once, show it in the Limits.
+  deterministic verifier, integrity-checked evidence, 246 tests. Say it once, show it in the Limits.

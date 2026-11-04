@@ -14,6 +14,7 @@
 <script defer src="/projects.js"></script>
 <script defer src="/explain.js"></script>
 <script defer src="/autopilot.js"></script>
+<script defer src="/flow.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -42,6 +43,12 @@
     </form>
   </div>
 
+  <section class="home-section" aria-labelledby="projects-heading">
+    <div class="section-head"><h2 id="projects-heading">Your projects</h2></div>
+    <nav id="project-list" class="card-list" aria-label="Saved projects"></nav>
+    <button id="project-more" class="link-button" type="button" hidden></button>
+  </section>
+
   <ol class="loop" aria-label="How it works">
     <li><span class="loop-n">1</span><strong>Describe</strong><span>Your idea in plain words</span></li>
     <li class="meta"><span class="loop-n">2</span><strong>Plan</strong><span>Muse Spark writes up to 8 steps; you approve them</span><em class="meta-chip">Muse Spark</em></li>
@@ -55,16 +62,12 @@
     <div id="proof-cards" class="proof-cards"></div>
   </section>
 
-  <section class="home-section" aria-labelledby="projects-heading">
-    <div class="section-head"><h2 id="projects-heading">Your projects</h2></div>
-    <nav id="project-list" class="card-list" aria-label="Saved projects"></nav>
-  </section>
 </section>
 
 <!-- Project page: describe, plan, bench -->
 <section id="guide-workspace" class="view" hidden aria-label="Project">
   <button class="back-link" type="button" data-view="projects">← Projects</button>
-  <div class="page-head"><div><p class="eyebrow">Project</p><h1 id="project-title">New project</h1></div><span id="brief-state" class="pill"></span><span id="lifecycle-state" class="pill" hidden></span></div>
+  <div class="page-head"><div><p class="eyebrow">Project</p><h1 id="project-title">New project</h1></div><span id="flow-status" class="pill"></span><span id="brief-state" class="pill flow-unused"></span><span id="lifecycle-state" class="pill flow-unused" hidden></span></div>
   <ol class="stepper" id="project-stepper">
     <li data-step="1" data-target="#project-form-card" class="current"><span>1</span>Describe</li>
     <li data-step="2" data-target="#plan-stage"><span>2</span>Plan</li>
@@ -73,7 +76,7 @@
   <p id="project-error" class="error-line" role="alert" hidden></p>
 
   <section class="card stage-card" id="project-form-card">
-    <div class="stage-head"><span class="stage-n">1</span><h2 id="project-form-title">What should it do?</h2></div>
+    <div class="stage-head"><h2 id="project-form-title">What should it do?</h2></div>
     <form id="project-form">
       <label for="project-idea" class="sr-only">Idea</label>
       <textarea id="project-idea" rows="3" maxlength="2000" required placeholder="A desk indicator that shows READY in green, BUSY in red, then DONE with both lights off. Three seconds each."></textarea>
@@ -96,7 +99,7 @@
   </section>
 
   <section class="card stage-card meta-card" id="plan-stage" hidden>
-    <div class="stage-head"><span class="stage-n">2</span><h2>Plan</h2><span id="proposal-status" class="pill"></span><span id="proposal-usage" class="meta-chip">Muse Spark</span></div>
+    <div class="stage-head"><h2>Plan</h2><button id="flow-back" class="link-button" type="button" hidden>← Back to the result</button><span id="proposal-status" class="pill"></span><span id="proposal-usage" class="meta-chip">Muse Spark</span></div>
     <p id="lifecycle-next" class="next-line"></p>
     <p id="guide-summary" class="copy muted"></p>
     <ul id="guide-goals" class="goals"></ul>
@@ -135,10 +138,14 @@
     <div id="project-firmware-links" hidden></div>
   </section>
 
-  <section class="card stage-card" id="bench-stage" hidden>
-    <div class="stage-head"><span class="stage-n">3</span><h2>Prove it on the bench</h2><span id="autopilot-status" class="pill"></span></div>
-    <p class="help">The agent runs the same jobs a person would click, skips what the records already prove, and stops wherever a person is needed. It never touches wiring or limits.</p>
-    <ol id="timeline" class="timeline"></ol>
+  <section class="card run-view" id="run-view" hidden aria-label="Bench run">
+    <div class="run-head"><h2 id="run-title" aria-live="polite">Starting</h2><button id="stop-bench" class="button danger" type="button" hidden>Stop</button></div>
+    <div class="run-bar"><i id="run-bar"></i></div>
+    <div class="run-cols">
+      <figure class="run-frame"><img id="run-frame" alt="What the camera sees"><figcaption id="run-frame-label" class="help"></figcaption></figure>
+      <ol id="run-phases" class="phases"></ol>
+    </div>
+    <div id="run-strip" class="step-strip" aria-label="Plan steps"></div>
     <div id="view-check" class="view-check" hidden>
       <p id="view-check-text" class="next-step"></p>
       <ul id="view-parts" class="view-parts"></ul>
@@ -146,9 +153,11 @@
       <div class="view-compare"><figure><img id="view-reference" alt="The calibrated camera view"><figcaption class="help">Calibrated view</figcaption></figure><figure><img id="view-live" alt="What the camera sees now"><figcaption class="help">Camera now</figcaption></figure></div>
       <div class="actions wrap"><button id="view-again" class="primary-button" type="button">I fixed it, check again</button></div>
     </div>
-    <div class="actions wrap"><button id="run-bench" class="primary-button" type="button" disabled>Run on the bench</button><button id="stop-bench" class="button danger" type="button" hidden>Stop</button><span id="execution-status" class="help" role="status"></span></div>
     <p id="autopilot-error" class="error-line" role="alert" hidden></p>
-    <p id="execution-error" class="error-line" role="alert" hidden></p>
+    <div id="run-ended" class="actions wrap" hidden><button id="run-again" class="primary-button" type="button">Try again</button><button id="run-to-plan" class="button" type="button">Back to the plan</button></div>
+  </section>
+
+  <section class="card result-view" id="result-view" hidden aria-label="Test result">
     <div id="test-result" class="test-result" hidden>
       <div class="test-result-head"><span id="test-verdict" class="verdict"></span><p id="test-headline" class="copy"></p></div>
       <div class="numbers">
@@ -156,7 +165,16 @@
         <div><strong id="test-mismatches"></strong><span>mismatches</span></div>
         <div><strong id="test-unknowns"></strong><span>unknown</span></div>
       </div>
-      <dl class="roles" aria-label="Who did what">
+    </div>
+    <div id="result-strip" class="step-strip" aria-label="Plan steps: choose one to see its frame"></div>
+    <div class="result-cols">
+      <figure class="run-frame"><img id="result-frame" alt="Recorded frame for this step"><figcaption id="result-frame-label" class="help"></figcaption></figure>
+      <div id="result-step" class="result-step"></div>
+    </div>
+    <div id="result-explain" class="result-explain" hidden></div>
+    <p id="result-error" class="error-line" role="alert" hidden></p>
+    <div class="actions wrap"><button id="result-again" class="primary-button" type="button">Run again</button><button id="result-change" class="button" type="button">Change the plan</button><button id="result-explain-run" class="button" type="button" hidden>Explain with Muse Spark</button><button id="result-evidence" class="button" type="button">Open full evidence</button></div>
+    <dl class="roles" aria-label="Who did what">
         <div><dt>Plan</dt><dd class="role-meta">Muse Spark</dd></div>
         <div><dt>Firmware</dt><dd>trusted local code</dd></div>
         <div><dt>LEDs</dt><dd>pixel measurement</dd></div>
@@ -164,7 +182,16 @@
         <div><dt>Verdict</dt><dd>independent verifier</dd></div>
         <div><dt>Explanation</dt><dd class="role-meta">Muse Spark, advisory</dd></div>
       </dl>
-    </div>
+  </section>
+
+  <details id="flow-details" class="card quiet" hidden>
+    <summary><span class="summary-title">Details</span><span class="help">Run log, firmware, parts, and questions</span></summary>
+  <section class="card stage-card" id="bench-stage" hidden>
+    <div class="stage-head"><h2>Run log</h2><span id="autopilot-status" class="pill"></span></div>
+    <p class="help">The agent runs the same jobs a person would click, skips what the records already prove, and stops wherever a person is needed. It never touches wiring or limits.</p>
+    <ol id="timeline" class="timeline"></ol>
+    <div class="actions wrap"><button id="run-bench" class="primary-button" type="button" disabled>Run on the bench</button><span id="execution-status" class="help" role="status"></span></div>
+    <p id="execution-error" class="error-line" role="alert" hidden></p>
     <img id="execution-image" class="test-frame" alt="Camera test frame" hidden>
     <p id="execution-image-label" class="help"></p>
     <div id="agent-decision" class="next-step" hidden></div>
@@ -241,6 +268,7 @@
         <ol id="guide-assembly" class="kit-steps"></ol>
       </div>
     </div>
+  </details>
   </details>
 </section>
 

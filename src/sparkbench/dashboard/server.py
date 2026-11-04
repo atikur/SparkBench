@@ -22,6 +22,7 @@ ASSETS['/projects.js']='projects.js'
 ASSETS['/wiring.svg']='wiring.svg'
 ASSETS['/lifecycle.js']='lifecycle.js'
 ASSETS['/explain.js']='explain.js'
+ASSETS['/flow.js']='flow.js'
 ASSETS['/autopilot.js']='autopilot.js'
 
 

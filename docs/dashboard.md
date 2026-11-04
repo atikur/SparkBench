@@ -22,6 +22,16 @@ The initial catalog includes:
 
 Source report, frozen specification, camera metadata and frame index are checked against local integrity manifests. Each image is checked before display, including its measurement hash when evaluated. Changed, missing or inconsistent evidence becomes unavailable. These are local integrity checks, not origin authentication or proof of continuous behavior.
 
+## Project page
+
+A project page shows one state at a time, with one status at the top.
+
+- **Plan:** the idea and the steps, with the run button always in view. **Change something** sends a revision to Muse Spark.
+- **Running:** the camera frame, five phases (Ready, Installed, Recorded, Read by Muse Spark, Verdict), overall progress and one chip per plan step. During reading the picture follows the frame just read and shows what Muse Spark returned. This is display only, and the verifier still decides at the end.
+- **Result:** the verdict first. Each step's chip opens its frame with what the plan expected, what the camera measured and what Muse Spark read. A failed or incomplete run shows the explanation or the next action in the same place.
+
+A project's status comes from the latest test of its current firmware. **Details** holds the run log, manual controls, firmware source, optional project details, the Muse Spark chat, and parts and wiring.
+
 ## Camera position
 
 A camera test is measured only on frames that match the calibrated camera position, so the phone has to stay still for the whole run. The agent checks this before anything is flashed, and again right before the test if it flashed. It records a few seconds and confirms three things: the view matches the calibrated one, both idle LEDs read off, and the frozen OLED reader can read the screen without being told what to expect.

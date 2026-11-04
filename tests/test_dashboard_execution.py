@@ -182,16 +182,33 @@ class ExecutionTests(unittest.TestCase):
         return job
     def test_reading_progress_counts_only_readable_frames_and_estimates_time(self):
         result=self.service.get(self.reading_job([100,104,108]))
-        self.assertEqual(result['reading_progress'],{'done':3,'total':4,'seconds_left':4})
+        self.assertEqual(result['reading_progress'],{'done':3,'total':4,'seconds_left':4,'last_text':None,'steps':[]})
         self.assertEqual(result['latest_frame']['file'],'frame-000003.jpg')
     def test_reading_progress_before_first_reading_has_no_estimate_or_frame(self):
         result=self.service.get(self.reading_job([]))
-        self.assertEqual(result['reading_progress'],{'done':0,'total':4,'seconds_left':None});self.assertNotIn('latest_frame',result)
+        self.assertEqual(result['reading_progress'],{'done':0,'total':4,'seconds_left':None,'last_text':None,'steps':[]});self.assertNotIn('latest_frame',result)
     def test_reading_progress_is_absent_until_the_files_exist_and_after_finish(self):
         job='c'*32;(self.root/'runs/dashboard-execution'/job).mkdir(parents=True);self.service.jobs[job]={'id':job,'action':'test','status':'running','stage':'analysis'}
         self.assertNotIn('reading_progress',self.service.get(job))
         finished=self.reading_job([100,104]);self.service.jobs[finished]['status']='pass'
         self.assertNotIn('reading_progress',self.service.get(finished))
+    def test_reading_progress_reports_each_plan_step_and_the_last_text(self):
+        job=self.reading_job([100,104,108]);workflow=self.root/'runs/dashboard-execution'/job/'workflow';camera=workflow/'capture/camera';camera.mkdir(parents=True)
+        (workflow/'analysis/spec.snapshot.json').write_text(json.dumps({'steps':[{'step':1,'oled_text':'9'},{'step':2,'oled_text':'8'}]}))
+        (workflow/'analysis/meta/frame-000003/reading.json').write_text(json.dumps({'status':'read','text':'8'}))
+        rows=[{'frame':i,'file':'frame-%06d.jpg'%i,'sample_pts_seconds':t} for i,t in enumerate([11,12,14.5,15],1)]
+        (camera/'frames.jsonl').write_text('\n'.join(json.dumps(r) for r in rows)+'\n')
+        events=[{'kind':'tx','command':'VISUAL'},{'kind':'rx_line','line':'VISUAL_STEP:1 RED:1','host_uptime_seconds':10},{'kind':'rx_line','line':'VISUAL_STEP:2 RED:0','host_uptime_seconds':13.2},{'kind':'rx_line','line':'VISUAL_STOPPED STATUS:COMPLETE RED:0','host_uptime_seconds':16.4}]
+        (workflow/'capture/uart.jsonl').write_text('\n'.join(json.dumps(e) for e in events)+'\n')
+        progress=self.service.get(job)['reading_progress']
+        self.assertEqual(progress['steps'],[{'step':1,'total':2,'read':2},{'step':2,'total':2,'read':1}]);self.assertEqual(progress['last_text'],'8')
+    def test_capture_step_follows_the_board_after_visual_and_ignores_replayed_lines(self):
+        job='e'*32;capture=self.root/'runs/dashboard-execution'/job/'workflow/capture';capture.mkdir(parents=True)
+        self.service.jobs[job]={'id':job,'action':'test','status':'running','stage':'capture'}
+        self.assertNotIn('capture_step',self.service.get(job))
+        events=[{'kind':'rx_line','line':'VISUAL_STEP:7 RED:1'},{'kind':'tx','command':'VISUAL'},{'kind':'rx_line','line':'VISUAL_STEP:2 RED:1'}]
+        (capture/'uart.jsonl').write_text('\n'.join(json.dumps(e) for e in events)+'\n{"partial')
+        self.assertEqual(self.service.get(job)['capture_step'],2)
     def test_build_with_an_older_runtime_is_marked_so_it_is_rebuilt_not_installed(self):
         build=self.compile();self.assertTrue(self.service.get(build['id'])['runtime_current'])
         path=self.root/'runs/dashboard-execution'/build['id']/'artifact/artifact.json';record=json.loads(path.read_text());record['trusted_runtime_sha256']['src/main.cpp']='0'*64;path.write_text(json.dumps(record))

@@ -22,7 +22,7 @@ from ..plans import plan_hash
 from ..policy import check_policy
 from ..framing import inspect_frame
 from ..meta import read_label
-from ..vision import digest, geometry_valid, led_state, read_images
+from ..vision import digest, geometry_valid, led_state, read_images, windows
 from ..workflow import execute
 from .catalog import Run
 from .planning import BusyError, IDENTIFIER
@@ -375,6 +375,9 @@ class ExecutionService:
             rows=frame_rows(capture)
             if rows and re.fullmatch(r"frame-\d{6}\.jpg",rows[-1].get("file","")):
                 row=rows[-1];result["latest_frame"]={"file":row["file"],"url":f"/api/jobs/{job_id}/frames/{row['file']}","live":result.get("stage")=="capture" and result.get("status")=="running"}
+        if result.get("action")=="test" and result.get("status")=="running" and result.get("stage")=="capture":
+            step=self._capture_step(job_id)
+            if step:result["capture_step"]=step
         if result.get("action")=="test" and result.get("status")=="running" and result.get("stage")=="analysis":
             progress=self._reading_progress(job_id)
             if progress:
@@ -396,7 +399,39 @@ class ExecutionService:
         if not ready:return None
         done=len(finished);seconds_left=None
         if done>=2:seconds_left=round((finished[-1][0]-finished[0][0])/(done-1)*(len(ready)-done))
-        return {"done":done,"total":len(ready),"seconds_left":seconds_left,"last_frame":finished[-1][1]+".jpg" if finished else None}
+        last_text=None
+        if finished:
+            try:last_text=json.loads((analysis/"meta"/finished[-1][1]/"reading.json").read_text()).get("text")
+            except (OSError,ValueError,AttributeError):pass
+        return {"done":done,"total":len(ready),"seconds_left":seconds_left,"last_frame":finished[-1][1]+".jpg" if finished else None,"last_text":last_text,"steps":self._reading_steps(job_id,set(ready),{name for _,name in finished})}
+
+    def _reading_steps(self, job_id, ready, finished):
+        workflow=self._folder(job_id)/"workflow"
+        try:
+            spec=json.loads((workflow/"analysis/spec.snapshot.json").read_text())["steps"]
+            frames=[json.loads(line) for line in (workflow/"capture/camera/frames.jsonl").read_text().splitlines() if line.strip()]
+            spans=windows(workflow/"capture",frames,[s["step"] for s in spec])
+        except (OSError,ValueError,KeyError,TypeError):
+            return []
+        steps=[]
+        for item,span in zip(spec,spans):
+            names=[Path(f["file"]).stem for f in span["frames"]]
+            steps.append({"step":item["step"],"total":sum(n in ready for n in names),"read":sum(n in finished for n in names)})
+        return steps
+
+    def _capture_step(self, job_id):
+        """The plan step the board last reported. Display only: UART never supplies a reading."""
+        try:lines=(self._folder(job_id)/"workflow/capture/uart.jsonl").read_text().splitlines()
+        except OSError:return None
+        step=None;started=False
+        for line in lines:
+            try:event=json.loads(line)
+            except ValueError:continue
+            if event.get("kind")=="tx" and event.get("command")=="VISUAL":started=True
+            elif started and event.get("kind")=="rx_line":
+                found=re.match(r"VISUAL_STEP:(\d+) ",event.get("line",""))
+                if found:step=int(found[1])
+        return step
 
     def image(self, job_id, name):
         self.get(job_id)
