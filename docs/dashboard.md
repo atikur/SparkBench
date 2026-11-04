@@ -23,8 +23,8 @@ project. If the camera needs help, the region editor appears on the project
 page and the run resumes after validation. Manual controls, logs and project
 details remain available below.
 
-On the Projects homepage, **Record idea** captures up to 30 seconds from the
-browser microphone. **Stop and transcribe** sends the clip to Muse Voice
+On the Projects homepage, **Speak** in the idea box captures up to 30 seconds
+from the browser microphone. **Stop** sends the clip to Muse Voice
 Transcribe and adds the transcript to the idea box for editing. SparkBench
 does not save the audio. Review the text and press **Plan it with Muse Spark**
 to start planning.

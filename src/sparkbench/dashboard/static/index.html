@@ -44,14 +44,18 @@
       <p class="lead">An agent plans your idea, sets up the camera, flashes the board and checks the result on a phone. If something is wrong, it shows you why and tests again once you fix it.</p>
       <form id="home-plan-form" class="home-plan">
         <label for="home-idea" class="sr-only">What should the board do?</label>
-        <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
+        <div class="idea-box">
+          <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
+          <div class="idea-box-foot">
+            <p id="idea-voice-help" class="help" hidden>Or speak for up to 30 seconds. Muse Voice writes it down.</p>
+            <button id="idea-voice-cancel" class="link-button" type="button" hidden>Discard</button>
+            <button id="idea-voice" class="voice-button" type="button" aria-describedby="idea-voice-help" data-state="idle" hidden><svg class="voice-mic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><i class="voice-dot" aria-hidden="true"></i><span id="idea-voice-label">Speak</span></button>
+          </div>
+        </div>
         <div class="actions wrap">
           <button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button>
-          <button id="idea-voice" class="button" type="button" aria-describedby="idea-voice-help" hidden>Record idea</button>
-          <button id="idea-voice-cancel" class="link-button" type="button" hidden>Discard recording</button>
+          <p id="idea-voice-status" class="help voice-status" role="status" hidden></p>
         </div>
-        <p id="idea-voice-help" class="help" hidden>Muse Voice turns a short recording into editable text.</p>
-        <p id="idea-voice-status" class="help" role="status" hidden></p>
         <div class="idea-chips" aria-label="Example ideas">
           <span class="help">Try:</span>
           <button class="idea-chip" type="button" data-idea="A desk status light. Show READY with only the green LED, BUSY with only the red LED, then DONE with both LEDs off. Three seconds each.">Desk status light</button>

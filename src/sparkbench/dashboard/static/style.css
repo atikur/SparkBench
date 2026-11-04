@@ -971,3 +971,32 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 .loop .loop-tool { justify-self: start; align-self: end; margin-top: 6px; font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .3px; color: var(--muted); }
 .loop li.meta .loop-tool { color: color-mix(in srgb, var(--accent) 75%, var(--text)); }
 @media (max-width: 980px) { .loop { row-gap: 22px; } }
+
+/* Home: the idea box holds the voice control, so typing and speaking read as one input */
+.idea-box { border: 1.5px solid var(--ink); border-radius: 4px; background: var(--panel); transition: box-shadow .12s; }
+.idea-box:focus-within { box-shadow: 3px 3px 0 var(--ink); }
+.home-plan .idea-box textarea, .home-plan .idea-box textarea:focus { display: block; width: 100%; border: 0; border-radius: 4px 4px 0 0; box-shadow: none; outline: none; background: transparent; padding: 12px 14px 4px; resize: none; field-sizing: content; min-height: 3.4em; max-height: 220px; }
+.idea-box-foot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-height: 36px; padding: 0 8px 8px 14px; }
+.idea-box-foot:has(#idea-voice[hidden]) { display: none; }
+.idea-box-foot .help { margin: 0 auto 0 0; font-size: 12.5px; }
+.idea-box-foot .link-button { margin-right: auto; font-size: 12.5px; }
+.voice-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; min-width: 92px; height: 34px; padding: 0 13px 0 10px; border: 1.5px solid var(--ink); border-radius: 999px; background: var(--panel); color: var(--text); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; cursor: pointer; transition: background .12s, color .12s, border-color .12s; }
+.voice-button[hidden] { display: none; }
+.voice-button:hover:not(:disabled) { background: var(--ink); color: var(--panel); }
+.voice-button .voice-dot { display: none; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.voice-button[data-state="recording"], .voice-button[data-state="recording"]:hover:not(:disabled) { min-width: 104px; background: var(--fail); border-color: var(--fail); color: #fff; }
+.voice-button[data-state="recording"] .voice-mic { display: none; }
+.voice-button[data-state="recording"] .voice-dot { display: block; animation: stage-rec 1.2s ease-in-out infinite; }
+.voice-button[data-state="busy"] { border-color: var(--line); color: var(--muted); cursor: progress; }
+.voice-button[data-state="busy"] .voice-mic { display: none; }
+.voice-button[data-state="busy"] .voice-dot { display: block; width: 12px; height: 12px; background: none; border: 2px solid currentColor; border-top-color: transparent; animation: flow-spin 1s linear infinite; }
+.voice-button[data-state="ready"] { border-color: var(--accent); color: var(--accent); }
+.voice-status { flex: 1 1 200px; min-width: 0; margin: 0; }
+.voice-status[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .voice-button .voice-dot { animation: none !important; } }
+
+/* Home hero on small screens: one column, with the photo at full width */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .hero-title { font-size: 34px; }
+}

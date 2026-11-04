@@ -2,6 +2,7 @@
 
 {
  const button = $('idea-voice'), discard = $('idea-voice-cancel');
+ const label = $('idea-voice-label'), help = $('idea-voice-help');
  const status = $('idea-voice-status'), idea = $('home-idea');
  let current = null;
 
@@ -10,14 +11,24 @@
   status.hidden = !message;
  }
 
- function controls(label = 'Record idea', busy = false) {
-  button.textContent = label;
+ function controls(text = 'Speak', state = 'idle', busy = false) {
+  label.textContent = text;
+  button.dataset.state = state;
   button.disabled = busy;
+  if (state === 'recording') button.setAttribute('aria-label', 'Stop recording and transcribe');
+  else button.removeAttribute('aria-label');
   discard.hidden = !current || current.uploading;
+  help.hidden = !!current;
+ }
+
+ function showClock(run) {
+  const seconds = Math.min(30, Math.floor((Date.now() - run.started) / 1000));
+  label.textContent = 'Stop · 0:' + String(seconds).padStart(2, '0');
  }
 
  function release(run) {
   clearTimeout(run.timeout);
+  clearInterval(run.clock);
   run.stream?.getTracks().forEach(track => track.stop());
   run.node?.port.close();
   if (run.context && run.context.state !== 'closed') run.context.close().catch(() => {});
@@ -55,7 +66,7 @@
   if (!run.samples?.length) return reset('No audio was recorded. Try again or type your idea.');
   run.abort = new AbortController();
   run.uploading = true;
-  controls('Transcribing…', true);
+  controls('Transcribing…', 'busy', true);
   say('Muse Voice is transcribing your recording.');
   try {
    const response = await fetch('/api/idea/transcribe', {
@@ -82,7 +93,7 @@
  async function record() {
   if (!plannerSession?.planning_available) return say('Connect the Meta API to record an idea, or type it here.');
   const run = current = {};
-  controls('Opening microphone…', true);
+  controls('Opening mic…', 'busy', true);
   say('Allow microphone access to describe your project.');
   try {
    const context = run.context = new AudioContext({sampleRate: 24000});
@@ -105,7 +116,7 @@
     release(run);
     if (run.send) transcribe(run);
     else {
-     controls('Transcribe recording');
+     controls('Transcribe', 'ready');
      say('Reached the 30-second limit. Transcribe or discard this recording.');
     }
    };
@@ -114,8 +125,10 @@
    });
    context.createMediaStreamSource(stream).connect(recorder).connect(context.destination);
    run.timeout = setTimeout(() => reset('Recording did not finish. Try again or type your idea.'), 32000);
-   controls('Stop and transcribe');
-   say('Recording up to 30 seconds. Stop and transcribe sends the clip to Meta.');
+   run.started = Date.now();
+   controls('Stop · 0:00', 'recording');
+   run.clock = setInterval(() => showClock(run), 250);
+   say('Recording. Stopping sends the clip to Meta to transcribe.');
   } catch (error) {
    if (run === current) reset(error.name === 'NotAllowedError' ?
     'Microphone access was denied. Allow it in the browser or type your idea.' :
@@ -125,12 +138,14 @@
 
  if (navigator.mediaDevices?.getUserMedia && window.AudioContext && window.AudioWorkletNode) {
   button.hidden = false;
+  help.hidden = false;
   button.addEventListener('click', () => {
    if (!current) return record();
    if (current.samples) return transcribe(current);
    if (!current.node) return;
    current.send = true;
-   controls('Stopping…', true);
+   clearInterval(current.clock);
+   controls('Stopping…', 'busy', true);
    clearTimeout(current.timeout);
    current.timeout = setTimeout(() => reset('Could not finish recording. Try again or type your idea.'), 2000);
    current.node.port.postMessage('stop');
