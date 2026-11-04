@@ -200,7 +200,7 @@ class ExecutionService(CameraSetupMixin, MappingRepairMixin):
         names={'red':'red LED','green':'green LED'};issues=[]
         for channel,name in names.items():
             states=[led_state(row.get('leds',{}).get(channel,{}).get('mean_luma_srgb'),calibration['thresholds'][channel]) for row in rows]
-            if any(state is not False for state in states):issues.append({'part':channel+'_led','problem':'The '+name+' could not be read as off while the board is idle. Check for glare or something covering it.'})
+            if any(state is not False for state in states):issues.append({'part':channel+'_led','problem':'The '+name+' could not be read as off while the board is idle. Check that both LEDs are still where the calibrated view shows them. A moved LED looks like this. Then check for glare or something covering it.'})
         return issues
 
     def start_view(self, body):

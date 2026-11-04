@@ -4,8 +4,8 @@ The bounded [LED mapping repair workflow](mapping-repair.md) is now implemented.
 After a confirmed LED mismatch, the fixed probe measures the two allowed pins;
 Muse Spark proposes a mapping and local code validates it. The dashboard waits
 for **Approve mapping repair and retest** before corrective installation. The
-original behavior stays frozen. Software tests pass; the new complete live repair
-demonstration remains pending.
+original behavior stays frozen. The complete sequence ran on real hardware on
+4 November; see [mapping repair](mapping-repair.md#live-validation).
 
 Start from the project folder using the existing local environment:
 

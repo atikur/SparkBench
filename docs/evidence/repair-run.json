@@ -1,0 +1,467 @@
+{
+  "scope": "Live run on 4 November 2026. The operator deliberately swapped the two LED signal wires before the fault test and disclosed this here. Muse Spark was not told.",
+  "servo_actuation": false,
+  "mapping_repair": {
+    "plan": "READY green, BUSY red, DONE both off, three seconds each. Steps and labels are unchanged by the repair.",
+    "fault_test": {
+      "recorded_at": "2026-11-04T15:37:16Z",
+      "behavior_verdict": "fail",
+      "evaluated_sample_count": 28,
+      "mismatch_count": 38,
+      "unknown_count": 0,
+      "finding_unit": "field readings",
+      "geometry_rejected_sample_count": 0,
+      "oled_evaluated": true
+    },
+    "fault_frame": {
+      "file": "frame-000012.jpg",
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "READY"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": "READY"
+      },
+      "image_sha256": "3a33c12180149de52294bc0ef81601404be76200aeeeff32729e717d0c38ad38"
+    },
+    "probe": {
+      "status": "mapped",
+      "measured_mapping": {
+        "green": 25,
+        "red": 26
+      },
+      "unknowns": [],
+      "approved_gpio": [
+        25,
+        26
+      ],
+      "probe_selection": "fixed_local_rule_after_confirmed_LED_mismatch",
+      "windows": [
+        {
+          "step": 1,
+          "readings": [
+            {
+              "file": "frame-000008.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000009.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000010.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000011.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000012.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000013.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000014.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000015.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000016.jpg",
+              "red": false,
+              "green": false
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "readings": [
+            {
+              "file": "frame-000022.jpg",
+              "red": false,
+              "green": true
+            },
+            {
+              "file": "frame-000023.jpg",
+              "red": false,
+              "green": true
+            },
+            {
+              "file": "frame-000024.jpg",
+              "red": false,
+              "green": true
+            },
+            {
+              "file": "frame-000025.jpg",
+              "red": false,
+              "green": true
+            },
+            {
+              "file": "frame-000026.jpg",
+              "red": false,
+              "green": true
+            },
+            {
+              "file": "frame-000027.jpg",
+              "red": false,
+              "green": true
+            },
+            {
+              "file": "frame-000028.jpg",
+              "red": false,
+              "green": true
+            },
+            {
+              "file": "frame-000029.jpg",
+              "red": false,
+              "green": true
+            },
+            {
+              "file": "frame-000030.jpg",
+              "red": false,
+              "green": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "readings": [
+            {
+              "file": "frame-000037.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000038.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000039.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000040.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000041.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000042.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000043.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000044.jpg",
+              "red": false,
+              "green": false
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "readings": [
+            {
+              "file": "frame-000050.jpg",
+              "red": true,
+              "green": false
+            },
+            {
+              "file": "frame-000051.jpg",
+              "red": true,
+              "green": false
+            },
+            {
+              "file": "frame-000052.jpg",
+              "red": true,
+              "green": false
+            },
+            {
+              "file": "frame-000053.jpg",
+              "red": true,
+              "green": false
+            },
+            {
+              "file": "frame-000054.jpg",
+              "red": true,
+              "green": false
+            },
+            {
+              "file": "frame-000055.jpg",
+              "red": true,
+              "green": false
+            },
+            {
+              "file": "frame-000056.jpg",
+              "red": true,
+              "green": false
+            },
+            {
+              "file": "frame-000057.jpg",
+              "red": true,
+              "green": false
+            },
+            {
+              "file": "frame-000058.jpg",
+              "red": true,
+              "green": false
+            },
+            {
+              "file": "frame-000059.jpg",
+              "red": true,
+              "green": false
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "readings": [
+            {
+              "file": "frame-000065.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000066.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000067.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000068.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000069.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000070.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000071.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000072.jpg",
+              "red": false,
+              "green": false
+            },
+            {
+              "file": "frame-000073.jpg",
+              "red": false,
+              "green": false
+            }
+          ]
+        }
+      ]
+    },
+    "muse_spark_proposal": {
+      "model": "muse-spark-1.3-contributor",
+      "status": "proposed",
+      "current_mapping": {
+        "red": 25,
+        "green": 26
+      },
+      "mapping": {
+        "green": 25,
+        "red": 26
+      },
+      "explanation": "Off-baseline measurements report both LEDs false. Energizing GPIO25 reports green true and red false. Energizing GPIO26 reports red true and green false. This indicates GPIO25 controls green and GPIO26 controls red, which is reversed from the assumption of red 25 and green 26. Proposed correction awaits approval and fresh camera retest.",
+      "evidence": [
+        "frame-000008.jpg",
+        "frame-000022.jpg",
+        "frame-000050.jpg"
+      ],
+      "usage": {
+        "completion_tokens": 501,
+        "prompt_tokens": 3316,
+        "total_tokens": 3817
+      },
+      "api_requests": 1,
+      "latency_seconds": 5.492,
+      "approval_required": true
+    },
+    "operator_approval": {
+      "approved_at_utc": "2026-11-04T15:45:59.288230+00:00",
+      "contract_sha256": "119c829b518bd4a238fe06e098708ce1034c075bbaa5634723546b03e1f66eac",
+      "candidate_plan_sha256": "403debfda5343b77b174cc32f1154a42ef782716b8d681368d8df16b8cf5c103",
+      "scope": "Operator approved the mapping diff and subsequent bounded build/install/retest; no hardware action performed by approval"
+    },
+    "retest": {
+      "recorded_at": "2026-11-04T15:47:53Z",
+      "behavior_verdict": "pass",
+      "evaluated_sample_count": 27,
+      "mismatch_count": 0,
+      "unknown_count": 0,
+      "finding_unit": "field readings",
+      "geometry_rejected_sample_count": 0,
+      "oled_evaluated": true
+    },
+    "retest_frame": {
+      "file": "frame-000012.jpg",
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "READY"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": "READY"
+      },
+      "image_sha256": "1cf9dff23b6599191822314b6a4bd9fa9d3c291d05b1af1fb68952f6cc254121"
+    },
+    "wires_during_retest": "still swapped; the firmware mapping changed instead"
+  },
+  "hand_fix": {
+    "fault_test": {
+      "recorded_at": "2026-11-04T16:00:10Z",
+      "behavior_verdict": "fail",
+      "evaluated_sample_count": 27,
+      "mismatch_count": 36,
+      "unknown_count": 0,
+      "finding_unit": "field readings",
+      "geometry_rejected_sample_count": 0,
+      "oled_evaluated": true
+    },
+    "proposal": "A second plan got its own probe and proposal, and the operator chose Keep current firmware.",
+    "camera_checks_blocked": "Two checks stopped because the operator had moved the LEDs out of their saved positions, instead of restoring the wires.",
+    "incomplete_tests": [
+      {
+        "recorded_at": "2026-11-04T16:12:33Z",
+        "behavior_verdict": "incomplete",
+        "evaluated_sample_count": 28,
+        "mismatch_count": 0,
+        "unknown_count": 10,
+        "finding_unit": "field readings",
+        "geometry_rejected_sample_count": 0,
+        "oled_evaluated": true
+      },
+      {
+        "recorded_at": "2026-11-04T16:16:28Z",
+        "behavior_verdict": "incomplete",
+        "evaluated_sample_count": 28,
+        "mismatch_count": 0,
+        "unknown_count": 9,
+        "finding_unit": "field readings",
+        "geometry_rejected_sample_count": 0,
+        "oled_evaluated": true
+      }
+    ],
+    "incomplete_reason": "The rewired red LED sat away from its saved position, so its lit reading stayed between the thresholds. The verifier reported unknown, not a pass or a mismatch.",
+    "recovery": "The operator ran camera setup again on the same plan.",
+    "retest": {
+      "recorded_at": "2026-11-04T16:21:39Z",
+      "behavior_verdict": "pass",
+      "evaluated_sample_count": 27,
+      "mismatch_count": 0,
+      "unknown_count": 0,
+      "finding_unit": "field readings",
+      "geometry_rejected_sample_count": 0,
+      "oled_evaluated": true
+    }
+  },
+  "camera_setup": {
+    "setup_order": "SAM 3.1 outlined all three parts in the setup used for the fault test. A separate capture validated the reference.",
+    "source_file": "frame-000007.jpg",
+    "regions": {
+      "oled": [
+        603,
+        843,
+        821,
+        950
+      ],
+      "red": [
+        1608,
+        727,
+        1657,
+        770
+      ],
+      "green": [
+        1430,
+        694,
+        1469,
+        747
+      ]
+    },
+    "sources": {
+      "oled": "sam-3.1",
+      "red": "sam-3.1",
+      "green": "sam-3.1"
+    },
+    "lens_points": {
+      "red": [
+        1631,
+        747
+      ],
+      "green": [
+        1448,
+        718
+      ]
+    },
+    "oled_corners": [
+      [
+        618,
+        845
+      ],
+      [
+        817,
+        872
+      ],
+      [
+        806,
+        946
+      ],
+      [
+        612,
+        921
+      ]
+    ],
+    "validation_oled_reading": "READY",
+    "sam_lens_agreement": true,
+    "image_sha256": "8dea3cdda97816e2983d275ff00e15df708bea98d1a9430315f3427d2359c4f0",
+    "image_size": [
+      1920,
+      1080
+    ]
+  }
+}

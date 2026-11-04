@@ -16,7 +16,8 @@ observations with the approved plan.
 | The camera caught an intentional physical fault | In a separate 3 November wiring-swap capture, 36 wrong-channel findings appeared across 47 samples. That test measured the LEDs. |
 | Unreadable evidence stays incomplete | In a separate historical LED/OLED analysis, 45 of 48 OLED readings were unknown. |
 | Muse Spark can suggest a next check grounded in evidence | Show a saved explanation of a separate incomplete run and its cited frames. The explanation is advisory, and invalid citations are rejected. |
-| The agent supports a human fix and re-test | The dashboard can wait for an operator and re-test the same approved plan. A single hero-project fault, explanation, repair and passing re-test is still pending on hardware. |
+| The agent investigates a real fault and recovers | On 4 November a disclosed wire swap gave 38 mismatched readings. A fixed probe and Muse Spark's proposal identified the swapped pins, the operator approved, and a fresh test passed 27 of 27 samples with the wires still swapped. |
+| The agent supports a human fix and re-test | The same night, a second plan's mismatch was fixed by hand and passed 27 of 27 samples on retest, after two recorded incomplete tests. |
 
 Verification covers sampled settled windows in the calibrated view. The submitted bench is the
 classic ESP32, two LEDs and an OLED. Muse Spark returns structured data, and a trusted renderer
@@ -36,6 +37,5 @@ in Dhaka. [Event schedule](https://dev.meta.ai/events/global-hackathon).
 - [ ] Include the dated [engineering log](history.md) to identify the work built during the event.
 - [ ] Complete any separate participant credit claim or optional prize entry that applies.
 
-For the demo, spend most of the time on the plan, its camera evidence, and one practical
-diagnosis. The [timed script](demo.md) has a recorded cut and a conditional sequence for the
-joint bench session.
+For the demo, spend most of the time on the live fault and recovery. The [timed script](demo.md)
+is one take from a new project, with the wires swapped and that disclosed on screen.

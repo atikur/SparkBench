@@ -5,10 +5,8 @@ GPIO25/26 probe, ask Muse Spark 1.3 Contributor for a mapping correction, and
 offer a reviewed firmware candidate. Local camera measurements must support the
 exact proposed mapping. The model does not choose the probe or execute commands.
 
-Implementation is validated with offline model, HTTP, integrity and UI tests.
-The new complete repair sequence has **not yet been validated with a real Meta
-request and fresh hardware captures**. Historical passes and wiring-fault
-recordings remain separate evidence.
+The complete sequence ran on real hardware on 4 November 2026, with a real Meta
+request and fresh captures. See [Live validation](#live-validation) below.
 
 ## Dashboard flow
 
@@ -57,15 +55,28 @@ lease. Its diagnostic log includes the probe journal, measured mapping, sanitize
 model request/result and candidate binding. Interrupted jobs do not resume by
 themselves after a server restart.
 
-## Validation and next live session
+## Live validation
 
-The 4 November implementation suite passes 309 host tests, including 20 repair
-integration tests and 10 simulated frontend scenarios. These use synthetic
-hardware adapters and mocked Meta transport; none is camera verification.
+On 4 November 2026 the operator deliberately swapped the two LED signal wires, with
+the servo supply off. Muse Spark was not told. The extract is in the
+[evidence bundle](evidence/repair-run.json).
 
-The remaining live check is a stable-view session with a deliberately disclosed
-mapping fault, the fixed probe, a real Contributor proposal, operator approval,
-and a fresh passing test against the unchanged contract. Include an unreadable
-probe control that produces no candidate. Keep the servo supply off. Record
-actual durations, API usage and all incomplete attempts rather than presenting
-the simulated sequence as a physical result.
+| Stage | Recorded result |
+| --- | --- |
+| Fault test | Mismatch: 38 mismatched field readings across 28 samples, 0 unknown |
+| Fixed probe | GPIO25 lit green and GPIO26 lit red, with no unknowns |
+| Muse Spark proposal | Red 26, green 25, in one request of 5.5 s and 3,817 tokens. Local code accepted it against the probe. |
+| Operator approval | Approved the two-row mapping diff. The behavior contract was unchanged. |
+| Retest, wires still swapped | Pass: 27 samples, 0 mismatches, 0 unknown |
+
+A second plan was run the same night through the hand-fix route: a mismatch of 36
+readings across 27 samples, then **Keep current firmware**, then restoring the wires
+by hand. Two camera checks stopped because the operator had moved the LEDs instead
+of the wires. After the LEDs were put back, two tests stayed incomplete with 10 and 9
+unknown readings, because the red LED no longer sat at its saved position. A new
+camera setup then gave a pass with 27 samples, 0 mismatches and 0 unknown.
+
+These are single runs on one bench. They do not establish general reliability. The
+unreadable-probe control, which should produce no candidate, has not been run on
+hardware. It remains covered only by the simulated tests, which use synthetic
+hardware adapters and mocked Meta transport.

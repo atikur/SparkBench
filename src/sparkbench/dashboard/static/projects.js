@@ -44,7 +44,8 @@ function updateProjectActionsCore(){const draft=project?.draft,accepted=project?
  const planReady=proposalResult?.status==='ready'&&proposalResult.id===snap?.proposal?.id&&!changed&&(!draft||draft.decision==='planned');
  const cameraSaved=planReady&&(window.cameraSetupSavedPlans?.has(proposalResult.id)||(typeof executionJobs!=='undefined'&&executionJobs.some(j=>j.proposal_id===proposalResult.id&&j.action==='camera_setup'&&j.status==='setup_ready')));
  $('plan-camera-status').hidden=!cameraSaved;
- const setupLocked=planReady&&(proposalResult.origin==='mapping_repair'||(typeof executionJobs!=='undefined'&&executionJobs.some(j=>j.proposal_id===proposalResult.id&&j.action==='test')));
+ // A tested plan may get a new reference: each test keeps the one it used. Only a repair stays on its parent's.
+ const setupLocked=planReady&&proposalResult.origin==='mapping_repair';
  $('plan-edit-form').hidden=!planReady||busy||!!(typeof autopilot!=='undefined'&&autopilot)||!!(typeof activeExecution!=='undefined'&&activeExecution);
  $('plan-camera-regions').hidden=!planReady||busy||setupLocked||!!(typeof autopilot!=='undefined'&&autopilot)||!!(typeof activeExecution!=='undefined'&&activeExecution);
  $('approve-run').hidden=!planReady||busy||!!(typeof activeExecution!=='undefined'&&activeExecution)||!!(typeof autopilot!=='undefined'&&autopilot);$('approve-run').textContent=planReady&&proposalResult.review_status==='reviewed'?'Run on the bench →':'Approve plan and run on the bench →';

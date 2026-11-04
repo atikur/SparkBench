@@ -16,11 +16,16 @@ and Claude Code. [Event page](https://cerebralvalley.ai/e/meta-ai-developer-hack
 
 | Recording | Result |
 | --- | --- |
+| **Live wire swap and approved mapping repair**, 4 November | 38 mismatched readings across 28 samples, then a pass with 27 samples, zero mismatches and zero unknowns, with the wires still swapped. |
 | **READY/BUSY/DONE**, 4 November | 26 sampled observations passed, with zero mismatches and zero unknowns. |
 | **Independent LED + OLED check**, 3 November | An earlier plan passed 45 sampled observations, with zero mismatches and zero unknowns. |
 | **Intentional LED wiring swap**, 3 November | 36 wrong-channel findings across 47 samples in a separate LED test. |
 | **Incomplete OLED analysis**, 3 November | 45 of 48 OLED readings were unknown. The result remained incomplete. |
 | **Evidence explanation** | Muse Spark explained a separate incomplete capture using saved findings and cited frames, then proposed a next check. |
+
+| Fault test: READY lights red | After approved repair: READY lights green |
+| --- | --- |
+| ![Fault test. OLED reads READY and the red LED is lit.](docs/evidence/repair-fault.jpg) | ![Retest with the same wires. OLED reads READY and the green LED is lit.](docs/evidence/repair-pass.jpg) |
 
 The [recorded evidence bundle](docs/evidence/README.md) includes selected camera frames, source
 records and integrity hashes. The [demo script](docs/demo.md) keeps the recorded examples separate
@@ -38,15 +43,14 @@ and gives a sequence for a joint bench recording. The final demo video link is p
 4. A confirmed LED mismatch can trigger one fixed GPIO25/26 probe. Muse Spark proposes a
    mapping from the camera measurements, and local code checks it. Review the exact mapping
    diff before approving compilation, installation and a retest against the unchanged behavior.
-   Other non-pass results retain the advisory explanation flow. The new repair workflow is
-   software-tested; its complete live fault-to-repair demonstration is still pending.
+   Other non-pass results retain the advisory explanation flow. The complete sequence ran on
+   real hardware on 4 November.
 
 [Bounded mapping repair, evidence rules and live validation status](docs/mapping-repair.md)
 
-The agent also supports [guided camera setup](docs/camera-setup.md) before a new
-plan's first test. The agent aligns the commissioned landmarks, checks them
-with SAM and validates the reference on a separate capture. It asks for edits
-only if it cannot qualify the reference.
+A new plan starts with [camera setup](docs/camera-setup.md). The agent finds the parts in a fresh
+frame, SAM 3.1 outlines them, and a separate capture validates the reference. It asks for edits
+only if it cannot qualify the reference, and it sets the camera up again if the view changes.
 Existing measurement thresholds remain frozen. One local automatic setup-to-test
 session on 4 November passed 27 sampled observations, with zero mismatches and
 zero unknowns. See the [setup records](docs/camera-setup.md#recorded-live-session).
@@ -111,8 +115,7 @@ tools, run host tests and print the readiness report. Then configure `META_API_K
 bench, including a verified prior application and boot-layout records for installation and a
 frozen camera calibration for verification. [Commissioning details](docs/commissioning.md)
 
-The 4 November camera and dashboard update passed all 343 host tests, including
-12 HTTP tests rerun with host loopback permission after the sandbox blocked them.
+The final 4 November update passed all 372 host tests.
 Run the suite from the repository root.
 
 ```bash

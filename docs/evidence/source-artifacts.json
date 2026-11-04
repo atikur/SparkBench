@@ -220,5 +220,82 @@
         "sha256": "e6859f5f4e4b8d193bf222f3bcc7df18648b54ecb47284b52c663709aa2c72b3"
       }
     ]
+  },
+  "repair-run.json": {
+    "representation": "Selected recorded values",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/52aa9cb9780445649e71d5a1da27ae86/workflow/analysis/verification.json",
+        "sha256": "f6e35e92b90550c1a3383335301aa14151fea270a8071663fa1705d6ebcca50f"
+      },
+      {
+        "path": "runs/dashboard-execution/9c11175456474322969ca312e55f961c/repair/discovery/discovery.json",
+        "sha256": "31bebf619e170c90b5c6003f38b491c218e29568cf8a9e429e305ec1461b86b4"
+      },
+      {
+        "path": "runs/dashboard-execution/9c11175456474322969ca312e55f961c/repair/proposal/result.json",
+        "sha256": "3d7cb264f1c3b2ca530ab2232220d849014883d7004628c536a67e7754d13bab"
+      },
+      {
+        "path": "runs/dashboard-execution/9c11175456474322969ca312e55f961c/approval.json",
+        "sha256": "d4da1451be60bdb3ff94764f75d40d6232381460160a3c4386a1c6d1eda7463d"
+      },
+      {
+        "path": "runs/dashboard-execution/dbf7aa4a10c642e79ab4c924d81749a6/workflow/analysis/verification.json",
+        "sha256": "f513e3311f59c4d8183898edae82aaf122ddc20732650d1a6acaf1cf4e1f8627"
+      },
+      {
+        "path": "runs/dashboard-execution/dcdd2d751e5641e4ade043433c5f5ccf/workflow/analysis/verification.json",
+        "sha256": "e98df1e1b0c4e09a94c6980ab641439cc9d33264b401393e38d905d59c76348a"
+      },
+      {
+        "path": "runs/dashboard-execution/3919df246978456fb22165452654dfd7/workflow/analysis/verification.json",
+        "sha256": "83e96263432584ecf3e247eb6f7e185f683d04d8fd420fdc0014fbe505884214"
+      },
+      {
+        "path": "runs/dashboard-execution/55d55d3f4cd94eb0a0752f45913f7231/workflow/analysis/verification.json",
+        "sha256": "102ccadf8e2aea669fc17c3e81cdb04b5b4d3d1267fb7495fb68b115f478ce54"
+      },
+      {
+        "path": "runs/dashboard-execution/2588a206ce4a43a4b7342985fba966c5/workflow/analysis/verification.json",
+        "sha256": "ceb014dbc9f13dcfbaeadaf01bb3cca1b029aab911c2cbab7ae4513786b09ea2"
+      }
+    ]
+  },
+  "repair-fault.jpg": {
+    "representation": "Original frame bytes",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/52aa9cb9780445649e71d5a1da27ae86/workflow/capture/camera/frame-000012.jpg",
+        "sha256": "3a33c12180149de52294bc0ef81601404be76200aeeeff32729e717d0c38ad38"
+      }
+    ]
+  },
+  "repair-pass.jpg": {
+    "representation": "Original frame bytes",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/dbf7aa4a10c642e79ab4c924d81749a6/workflow/capture/camera/frame-000012.jpg",
+        "sha256": "1cf9dff23b6599191822314b6a4bd9fa9d3c291d05b1af1fb68952f6cc254121"
+      }
+    ]
+  },
+  "sam-setup.jpg": {
+    "representation": "Original frame bytes",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/371d4518f7f64e4796cc36504fb2f2e5/workflow/capture/camera/frame-000007.jpg",
+        "sha256": "8dea3cdda97816e2983d275ff00e15df708bea98d1a9430315f3427d2359c4f0"
+      }
+    ]
+  },
+  "sam-setup-boxes.svg": {
+    "representation": "Smaller copy of sam-setup.jpg with the saved regions drawn by the export",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/371d4518f7f64e4796cc36504fb2f2e5/workflow/capture/camera/frame-000007.jpg",
+        "sha256": "8dea3cdda97816e2983d275ff00e15df708bea98d1a9430315f3427d2359c4f0"
+      }
+    ]
   }
 }

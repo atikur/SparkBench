@@ -231,6 +231,10 @@ class ExecutionTests(unittest.TestCase):
             job=self.view_job(row)
             self.assertEqual((job['status'],job['view_issues'][0]['part']),('view_blocked',part));self.assertIn(text,job['view_issues'][0]['problem'])
             self.assertEqual(job['view_inspection']['fix'],'Tilt the phone down.');self.service.label_reader.assert_not_called();self.assertEqual(job['meta_requests'],1)
+    def test_an_led_that_will_not_read_off_names_a_moved_led_first(self):
+        job=self.view_job(lambda n:{**self.GOOD,'leds':{'red':{'mean_luma_srgb':150},'green':{'mean_luma_srgb':90}}})
+        problem=job['view_issues'][0]['problem']
+        self.assertLess(problem.index('still where the calibrated view shows them'),problem.index('glare'))
     def test_automatic_setup_skips_the_inspector_only_for_a_moved_camera(self):
         moved={'status':'unknown','error':'Static border pixels do not match reference'}
         self.service.camera_setup_available=Mock(return_value=True)

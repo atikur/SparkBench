@@ -79,7 +79,7 @@ async function checkView(){$('view-check').hidden=true;lastViewCheck=null;setSta
  }
  if(job.status==='view_ok'){const note='OLED and both LEDs where they should be · OLED reads "'+job.oled_reading+'"';setStage('view','done',note);autoLog('ok','Camera check: '+note);return true;}
  if(job.status==='view_blocked'&&job.setup_available===true&&agentCanSetUpCamera()){autoLog('do','Camera check: the view no longer matches its saved position, so the agent is setting it up again.');return false;}
- if(job.status==='view_blocked'){const text=job.view_issues.map(i=>i.problem).join(' '),frame=job.latest_frame?.url;setStage('view','stopped',text);autoLog('stop','Camera check: '+text);showViewCheck(text+(frame?' Match the calibrated view, keep the phone still, then check again.':' Adjust the camera, then check again.'),frame,job);return false;}
+ if(job.status==='view_blocked'){const text=job.view_issues.map(i=>i.problem).join(' '),frame=job.latest_frame?.url;setStage('view','stopped',text);autoLog('stop','Camera check: '+text);showViewCheck(text+(frame?' Compare the two pictures below, fix what differs, then check again.':' Adjust the camera, then check again.'),frame,job);return false;}
  const text=job.error||'The camera check did not finish.';
  // A short capture costs no model call and moves nothing on the board, so the agent tries it once more by itself.
  if(job.status==='incomplete'&&/fresh camera frames/.test(text)&&autopilot&&!autopilot.captureRetried){autopilot.captureRetried=true;autoLog('do','The camera capture came up short, so the agent is trying it once more.');return checkView();}

@@ -1,13 +1,32 @@
 # SparkBench recorded evidence
 
-These extracts can be reviewed directly in the repository. Each row comes from a separate saved record. The READY/BUSY/DONE sequence is the featured project. The wiring swap and the two incomplete tests show how the verifier handles different failure modes. The repair and re-test flow still needs a complete recorded hardware session.
+These extracts can be reviewed directly in the repository. Each row comes from a separate saved record. The READY/BUSY/DONE sequence is the featured project. The wiring swap and the two incomplete tests show how the verifier handles different failure modes. The live wire swap and repair below is the complete fault-to-retest session.
 
 | Recording | Automatic result | Scope |
 | --- | --- | --- |
+| Live wire swap and approved mapping repair, 4 November | Mismatch, 38 readings across 28 samples, then pass, 27 samples, 0 mismatches, 0 unknowns | Two external LEDs and OLED text |
 | READY/BUSY/DONE, 4 November 2026 | Pass, 26 sampled observations, 0 mismatches, 0 unknowns | Two external LEDs and OLED text |
 | Intentional wiring swap, 3 November | Fault detected, 36 mismatched channel readings across 47 samples | Two external LEDs |
 | Unreadable OLED crop, 3 November | Incomplete, 45 unknown OLED readings across 48 samples | Two external LEDs and OLED text |
 | Camera view outside calibration, 3 November | Incomplete, 37 rejected samples and 111 unknown field readings | Two external LEDs and OLED text, with a separate advisory explanation |
+
+## Live wire swap and mapping repair
+
+The operator swapped the two LED signal wires and disclosed it here. Muse Spark was not told. Both frames below are frame 12 of the READY step, from the same camera position with the same wires. The plan expects green.
+
+| Fault test · red lit instead of green · mismatch | After approved repair · wires still swapped · pass |
+| --- | --- |
+| ![Original frame 12 of the fault test. OLED reads READY and the red LED is lit.](repair-fault.jpg) | ![Original frame 12 of the retest. OLED reads READY and the green LED is lit.](repair-pass.jpg) |
+
+A fixed probe measured GPIO25 lighting green and GPIO26 lighting red. Muse Spark proposed the reversed mapping from those measurements, local code checked it against the probe, and the operator approved the diff. The steps, labels and timing did not change. The file also records a separate hand-fix run, including its blocked checks and two incomplete tests.
+
+[Fault, probe, proposal, approval and retest records](repair-run.json)
+
+## SAM 3.1 camera setup
+
+SAM 3.1 outlined the OLED and both LED lenses for the setup used in the fault test. Local vision first located each lens by color, and a separate capture then validated the reference. SAM takes no part in a verdict. The boxes below were drawn by this export from the saved regions, on a smaller copy of the [original frame](sam-setup.jpg).
+
+![Saved SAM regions for the OLED, red LED and green LED drawn on the setup frame.](sam-setup-boxes.svg)
 
 ## Featured project
 
@@ -51,7 +70,7 @@ An earlier reply on the same recording put supplied frame names inside sentences
 
 ## Provenance
 
-The bundle contains selected structured records and six images. Its original JPEGs and saved crops match the source bytes. The JSON extracts contain repository-relative source references and omit host-specific paths and API response identifiers. The archived diagnosis frame hashes refer to the original wide frames held locally.
+The bundle contains selected structured records, nine images and one drawn overlay. Its original JPEGs and saved crops match the source bytes. The JSON extracts contain repository-relative source references and omit host-specific paths and API response identifiers. The archived diagnosis frame hashes refer to the original wide frames held locally.
 
 The export checked the source reports, frozen plans, frame indexes, and all 158 evaluated frame hashes against the local capture records. It also verified the two diagnosis request and response records and the saved image hashes. A reviewer can check the integrity of the exported files with the commands below.
 
