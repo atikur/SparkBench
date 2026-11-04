@@ -502,9 +502,17 @@ class ExecutionService:
         with self.lock:
             if self.active:self.cancel_event.set()
 
+    def _test_title(self, job_id):
+        """Names a recorded test after what the plan showed, so the runs can be told apart."""
+        try:
+            labels=[step["oled_text"] for step in json.loads((self._folder(job_id)/"spec.json").read_text())["steps"]]
+            return ", ".join(labels) or "Camera test"
+        except (OSError,ValueError,KeyError,TypeError):
+            return "Camera test"
+
     def register_evidence(self):
         for job in self.list():
             folder=self._folder(job["id"])/"workflow"
             if job["action"]=="test" and job["status"] in ("pass","fail","incomplete") and (folder/"analysis/verification.json").is_file():
                 relative=str(folder.relative_to(self.root))
-                self.store.catalog["test-"+job["id"]]=Run("test-"+job["id"],"Reviewed-plan camera test", "Physical comparison against reviewed proposal",relative,relative+"/capture")
+                self.store.catalog["test-"+job["id"]]=Run("test-"+job["id"],self._test_title(job["id"]),"Camera test of an approved plan",relative,relative+"/capture")

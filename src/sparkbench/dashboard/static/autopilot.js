@@ -17,17 +17,15 @@ window.syncStages=function(){if(autopilot)return;if(!executionPlan||executionPla
  if(!$('timeline').children.length)resetTimeline();
  const build=buildJob(),jobs=matchingJobs(),port=$('execution-port').value,camera=$('execution-camera').value;
  setStage('compile',build?'done':'pending',build?'firmware '+build.firmware_sha256.slice(0,12)+'…':'');
- setStage('connect',port&&camera?'done':'pending',port&&camera?optionName('execution-port')+' + '+optionName('execution-camera'):'chosen when the run starts');
- setStage('view','pending','checked when the run starts');
+ setStage('connect',port&&camera?'done':'pending',port&&camera?optionName('execution-port')+' + '+optionName('execution-camera'):'');
+ setStage('view','pending','');
  const inst=build&&jobs.find(j=>j.action==='install'&&j.status==='installed'&&j.firmware_sha256===build.firmware_sha256);
  setStage('install',inst?'done':'pending',inst?'flash verified':'');
  const identity=inst&&(inst.runtime_identity?.status==='pass'||jobs.some(j=>j.action==='identity'&&j.status==='identity_confirmed'));
  setStage('identity',identity?'done':'pending',identity?'confirmed over USB':'');
  const last=jobs.find(j=>j.action==='test'&&j.status!=='running');
  setStage('test',last?(last.status==='pass'?'done':last.status==='fail'?'bad':last.status==='cancelled'?'stopped':'warn'):'pending',last?(last.status==='pass'?'verified on camera':last.status==='fail'?'behavior mismatch':last.status):'');
- setStage('explain',!last?'pending':last.status==='pass'?'skipped':'pending',last&&last.status==='pass'?'not needed':'');setStage('decide','pending','');
- $('run-bench').textContent=last?'Run again':'Run on the bench';};
-window.updateAutopilot=function(){$('run-bench').disabled=!!autopilot||!!activeExecution||!executionPlan||executionPlan.review_status!=='reviewed'||!plannerSession?.planning_available;};
+ setStage('explain',!last?'pending':last.status==='pass'?'skipped':'pending',last&&last.status==='pass'?'not needed':'');setStage('decide','pending','');};
 async function refreshJobs(){const data=await api('/api/jobs');executionJobs=data.jobs;updateExecutionButtons();}
 // One explicit bench job, polled to completion; the timeline and manual controls stay in sync while it runs.
 async function runJob(action,stage){const body={proposal_id:executionPlan.id,plan_sha256:executionPlan.plan_sha256,request_id:newId()};
@@ -62,8 +60,8 @@ async function checkViewUntilClear(){for(;;){if(await checkView())return;if(auto
 $('view-again').addEventListener('click',async()=>{if(viewWait){const resolve=viewWait;viewWait=null;resolve(true);return;}if(autopilot||activeExecution)return;$('view-again').disabled=true;try{if(await checkView())setAutoState('Camera clear. Run on the bench when ready.','done');}catch(e){$('autopilot-error').textContent=e.message;$('autopilot-error').hidden=false;}finally{$('view-again').disabled=false;}});
 async function explainRun(run){const started=await planningPost('/api/runs/'+encodeURIComponent(run.id)+'/explain',{request_id:newId()});let r;for(;;){await wait(800);r=await api('/api/explanations/'+started.id);if(r.status!=='generating')return r;}}
 async function runBench(){if(autopilot||!executionPlan||executionPlan.review_status!=='reviewed'||activeExecution)return;
- autopilot={cancelled:false,plan:executionPlan.id,testDone:false};window.flowRunStarted?.();$('autopilot-log').replaceChildren();$('autopilot-error').hidden=true;$('agent-decision').hidden=true;$('view-check').hidden=true;testResultVersion++;$('test-result').hidden=true;$('execution-image').hidden=true;$('execution-image-label').textContent='';$('stop-bench').hidden=false;resetTimeline();window.updateAutopilot();window.updateProjectActions?.();
- const finish=(state,text)=>{setAutoState(text,state);const hold=!autopilot?.testDone&&!autopilot?.cancelled&&state!=='done';autopilot=null;window.flowRunEnded?.(text,hold);$('stop-bench').hidden=true;window.updateAutopilot();window.updateProjectActions?.();};
+ autopilot={cancelled:false,plan:executionPlan.id,testDone:false};window.flowRunStarted?.();$('autopilot-log').replaceChildren();$('autopilot-error').hidden=true;$('view-check').hidden=true;testResultVersion++;$('test-result').hidden=true;$('stop-bench').hidden=false;resetTimeline();window.updateProjectActions?.();
+ const finish=(state,text)=>{setAutoState(text,state);const hold=!autopilot?.testDone&&!autopilot?.cancelled&&state!=='done';autopilot=null;window.flowRunEnded?.(text,hold);$('stop-bench').hidden=true;window.updateProjectActions?.();};
  const decide=(state,text)=>{setStage('decide',state,text);autoLog('decide',text);};
  const stopped=()=>{if(autopilot?.cancelled)throw new Error('Stopped');};
  try{
@@ -97,5 +95,4 @@ async function runBench(){if(autopilot||!executionPlan||executionPlan.review_sta
   if(run.behavior_verdict==='fail'){decide('bad','The board did something other than the plan. I will not change the plan to match a fault. Next check: '+r.explanation.next_check+' Then run again.');return finish('bad','Needs you: check the wiring');}
   decide('warn','The readings are unknown, not wrong, so no pass and no fail. Next check: '+r.explanation.next_check);return finish('warn','Needs you: see the next check');
  }catch(e){if(e.message==='Stopped'||autopilot?.cancelled){autoLog('stop','Stopped by you.');return finish('stopped','Stopped.');}$('autopilot-error').textContent=e.message;$('autopilot-error').hidden=false;autoLog('bad',e.message);finish('bad','Stopped on an error.');}}
-$('run-bench').addEventListener('click',runBench);
 $('stop-bench').addEventListener('click',async()=>{if(!autopilot)return;autopilot.cancelled=true;if(viewWait){const resolve=viewWait;viewWait=null;resolve(false);}setAutoState('Stopping after the current step…','busy');if(activeExecution?.id){try{await planningPost('/api/jobs/'+activeExecution.id+'/cancel',{});}catch(e){}}});

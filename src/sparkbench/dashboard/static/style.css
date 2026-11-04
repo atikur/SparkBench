@@ -73,14 +73,6 @@ details.quiet[open] > summary { margin-bottom: 12px; }
 details.card.quiet > summary { color: var(--text); }
 
 /* Stepper */
-.stepper { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
-.stepper li { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid var(--line); font-size: 13px; color: var(--muted); }
-.stepper li span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--line); color: var(--text); font-size: 12px; font-weight: 600; }
-.stepper li.current { color: var(--accent); border-color: var(--accent); background: var(--soft); }
-.stepper li.current span { background: var(--accent); color: var(--accent-ink); }
-.stepper li.done { color: var(--pass); border-color: var(--pass-bg); }
-.stepper li.done span { background: var(--pass); color: transparent; position: relative; }
-.stepper li.done span::after { content: "✓"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--accent-ink); font-size: 12px; }
 
 /* Forms and buttons */
 label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
@@ -302,8 +294,6 @@ dialog img { display: block; max-width: 90vw; max-height: 80vh; object-fit: cont
 #project-details[open] > summary { margin-bottom: 4px; }
 
 /* Clickable stepper */
-.stepper li[data-target] { cursor: pointer; }
-.stepper li[data-target]:hover { border-color: var(--accent); }
 
 /* Meta cards get a faint Meta edge */
 .meta-card { border-left: 3px solid color-mix(in srgb, var(--meta) 55%, var(--line)); }
@@ -503,7 +493,6 @@ details.card[open] > summary { margin-bottom: 16px; }
 .spinner { width: 26px; height: 26px; border-radius: 50%; border: 3px solid var(--soft); border-top-color: var(--accent); animation: dlg-spin .8s linear infinite; flex-shrink: 0; }
 
 /* Project page: one state at a time. */
-#project-stepper, .flow-unused, #run-bench { display: none !important; }
 #guide-workspace[data-flow="running"] #project-form-card, #guide-workspace[data-flow="running"] #plan-stage,
 #guide-workspace[data-flow="result"] #project-form-card, #guide-workspace[data-flow="result"] #plan-stage { display: none; }
 #flow-status[data-state="done"] { background: var(--pass-bg); color: var(--pass); }
@@ -560,7 +549,6 @@ button.step-chip[aria-pressed="true"] { outline: 2px solid var(--accent); outlin
 #project-form-card { padding-block: 16px; }
 #project-form-card .stage-head { margin-bottom: 6px; }
 #project-form-card h2 { font-size: 14px; color: var(--muted); }
-#flow-details > #project-details { margin-top: 18px; }
 @media (max-width: 720px) { #plan-stage > .actions { margin-inline: -18px; margin-bottom: -18px; padding-inline: 18px; } }
 .run-view.blocked #view-check { order: 1; }
 .run-view.blocked .run-cols { order: 2; }

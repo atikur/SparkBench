@@ -1,10 +1,8 @@
 'use strict';
 let lifecycleSnapshot=null,jobLogVersion=0;
-const lifecycleLabels={accept_brief:'Accept brief',prepare_proposal:'Prepare proposal',proposal_unavailable:'Proposal unavailable',planning:'Planning',clarify:'Clarification needed',unsupported:'Unsupported',invalid_response:'Invalid response',error:'Planning error',review:'Review proposal',compile:'Ready to compile',install:'Ready to install',check_identity:'Installed · check identity',installed:'Installed · identity confirmed',firmware_unconfirmed:'Firmware state unconfirmed'};
 const lifecycleNext={accept_brief:'Next: accept the brief to lock in the behavior.',prepare_proposal:'Next: prepare the firmware plan.',proposal_unavailable:'The saved plan failed its integrity check.',planning:'Muse Spark is writing the plan…',review:'',compile:'',install:'',check_identity:'',installed:'',firmware_unconfirmed:'Board state is unconfirmed. Open the job logs before testing.'};
 function lifecycleField(label,value){$('lifecycle-fields').append(node('dt',label),node('dd',value||'Unavailable'));}
-window.renderProjectFirmware=function(snapshot){lifecycleSnapshot=snapshot;$('project-firmware-status').hidden=!snapshot;const stage={accept_brief:1,prepare_proposal:2,proposal_unavailable:2,planning:2,clarify:2,unsupported:2,invalid_response:2,error:2,review:2,compile:3,install:3,check_identity:3,installed:4,firmware_unconfirmed:3}[snapshot?.state]||(typeof project!=='undefined'&&project?.accepted?2:1);const passed=snapshot?.camera_result?.status==='pass';const shown=Math.min(stage,3);setStepper('project-stepper',passed?3:shown,passed?[1,2,3]:[1,2,3].filter(n=>n<shown));if(!snapshot){window.updateProjectActions?.();return;}
- $('lifecycle-state').textContent=snapshot.active_job?'In progress':lifecycleLabels[snapshot.state]||snapshot.state;
+window.renderProjectFirmware=function(snapshot){lifecycleSnapshot=snapshot;$('project-firmware-status').hidden=!snapshot;if(!snapshot){window.updateProjectActions?.();return;}
  $('lifecycle-next').textContent=snapshot.active_job?'Running: '+snapshot.active_job.action+' · '+snapshot.active_job.stage:lifecycleNext[snapshot.state]??'Open the plan to see where it stands.';
  const cam=snapshot.camera_result;
  $('lifecycle-fields').replaceChildren();lifecycleField('Accepted brief',snapshot.accepted_sha256);lifecycleField('Proposal',snapshot.proposal?snapshot.proposal.id+' · '+(snapshot.proposal.review_status||snapshot.proposal.status):'Not prepared');
@@ -12,7 +10,7 @@ window.renderProjectFirmware=function(snapshot){lifecycleSnapshot=snapshot;$('pr
  const installed=snapshot.recorded_installed;lifecycleField('Recorded on board',installed?.firmware_sha256);lifecycleField('Version match',snapshot.matches_recorded_installation?'Matches this project’s compiled application':'This project’s compiled application is not confirmed as installed');
  const identity=snapshot.runtime_identity;lifecycleField('Runtime identity',identity?.status==='pass'?'Confirmed over UART · '+date(identity.checked_at_utc):identity?'Unconfirmed':'Not checked for this version');
  const camera=snapshot.camera_result;lifecycleField('Camera behavior',camera?camera.status==='pass'?'Passed sampled LED/OLED windows':camera.status==='fail'?'Behavior mismatch':camera.status==='running'?'In progress':'Incomplete / no physical pass':'Not tested for this compiled version');
- $('lifecycle-scope').textContent=snapshot.scope;$('lifecycle-open').hidden=true;if(snapshot.proposal&&!plannerBusy&&proposalId!==snapshot.proposal.id)openSavedProposal(snapshot.proposal.id,false);
+ $('lifecycle-scope').textContent=snapshot.scope;if(snapshot.proposal&&!plannerBusy&&proposalId!==snapshot.proposal.id)openSavedProposal(snapshot.proposal.id,false);
  $('lifecycle-jobs').replaceChildren(...snapshot.recent_jobs.map(job=>{const b=node('button',job.action+' · '+job.status+' · '+date(job.started_at_utc),'button job-history-button');b.type='button';b.addEventListener('click',()=>window.inspectFirmwareJob(job.id));return b;}));
  window.updateProjectActions?.();
 };

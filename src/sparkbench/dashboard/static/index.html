@@ -39,7 +39,7 @@
     <form id="home-plan-form" class="home-plan">
       <label for="home-idea" class="sr-only">What should the board do?</label>
       <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
-      <div class="actions wrap"><button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button><button id="open-guide" class="link-button" type="button">Start with more details</button></div>
+      <div class="actions wrap"><button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button></div>
     </form>
   </div>
 
@@ -67,12 +67,7 @@
 <!-- Project page: describe, plan, bench -->
 <section id="guide-workspace" class="view" hidden aria-label="Project">
   <button class="back-link" type="button" data-view="projects">← Projects</button>
-  <div class="page-head"><div><p class="eyebrow">Project</p><h1 id="project-title">New project</h1></div><span id="flow-status" class="pill"></span><span id="brief-state" class="pill flow-unused"></span><span id="lifecycle-state" class="pill flow-unused" hidden></span></div>
-  <ol class="stepper" id="project-stepper">
-    <li data-step="1" data-target="#project-form-card" class="current"><span>1</span>Describe</li>
-    <li data-step="2" data-target="#plan-stage"><span>2</span>Plan</li>
-    <li data-step="3" data-target="#bench-stage"><span>3</span>Prove</li>
-  </ol>
+  <div class="page-head"><div><p class="eyebrow">Project</p><h1 id="project-title">New project</h1></div><span id="flow-status" class="pill"></span></div>
   <p id="project-error" class="error-line" role="alert" hidden></p>
 
   <section class="card stage-card" id="project-form-card">
@@ -83,18 +78,15 @@
       <p id="project-idea-view" class="idea-quote" hidden></p>
       <div class="actions">
         <button id="create-project" class="primary-button" type="submit">Plan it with Muse Spark</button>
-        <span id="project-form-help" class="help">Supported bench: classic ESP32, red and green LEDs, one small OLED. Up to 8 steps of 3 seconds.</span>
       </div>
-      <details id="project-details" class="quiet">
-        <summary>Experience, budget and parts <span class="muted">(optional)</span></summary>
-        <div class="field-row">
+      <div id="project-details" hidden>
+                <div class="field-row">
           <label>Experience<select id="project-experience"><option value="beginner">New to electronics</option><option value="some_experience">Some experience</option></select></label>
           <label>Budget or constraints<input id="project-budget" maxlength="120" placeholder="Use the parts I already have"></label>
         </div>
         <label for="project-parts-notes">Parts you have</label>
         <textarea id="project-parts-notes" rows="2" maxlength="1500" placeholder="Classic ESP32, two LEDs, 330 Ω resistors, I²C OLED"></textarea>
-        <div class="actions"><button id="save-profile" class="button" type="button" hidden>Save details</button></div>
-      </details>
+        </div>
     </form>
   </section>
 
@@ -109,18 +101,14 @@
       <textarea id="brief-reply" rows="2" maxlength="3000" required placeholder="Type your answer and Muse Spark will update the plan."></textarea>
       <div class="actions wrap"><button class="primary-button" type="submit">Reply to Muse Spark</button><button id="brief-defaults" class="button" type="button">Go with the defaults</button></div>
     </form>
-    <details id="guide-revision" class="quiet" hidden><summary>Review the revised brief</summary><p id="guide-revision-copy" class="copy muted"></p></details>
-    <p id="instruction-view" class="idea-quote" hidden></p>
-    <div id="planner-result" hidden>
+        <div id="planner-result" hidden>
       <p id="proposal-summary" class="copy"></p>
       <div id="proposal-question" class="question-box" hidden></div>
       <table id="proposal-table" class="plan-table"><thead><tr><th>Step</th><th>Red</th><th>Green</th><th>OLED</th><th>Time</th></tr></thead><tbody id="proposal-steps"></tbody></table>
       <p id="proposal-validation" class="help"></p>
-      <p id="review-status" class="help"></p>
-    </div>
+          </div>
     <p id="planner-error" class="error-line" role="alert" hidden></p>
-    <div id="guide-next-step" class="next-step" hidden></div>
-    <form id="plan-edit-form" hidden>
+        <form id="plan-edit-form" hidden>
       <label for="plan-edit">What should change?</label>
       <textarea id="plan-edit" rows="2" maxlength="3000" required placeholder="For example: say GO instead of START, or use green while counting and red at the end."></textarea>
       <div class="actions wrap"><button class="primary-button" type="submit">Update the plan</button><button id="plan-edit-cancel" class="button" type="button">Cancel</button></div>
@@ -130,16 +118,11 @@
       <button id="plan-edit-open" class="button" type="button" hidden>Change something</button>
       <button id="accept-brief" class="primary-button" type="button" hidden>Accept and plan the steps →</button>
       <button id="project-firmware" class="button" type="button" hidden>Plan the steps →</button>
-      <button id="review-plan" class="button" type="button" hidden>Mark reviewed</button>
-      <button id="lifecycle-open" class="link-button" type="button" hidden>Show plan</button>
-      <button id="plan-back-to-project" class="link-button" type="button" hidden>Revise the idea</button>
-    </div>
-    <p id="accepted-brief-note" class="help"></p>
-    <div id="project-firmware-links" hidden></div>
-  </section>
+                      </div>
+          </section>
 
   <section class="card run-view" id="run-view" hidden aria-label="Bench run">
-    <div class="run-head"><h2 id="run-title" aria-live="polite">Starting</h2><button id="stop-bench" class="button danger" type="button" hidden>Stop</button></div>
+    <div class="run-head"><h2 id="flow-title" aria-live="polite">Starting</h2><button id="stop-bench" class="button danger" type="button" hidden>Stop</button></div>
     <div class="run-bar"><i id="run-bar"></i></div>
     <div class="run-cols">
       <figure class="run-frame"><img id="run-frame" alt="What the camera sees"><figcaption id="run-frame-label" class="help"></figcaption></figure>
@@ -190,15 +173,8 @@
     <div class="stage-head"><h2>Run log</h2><span id="autopilot-status" class="pill"></span></div>
     <p class="help">The agent runs the same jobs a person would click, skips what the records already prove, and stops wherever a person is needed. It never touches wiring or limits.</p>
     <ol id="timeline" class="timeline"></ol>
-    <div class="actions wrap"><button id="run-bench" class="primary-button" type="button" disabled>Run on the bench</button><span id="execution-status" class="help" role="status"></span></div>
+    <div class="actions wrap"><span id="execution-status" class="help" role="status"></span></div>
     <p id="execution-error" class="error-line" role="alert" hidden></p>
-    <img id="execution-image" class="test-frame" alt="Camera test frame" hidden>
-    <p id="execution-image-label" class="help"></p>
-    <div id="agent-decision" class="next-step" hidden></div>
-    <div class="actions wrap">
-      <button id="open-test-explain" class="button" type="button" hidden>Explain with Muse Spark →</button>
-      <button id="open-test-evidence" class="button" type="button" hidden>Open full evidence →</button>
-    </div>
     <details class="quiet" id="manual-controls">
       <summary>Manual controls, devices and logs</summary>
       <section id="execution-panel" hidden aria-label="Bench controls">
@@ -235,16 +211,16 @@
   </section>
 
   <details id="guide-conversation-card" class="card quiet" hidden>
-    <summary><span class="summary-title">Ask Meta about this build</span><span class="meta-chip">Muse Spark · text + photos</span></summary>
+    <summary><span class="summary-title">Ask Muse Spark about this build</span><span class="meta-chip">Muse Spark · text + photos</span></summary>
     <div id="guide-conversation" class="conversation" aria-live="polite"></div>
     <form id="guide-question-form">
       <label for="guide-question" class="sr-only">Your question</label>
-      <textarea id="guide-question" rows="2" maxlength="3000" required placeholder="What do I do next? Or attach photos and ask what Meta can see."></textarea>
+      <textarea id="guide-question" rows="2" maxlength="3000" required placeholder="What do I do next? Or attach photos and ask what it can see."></textarea>
       <div class="actions wrap">
         <label class="button upload-label">Add photos<input id="guide-photos" type="file" accept="image/jpeg,image/png" multiple></label>
         <button id="guide-show-camera" class="button" type="button">Use iPhone camera</button>
         <select id="guide-run" aria-label="Attach a recorded test"><option value="">No test attached</option></select>
-        <button id="ask-guide" class="primary-button" type="submit">Ask Meta</button>
+        <button id="ask-guide" class="primary-button" type="submit">Ask Muse Spark</button>
         <span id="guide-request-status" class="help"></span>
       </div>
       <div id="guide-camera-controls" class="actions wrap" hidden>
@@ -315,7 +291,7 @@
       <div class="card-head"><h2>Expected vs observed</h2><span id="step-label" class="help"></span></div>
       <table><thead><tr><th>Output</th><th>Expected</th><th>Observed</th></tr></thead><tbody id="observations"></tbody></table>
       <p id="measurement-note" class="help"></p>
-      <h3>What Meta did</h3>
+      <h3>What Muse Spark did</h3>
       <p id="model-role" class="copy"></p>
       <span id="model-name" class="meta-chip"></span>
     </section>
@@ -346,7 +322,7 @@
 </main>
 
 <footer class="footer">
-  <span>Describe → Plan → Run → Prove → Explain</span>
+  <span></span>
   <button id="open-limits" class="link-button" type="button">Limits</button>
 </footer>
 
@@ -380,13 +356,14 @@
   <div class="dialog-header"><strong>What SparkBench does and does not claim</strong><button id="close-limits" class="button" type="button">Close</button></div>
   <ul class="limits">
     <li>One supported bench: a classic ESP32, a red LED on GPIO25, a green LED on GPIO26 and one small OLED.</li>
-    <li>Plans are at most 8 steps of 3 seconds with short uppercase labels. Meta proposes data; trusted local code renders the firmware.</li>
+    <li>Plans are at most 8 steps of 3 seconds with short uppercase labels. Muse Spark proposes data; trusted local code renders the firmware.</li>
     <li>A camera verdict covers sampled settled windows in the recorded view, not continuous behaviour or electrical measurements.</li>
     <li>Unknown readings stay unknown. They never count as a pass or a fail.</li>
     <li>Parts and wiring ticks are your own report. They save automatically and do not check the hardware.</li>
-    <li>Meta's advice and photo descriptions are guidance, not a pass. A photo cannot establish continuity, voltage or polarity.</li>
+    <li>Muse Spark's advice and photo descriptions are guidance, not a pass. A photo cannot establish continuity, voltage or polarity.</li>
     <li>The servo on the rig is never driven by this runtime and its angles are unmeasured.</li>
-    <li>Browsing saved work makes no model call and touches no hardware. Every Meta request and every bench action is an explicit button.</li>
+    <li>The phone must stay still in its calibrated position. Frames from anywhere else are rejected, never read or guessed.</li>
+    <li>Browsing saved work makes no model call and touches no hardware. A run starts only when you press the button, and every request and job it makes is saved.</li>
     <li>Evidence lives locally under <code>runs/</code> with integrity hashes. Changed or missing evidence is shown as unavailable.</li>
   </ul>
 </dialog>

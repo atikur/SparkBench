@@ -45,15 +45,15 @@ function runPhases(){const job=activeExecution?.action==='test'?activeExecution:
  else if(testEnded){set('verdict','running','Comparing the readings with the plan');percent=96;}
  else set('verdict','pending');
  return {phases:out,percent:Math.round(percent)};}
-function renderFrame(img,label,url,text){if(url&&img.dataset.url!==url){img.dataset.url=url;img.src=url;}$(label).textContent=text;}
+function showFlowFrame(img,label,url,text){if(url&&img.dataset.url!==url){img.dataset.url=url;img.src=url;}$(label).textContent=text;}
 let flowPeak=0;
 function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-check').hidden;let active=RUN_PHASES.find(([id])=>phases[id].state==='running')||RUN_PHASES.find(([id])=>phases[id].state==='stopped');
- $('run-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':active?RUN_TITLES[active[0]]:'Starting';
+ $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':active?RUN_TITLES[active[0]]:'Starting';
  flowPeak=Math.max(flowPeak,percent);$('run-bar').style.width=Math.max(flowPeak,2)+'%';$('run-view').classList.toggle('blocked',blocked);$('run-ended').hidden=!flowHold;
  $('run-phases').replaceChildren(...RUN_PHASES.map(([id,name])=>{const p=phases[id],li=node('li');li.dataset.state=p.state;li.append(node('span',undefined,'phase-dot'));const body=node('div');body.append(node('strong',name));if(p.note)body.append(node('span',p.note,'help'));li.append(body);return li;}));
  const job=activeExecution?.action==='test'?activeExecution:null,progress=job?.stage==='analysis'?job.reading_progress:null,steps=planSteps();
- if(job?.latest_frame){const said=progress?.last_text;renderFrame($('run-frame'),'run-frame-label',job.latest_frame.url,job.latest_frame.live?'Live camera':progress?(said?'Muse Spark read "'+said+'"':'Muse Spark found this frame unreadable'):'Recorded frame');}
- else renderFrame($('run-frame'),'run-frame-label','/api/camera/reference','Calibrated camera view');
+ if(job?.latest_frame){const said=progress?.last_text;showFlowFrame($('run-frame'),'run-frame-label',job.latest_frame.url,job.latest_frame.live?'Live camera':progress?(said?'Muse Spark read "'+said+'"':'Muse Spark found this frame unreadable'):'Recorded frame');}
+ else showFlowFrame($('run-frame'),'run-frame-label','/api/camera/reference','Calibrated camera view');
  const per=Object.fromEntries((progress?.steps||[]).map(s=>[s.step,s]));
  $('run-strip').replaceChildren(...steps.map((s,i)=>{const n=i+1,chip=node('div',undefined,'step-chip');chip.append(node('strong',s.text));const info=per[n];let state='';let small='';
    if(progress){if(info){small=info.read+' of '+info.total;state=info.read>=info.total?'read':info.read>0?'now':'';}}
@@ -66,7 +66,7 @@ const ledWords=(r,g)=>[r,g].map((v,i)=>(i?'green ':'red ')+(v===null||v===undefi
 function renderResultStep(){const run=flowRun;if(!run)return;const frames=stepFrames(run,flowStep),f=frames.find(x=>frameMismatch(x,run))||frames.find(x=>frameUnknown(x,run))||frames[Math.floor(frames.length/2)];
  $('result-strip').replaceChildren(...run.steps.map(s=>{const b=node('button',undefined,'step-chip');b.type='button';b.dataset.state=stepResult(run,s.id);b.setAttribute('aria-pressed',String(s.id===flowStep));b.append(node('strong',s.label));b.addEventListener('click',()=>{flowStep=s.id;renderResultStep();});return b;}));
  if(!f){$('result-step').replaceChildren(node('p','No samples for this step.','help'));return;}
- renderFrame($('result-frame'),'result-frame-label',f.image_url,'Step '+flowStep+' · '+f.file);
+ showFlowFrame($('result-frame'),'result-frame-label',f.image_url,'Step '+flowStep+' · '+f.file);
  const clean=frames.filter(x=>!frameMismatch(x,run)&&!frameUnknown(x,run)).length,row=(name,text,cls)=>{const p=node('p');p.append(node('span',name,'help'),node('span',text,cls));return p;};
  const expected=f.expected||{},seen=f.observed||{},rejected=f.geometry_supported===false;
  $('result-step').replaceChildren(node('h3','Step '+flowStep),

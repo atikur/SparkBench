@@ -142,4 +142,34 @@ class HTTPTests(unittest.TestCase):
             self.assertIn(self.request(path)[0],(400,404))
 
 
+class StaticPageTests(unittest.TestCase):
+    """The page is plain scripts sharing one scope, so a clash fails silently in the browser."""
+    STATIC=Path(__file__).resolve().parents[1]/"src/sparkbench/dashboard/static"
+    def scripts(self):
+        return {p.name:p.read_text() for p in self.STATIC.glob("*.js")}
+    def ids(self):
+        import re
+        return re.findall(r'\bid="([^"]+)"',(self.STATIC/"index.html").read_text())
+    def test_page_ids_are_unique(self):
+        ids=self.ids();self.assertEqual(sorted(i for i in set(ids) if ids.count(i)>1),[])
+    def test_every_element_a_script_asks_for_exists(self):
+        import re
+        ids=set(self.ids())
+        missing={m for s in self.scripts().values() for m in re.findall(r"\$\('([\w-]+)'\)",s)}-ids
+        self.assertEqual(sorted(missing),[])
+    def test_every_script_parses(self):
+        import shutil,subprocess
+        node=shutil.which("node")
+        if not node:self.skipTest("node is not installed")
+        for path in self.STATIC.glob("*.js"):
+            result=subprocess.run([node,"--check",str(path)],capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,path.name+": "+result.stderr[-300:])
+    def test_no_two_scripts_define_the_same_top_level_function(self):
+        import re
+        seen={}
+        for name,source in self.scripts().items():
+            for fn in re.findall(r"^(?:async )?function (\w+)\(",source,re.M):
+                self.assertNotIn(fn,seen,fn+" is defined in "+name+" and "+seen.get(fn,""));seen[fn]=name
+
+
 if __name__=='__main__':unittest.main()
