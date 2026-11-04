@@ -82,7 +82,7 @@ and 4 November, so say it once at the start, keep it on screen, and label record
 2. 0:15 On the home page, type the desk-light sentence into the box and press "Plan it with Muse
    Spark". A panel opens: Muse Spark's brief, then the step table.
 3. 0:45 Press "Approve plan and run on the bench" in the panel. The project opens on the agent's
-   timeline: compile, connect, install, identity, camera test, each with what it did or why it
+   timeline: connect, camera check, compile, install, identity, camera test, each with what it did or why it
    skipped it.
 4. 1:10 The phone watches the board. Verdict: verified on camera, with the numbers and the frame.
 5. 1:40 Swap the two LED wires. Press "Run again". The timeline turns at Camera test: mismatch.
@@ -131,4 +131,4 @@ hours, so it is not in the plan.
   reasoning, with every input and output on disk. Judges can see what the model saw.
 - **Demo 25%.** Six beats, each one screen, the last one a payoff.
 - **Technical depth 20%.** A trust boundary that keeps the model out of the actuation path, a
-  deterministic verifier, integrity-checked evidence, 235 tests. Say it once, show it in the Limits.
+  deterministic verifier, integrity-checked evidence, 240 tests. Say it once, show it in the Limits.

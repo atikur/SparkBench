@@ -327,6 +327,8 @@ dialog img { display: block; max-width: 90vw; max-height: 80vh; object-fit: cont
 
 /* Inline camera result */
 .view-check { margin-top: 12px; display: grid; gap: 12px; }
+.view-parts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; }
+.view-parts li[data-ok="false"] { color: var(--warning); font-weight: 600; }
 .view-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .view-compare figure { margin: 0; display: grid; gap: 6px; }
 .view-compare img { width: 100%; border-radius: 8px; display: block; background: var(--soft); }

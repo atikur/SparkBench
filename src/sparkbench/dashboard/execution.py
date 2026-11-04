@@ -20,7 +20,9 @@ from ..installation import install, verify_identity
 from ..intent import save
 from ..plans import plan_hash
 from ..policy import check_policy
-from ..vision import digest, geometry_valid, read_images
+from ..framing import inspect_frame
+from ..meta import read_label
+from ..vision import digest, geometry_valid, led_state, read_images
 from ..workflow import execute
 from .catalog import Run
 from .planning import BusyError, IDENTIFIER
@@ -47,11 +49,11 @@ class Cancelled(ValueError): pass
 
 
 class ExecutionService:
-    def __init__(self, root, planner, store, *, builder=build_artifact, installer=install, runner=execute, enumerate_devices=devices, identity_checker=verify_identity, view_reader=read_images):
+    def __init__(self, root, planner, store, *, builder=build_artifact, installer=install, runner=execute, enumerate_devices=devices, identity_checker=verify_identity, view_reader=read_images, label_reader=read_label, frame_inspector=inspect_frame):
         self.root=Path(root).resolve();self.directory=self.root/"runs/dashboard-execution"
         self.planner,self.store=planner,store
         self.builder,self.installer,self.runner,self.enumerate_devices=builder,installer,runner,enumerate_devices
-        self.identity_checker=identity_checker;self.view_reader=view_reader
+        self.identity_checker=identity_checker;self.view_reader=view_reader;self.label_reader=label_reader;self.frame_inspector=frame_inspector
         self.lock=threading.RLock();self.active=None;self.cancel_event=None;self.thread=None;self.jobs={}
         if self.directory.is_dir():
             for folder in self.directory.iterdir():
@@ -163,8 +165,8 @@ class ExecutionService:
         finally:
             with self.lock:self.active=None
 
-    # Camera view check: a short capture compared with the frozen view, before anything is flashed. It sends no serial
-    # commands and makes no Meta requests. It only says whether a test could be measured from here.
+    # Camera check: a short capture compared with the frozen view, before the plan runs. It sends no serial commands
+    # and only says whether a test could be measured from here. The board is idle, so both LEDs must read off.
     def _frozen_calibration(self):
         _,calibration=check_policy(self.root/"hardware/oled-reader.policy.json")
         return json.loads(Path(calibration).read_text())
@@ -173,6 +175,16 @@ class ExecutionService:
         file=self.root/self._frozen_calibration()["geometry"]["reference_frame"]
         if file.is_symlink() or not file.is_file():raise KeyError("Reference frame unavailable")
         return file.read_bytes()
+
+    def _view_issues(self, rows, matched, measured, calibration):
+        if not measured:return [{'part':'camera','problem':'The camera is not in its calibrated position.'}]
+        if measured<len(rows):return [{'part':'camera','problem':'The camera moved during the check. Keep the phone still.'}]
+        if matched<len(rows):return [{'part':'oled','problem':'The OLED border was not found where it should be. Check that the OLED is on and nothing covers it.'}]
+        names={'red':'red LED','green':'green LED'};issues=[]
+        for channel,name in names.items():
+            states=[led_state(row.get('leds',{}).get(channel,{}).get('mean_luma_srgb'),calibration['thresholds'][channel]) for row in rows]
+            if any(state is not False for state in states):issues.append({'part':channel+'_led','problem':'The '+name+' could not be read as off while the board is idle. Check for glare or something covering it.'})
+        return issues
 
     def start_view(self, body):
         if set(body)!={'request_id','device_id'} or not isinstance(body['request_id'],str) or not IDENTIFIER.fullmatch(body['request_id']):raise ValueError('Explicit camera and request ID required')
@@ -199,10 +211,24 @@ class ExecutionService:
             from ..led_oled import frame_rows
             chosen=frame_rows(output/'frames.jsonl')[-3:]
             if not chosen:raise ValueError('No camera frames')
-            analysis=run.parent/'view';analysis.mkdir()
+            analysis=run.parent/'view';analysis.mkdir();self._set(job_id,stage='analysis')
             native=self.view_reader(run,geometry,chosen,analysis,read_labels=False)
-            matched=sum(geometry_valid(native[row['file']],geometry) for row in chosen)
-            self._set(job_id,status='view_ok' if matched==len(chosen) else 'view_moved',stage='finished',frames_checked=len(chosen),frames_matched=matched,ended_at_utc=datetime.now(timezone.utc).isoformat(),serial_commands_sent=[],meta_requests=0)
+            rows=[native[row['file']] for row in chosen]
+            matched=sum(geometry_valid(row,geometry) for row in rows);measured=sum(row.get('status')=='measured' for row in rows)
+            issues=self._view_issues(rows,matched,measured,calibration);requests=0;reading=None;inspection=None
+            # The frozen reader, without any expected text, confirms the OLED can be read from here.
+            if not issues:
+                if cancel.is_set():raise Cancelled('Cancelled before the OLED reading')
+                last=rows[-1];result=self.label_reader(analysis/'crops'/last['label_crop'],analysis/'meta'/last['id']);requests+=1
+                if result.get('status')=='read':reading=result.get('text')
+                else:issues.append({'part':'oled','problem':'The OLED is in view, but its text could not be read from here. Check for glare or a blurry image.'})
+            # Only to tell the person what to fix. It can never clear an issue.
+            if issues and not cancel.is_set():
+                try:
+                    requests+=1;looked=self.frame_inspector((output/chosen[-1]['file']).read_bytes(),self.reference_image(),analysis/'inspection')
+                    inspection=looked.get('inspection')
+                except Exception:inspection=None
+            self._set(job_id,status='view_blocked' if issues else 'view_ok',stage='finished',frames_checked=len(chosen),frames_matched=matched,view_issues=issues,view_inspection=inspection,oled_reading=reading,ended_at_utc=datetime.now(timezone.utc).isoformat(),serial_commands_sent=[],meta_requests=requests)
         except Cancelled:
             self._set(job_id,status='cancelled',stage='finished',error='Cancelled before camera access. No serial commands sent.')
         except Exception as exc:

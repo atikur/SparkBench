@@ -24,7 +24,11 @@ Source report, frozen specification, camera metadata and frame index are checked
 
 ## Camera position
 
-A camera test is measured only on frames that match the calibrated camera position, so the phone has to stay still for the whole run. The agent checks this first: it records a few seconds, compares them with the calibrated view, and stops before anything is flashed if they differ. The panel shows the calibrated view beside the current one, so the phone can be put back. The check sends no serial commands and makes no Meta requests.
+A camera test is measured only on frames that match the calibrated camera position, so the phone has to stay still for the whole run. The agent checks this before anything is flashed, and again right before the test if it flashed. It records a few seconds and confirms three things: the view matches the calibrated one, both idle LEDs read off, and the frozen OLED reader can read the screen without being told what to expect.
+
+If anything is wrong, the agent names the problem, shows the calibrated view beside the current one, and waits. **I fixed it, check again** repeats the check and the same run carries on from there. **Stop** ends the run. When the check is blocked, Muse Spark looks at the frame once and says which parts are cut off and how to move the phone. That advice is only for the person: it can never clear a check.
+
+The check sends no serial commands. It makes one Meta request when clear, the OLED reading, and at most one when blocked.
 
 If the phone moves during a test, the geometry guard rejects those frames. The result says the camera moved, reports incomplete, and does not blame the board. A rejected frame is never read or guessed.
 

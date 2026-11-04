@@ -155,26 +155,44 @@ class ExecutionTests(unittest.TestCase):
             artifact.assert_not_called();serial.assert_not_called()
 
 
-    def view_setup(self,matches):
+    def view_setup(self,row):
         calibration=self.root/'cal.json';geometry={'minimum_border_support':.85,'reference_frame':'ref.jpg'}
-        calibration.write_text(json.dumps({'camera_id':'iphone','geometry':geometry}));(self.root/'ref.jpg').write_bytes(b'\xff\xd8\xffref')
+        limits={'off_threshold':100,'on_threshold':200}
+        calibration.write_text(json.dumps({'camera_id':'iphone','geometry':geometry,'thresholds':{'red':limits,'green':limits}}));(self.root/'ref.jpg').write_bytes(b'\xff\xd8\xffref')
         def capture(device,seconds,fps,output):
             output.mkdir(parents=True);rows=[{'frame':i,'file':'frame-%06d.jpg'%i,'sample_pts_seconds':i,'host_uptime_seconds':i} for i in range(1,6)]
             (output/'frames.jsonl').write_text('\n'.join(json.dumps(r) for r in rows)+'\n')
             for r in rows:(output/r['file']).write_bytes(b'\xff\xd8\xffframe')
-        self.service.view_reader=Mock(side_effect=lambda run,g,frames,out,read_labels:{r['file']:({'status':'measured','oled_border_support':[1,1,1,1]} if matches else {'status':'unknown','error':'Static border pixels do not match reference'}) for r in frames})
+        self.service.view_reader=Mock(side_effect=lambda run,g,frames,out,read_labels:{r['file']:row(r['frame']) for r in frames})
+        self.service.label_reader=Mock(return_value={'status':'read','text':'STOPPED'})
+        self.service.frame_inspector=Mock(return_value={'inspection':{'oled':'partly_visible','red_led':'fully_visible','green_led':'fully_visible','oled_legible':False,'fix':'Tilt the phone down.'}})
         return patch('sparkbench.dashboard.execution.capture_frames',side_effect=capture),patch('sparkbench.dashboard.execution.check_policy',return_value=({},calibration))
-    def test_view_check_reports_match_and_moved_without_serial_or_meta(self):
-        for matches,status,count in [(True,'view_ok',3),(False,'view_moved',0)]:
-            a,b=self.view_setup(matches)
-            with a,b:
-                job=self.wait(self.service.start_view({'request_id':__import__('uuid').uuid4().hex,'device_id':'iphone'}))
-            self.assertEqual(job['status'],status);self.assertEqual((job['frames_checked'],job['frames_matched']),(3,count))
-            self.assertEqual((job['serial_commands_sent'],job['meta_requests']),([],0))
-            self.assertFalse(self.service.view_reader.call_args.kwargs['read_labels'])
-            self.runner.assert_not_called();self.installer.assert_not_called()
+    def view_job(self,row,device='iphone'):
+        a,b=self.view_setup(row)
+        with a,b:return self.wait(self.service.start_view({'request_id':__import__('uuid').uuid4().hex,'device_id':device}))
+    GOOD={'status':'measured','oled_border_support':[1,1,1,1],'leds':{'red':{'mean_luma_srgb':70},'green':{'mean_luma_srgb':90}},'label_crop':'x.png','id':'x'}
+    def test_view_check_clear_reads_oled_once_and_never_asks_the_inspector(self):
+        job=self.view_job(lambda n:self.GOOD)
+        self.assertEqual((job['status'],job['oled_reading'],job['view_issues'],job['meta_requests'],job['serial_commands_sent']),('view_ok','STOPPED',[],1,[]))
+        self.service.label_reader.assert_called_once();self.service.frame_inspector.assert_not_called();self.assertFalse(self.service.view_reader.call_args.kwargs['read_labels'])
+        self.runner.assert_not_called();self.installer.assert_not_called()
+    def test_view_check_blocks_and_names_the_problem(self):
+        moved={'status':'unknown','error':'Static border pixels do not match reference'}
+        cases=[(lambda n:moved,'camera','calibrated position'),
+               (lambda n:self.GOOD if n<5 else moved,'camera','moved during'),
+               (lambda n:{**self.GOOD,'oled_border_support':[1,.2,1,1]},'oled','border'),
+               (lambda n:{**self.GOOD,'leds':{'red':{'mean_luma_srgb':150},'green':{'mean_luma_srgb':90}}},'red_led','red LED')]
+        for row,part,text in cases:
+            job=self.view_job(row)
+            self.assertEqual((job['status'],job['view_issues'][0]['part']),('view_blocked',part));self.assertIn(text,job['view_issues'][0]['problem'])
+            self.assertEqual(job['view_inspection']['fix'],'Tilt the phone down.');self.service.label_reader.assert_not_called();self.assertEqual(job['meta_requests'],1)
+    def test_unreadable_oled_blocks_and_inspector_cannot_clear_or_break_it(self):
+        a,b=self.view_setup(lambda n:self.GOOD);self.service.label_reader.return_value={'status':'unknown','text':None}
+        self.service.frame_inspector.side_effect=RuntimeError('meta down')
+        with a,b:job=self.wait(self.service.start_view({'request_id':__import__('uuid').uuid4().hex,'device_id':'iphone'}))
+        self.assertEqual((job['status'],job['view_issues'][0]['part'],job['view_inspection'],job['oled_reading']),('view_blocked','oled',None,None))
     def test_view_check_refuses_another_camera_and_serves_reference(self):
-        a,b=self.view_setup(True)
+        a,b=self.view_setup(lambda n:self.GOOD)
         with a as capture,b:
             job=self.wait(self.service.start_view({'request_id':__import__('uuid').uuid4().hex,'device_id':'other-camera'}))
             self.assertEqual(job['status'],'incomplete');self.assertIn('differs',job['error']);capture.assert_not_called()

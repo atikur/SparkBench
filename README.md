@@ -57,6 +57,7 @@ token count saved to disk with integrity hashes.
 | **Build guide** (text + up to 3 photos) | idea, experience, parts on hand, a fixed component catalog, the capability contract | decision (planned / clarify / unsupported), goals, parts list, what is visible and what is uncertain in the photos, one next step | any authority over pass or fail |
 | **Intent planner** (text) | the instruction and the capability contract | ready steps, one clarification question, or unsupported | the expected answer and the test oracle |
 | **OLED reader** (vision) | one cropped OLED frame | `{readable, text}` | the expected label |
+| **Frame checker** (vision) | the calibrated view and the current camera frame, only when the camera check is blocked | which parts are cut off, one fix for the person | any power to clear the check or touch a verdict |
 | **Evidence analyst** (vision + reasoning) | frozen expected steps, measured findings, up to three recorded frames | diagnosis, confidence, cited frames, one next check, what cannot be determined | the verifier's thresholds and pass logic; any power to change a verdict |
 | **Behavior generator** (CLI) | a structured spec and a measured pin mapping | a bounded plan | pins, timing and code outside the contract |
 
@@ -75,7 +76,7 @@ the model explains it from the recorded evidence, and the explanation is advisor
   model or touches hardware. Each hardware action (compile, install, camera test) is a separate
   explicit button.
 - **Agent**: after one approval it runs those same jobs in order on a live timeline, skips what
-  the saved records already prove, checks the camera position before flashing, reads a non-pass
+  the saved records already prove, confirms every part is in frame and the OLED is readable before running, waits for you to fix it if not, reads a non-pass
   result with Muse Spark and decides the next step: check the wiring or stop on unknown readings. It never
   changes wiring, mappings or limits, and it stops wherever a person is needed.
 - **Firmware**: a fixed runtime on a classic ESP32 reads a generated data table. Serial protocol
@@ -129,7 +130,7 @@ Guides: [dashboard](docs/dashboard.md),
 [building a project](docs/build-guide.md), [intent planning](docs/intent-planning.md),
 [software pipeline and trust boundary](docs/software-pipeline.md), [live validation](docs/live-validation.md).
 
-Host tests (235, no hardware, no network):
+Host tests (240, no hardware, no network):
 
 ```bash
 .venv/bin/python -m unittest discover -s tests -v
@@ -160,7 +161,7 @@ quoted above are summarised in [docs/live-validation.md](docs/live-validation.md
 | `src/sparkbench/` | CLI, Meta clients (`meta.py`, `intent.py`, `guide.py`, `diagnosis.py`, `generation.py`), verifier, build and install, camera and servo tooling |
 | `src/sparkbench/dashboard/` | local server, project and job state, static UI |
 | `firmware/` | PlatformIO projects: the LED/OLED runtime and the bring-up diagnostics |
-| `tests/` | 235 host tests plus native C++ and Swift simulation tests |
+| `tests/` | 240 host tests plus native C++ and Swift simulation tests |
 | `tools/` | macOS camera, vision and tracker helpers, bootstrap and packaging scripts |
 | `hardware/` | board, camera and calibration records, wiring diagrams |
 | `docs/` | guides, contest audit, and the full [project history](docs/history.md) |
