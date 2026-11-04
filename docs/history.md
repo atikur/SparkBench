@@ -13,7 +13,7 @@ Compiled applications have source/binary downloads and a source viewer.
 The desk-status project has now been compiled and installed through the dashboard;
 flash bytes and its idle UART identity are confirmed. Project status and job logs
 show each stage separately. This compiled version has not yet had a camera test.
-[Installation evidence](../runs/software/project-installation-2026-11-03-v1/report.md).
+Installation evidence (local run record `runs/software/project-installation-2026-11-03-v1/report.md`).
 [Build-guide walkthrough](build-guide.md). First release supports the known
 ESP32 LED/OLED kit; photo advice remains distinct from measured test evidence.
 
@@ -33,7 +33,7 @@ refresh the reference before retesting. Servo angles remain unmeasured.
 held-out frames after a predetermined within-session startup reference. Image
 heading repeatability is 0.5°, with mechanical angles still unknown. A reference
 from a different camera session remains unqualified; global defaults were not
-promoted. All 155 host tests pass. See the [tracking report](../runs/servo-reference/current-view-exposure-2026-11-03-v2/report.md)
+promoted. All 155 host tests pass. See the tracking report (local run record `runs/servo-reference/current-view-exposure-2026-11-03-v2/report.md`)
 and [recorded demonstration guide](demo.md). Earlier tracking/view notes
 below are historical and do not establish current calibration.
 
@@ -49,7 +49,7 @@ Latest-view full LED/OLED verification passes45samples with MetaContributoronly,
 0mismatches/unknowns, frozen before fresh capture. A prior clipped-crop run remains
 incomplete. Servo supply stays off; this runtime never drives GPIO27. Physical
 protractor/ruler are still awaited for actual servo angles and full Behavior A/B.
-[Current report](../runs/live/led-oled-resume-2026-11-03-v1/report.md).
+Current report (local run record `runs/live/led-oled-resume-2026-11-03-v1/report.md`).
 
 **Earlier 3 November: independent full-rig software preparation is complete.** A separate
 candidate path now supports measured servo calibration, bounded full-rig firmware,
@@ -72,53 +72,53 @@ Latest grid-corner reference: one fresh60-second static capture localizes
 Old wood references on the same frames localize259/261, also no losses; fresh
 gain is modest. Grid corners are now the current default; all limits unchanged.
 No movement/firmware/Meta calls; horn tilt and actual angles remain unverified.
-[Comparison report](../runs/servo-reference/grid-corner-tracker-2026-11-03-v1/report.md).
+Comparison report (local run record `runs/servo-reference/grid-corner-tracker-2026-11-03-v1/report.md`).
 
 Earlier mounted-grid view: refreshed tracker localizes37/42fresh frames,29preview-ready,
 with one loss/recovery and final state tracking. Prior0/49changed-reference failure
 is preserved. Same limits and patch sizes; no motion/firmware/Meta calls. Possible
 horn tilt and actual angles remain unverified. Current passive default selects
 this view; last121tests passed, no source change in this update.
-[Refresh report](../runs/servo-reference/mounted-grid-tracker-2026-11-03-v2/report.md).
+Refresh report (local run record `runs/servo-reference/mounted-grid-tracker-2026-11-03-v2/report.md`).
 
 Earlier offline replay: refreshed pre-command reference and optional larger
 background windows localize116/131 saved frames, including20/20samples in the
 four post-command windows.15unknowns remain; original0/131 trial is preserved.
 This is retrospective development, not independent verification or calibrated
 angles. All120hosttests pass; no new capture/movement/firmware or Meta call.
-[Replay report](../runs/servo-motion/guarded-replay-2026-11-02-v4/report.md).
+Replay report (local run record `runs/servo-motion/guarded-replay-2026-11-02-v4/report.md`).
 
 Earlier guarded trial: one explicitly authorized fixed sequence completed with
 UART STOP acknowledgement and131camera frames. Agent sees horn movement/return,
 but frozen automatic tracking localizes0/131, rejecting all3pre-start frames.
 Angles and full Behavior A/B remain incomplete. User reports servo power now off;
 diagnostic remains installed, no further movement authorized.
-[Trial report](../runs/servo-motion/guarded-fixed-2026-11-02-v1/report.md).
+Trial report (local run record `runs/servo-motion/guarded-fixed-2026-11-02-v1/report.md`).
 
 Current firmware: the separately authorized guarded servo diagnostic is now
 installed and flash-verified. Exact idle/PWM-off/available identity and increasing
 heartbeats verified via UART; initial idle verification used only `ID`; the subsequent one-shot trial is recorded above.
 Keep the external servo supply unplugged until a separately authorized test.
 The working LED/OLED restoration application is saved.
-[Installation report](../runs/firmware/servo-guarded-installed-2026-11-02-v1/report.md).
+Installation report (local run record `runs/firmware/servo-guarded-installed-2026-11-02-v1/report.md`).
 
 Earlier60-second fixed-stand capture: **270/271 localized**, one startup unknown,
 266preview-ready, no tracking losses after readiness; ended tracking. Same frozen
 reference/settings as the short check, no tuning afterward. This qualifies only
 the recorded static view; angles and powered mounting remain unverified. No
-servo movement or firmware changes. [Report](../runs/servo-tracking/taped-fixed-long-2026-11-02-v1/report.md).
+servo movement or firmware changes. Report (local run record `runs/servo-tracking/taped-fixed-long-2026-11-02-v1/report.md`).
 
 Earlier fixed-stand check: after the user secured the phone stand, a new tabletop
 reference localizes51/53 fresh frames,2startupunknown,48preview-ready and no
 loss after readiness. Center Stage/Portrait are inactive in all saved samples;
 read-only diagnostics are recorded per frame. All107 host tests pass. This is
 a short unpowered static check; actual angles and powered mounting remain
-unverified. [Current report](../runs/servo-reference/taped-fixed-2026-11-02-v1/report.md).
+unverified. Current report (local run record `runs/servo-reference/taped-fixed-2026-11-02-v1/report.md`).
 
 Earlier follow-up: a revised background patch improves saved-data localization,
 but a fresh53-frame capture rejects with both old and new references after the
 scene changes. Current-view registration remains incomplete; keep servo power
-off. See [diagnosis](../runs/servo-reference/taped-registration-2026-11-02-v1/report.md).
+off. See diagnosis (local run record `runs/servo-reference/taped-registration-2026-11-02-v1/report.md`).
 
 Earlier update (2 November): the servo is attached to its plate and temporarily
 taped at the table edge; stability is user-reported while unpowered. Current
