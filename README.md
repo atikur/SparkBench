@@ -54,7 +54,7 @@ zero unknowns. See the [setup records](docs/camera-setup.md#recorded-live-sessio
 ## Meta Model API
 
 The runtime calls `muse-spark-1.3-contributor` and validates structured responses. Guided
-camera setup also uses `sam-3.1` through the Meta API for region proposals. Planning,
+camera setup also uses `sam-3.1` through the Meta API for region proposals, and spoken ideas use `muse-voice-transcribe-1.0`. Planning,
 framing advice and diagnosis use separate bounded requests. A camera test can make multiple
 OLED requests, each for one eligible crop.
 
@@ -65,6 +65,7 @@ OLED requests, each for one eligible crop.
 | **OLED reader** | A single display crop produces a readable flag and text. The request omits the expected label. |
 | **Frame checker** | A blocked camera view can produce placement advice for the operator. The local check decides whether the view is usable. |
 | **SAM region proposer** | A fresh setup photo and selected lens points produce component regions for confirmation. A separate capture checks the resulting reference; SAM does not decide behavior pass/fail. |
+| **Voice transcriber** (`muse-voice-transcribe-1.0`) | A spoken idea of up to 30 seconds becomes editable text in the idea box. The audio is never stored; the request record is. Nothing is planned until the person reviews the text. |
 | **Evidence analyst** | The approved steps, measurements and up to three saved frames produce an advisory explanation, cited frames and one next check. Local code validates the citations. |
 | **Mapping repair analyst** | The fixed probe's camera measurements and current firmware assumption produce a proposed GPIO25/26 mapping and cited evidence. Local inference must agree; installation requires approval. Live validation of this new role is pending. |
 

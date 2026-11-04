@@ -124,7 +124,7 @@
  }
 
  if (navigator.mediaDevices?.getUserMedia && window.AudioContext && window.AudioWorkletNode) {
-  button.hidden = $('idea-voice-help').hidden = false;
+  button.hidden = false;
   button.addEventListener('click', () => {
    if (!current) return record();
    if (current.samples) return transcribe(current);

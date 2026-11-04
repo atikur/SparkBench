@@ -34,8 +34,9 @@ suite.
 
 ## Describe your use of Meta products to build the submitted project
 
-SparkBench uses two Meta models through the Meta Model API: Muse Spark
-(`muse-spark-1.3-contributor`) in six roles, and SAM 3.1 for camera setup. Every Muse Spark
+SparkBench uses three Meta products through the Meta Model API: Muse Spark
+(`muse-spark-1.3-contributor`) in six roles, SAM 3.1 for camera setup, and Muse Voice
+(`muse-voice-transcribe-1.0`) for spoken ideas. Every Muse Spark
 call returns strict JSON through JSON Schema, one bounded request per action with no retries, and
 the workstation records each request, response, latency and token count with integrity hashes.
 The evidence bundle in the repository includes selected records.
@@ -61,6 +62,8 @@ In order of weight in the proof:
 7. **SAM 3.1 region proposer.** During camera setup, proposes the screen and lens regions from a
    fresh capture. A separate capture validates the resulting reference with the frozen thresholds.
    SAM never takes part in a verdict.
+8. **Muse Voice transcriber.** Turns a spoken idea of up to 30 seconds into editable text in the
+   idea box. The audio is never stored, and nothing is planned until the person has reviewed the text.
 
 The local runtime validates every plan, renders the firmware, controls the bench and computes the
 verdict. The models plan, perceive, interpret and propose; they never grade their own work.

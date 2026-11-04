@@ -4,6 +4,7 @@ import json
 import mimetypes
 import re
 import secrets
+import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -178,7 +179,7 @@ class Handler(BaseHTTPRequestHandler):
                 audio = self.rfile.read(length)
                 if len(audio) != length:
                     raise ValueError("The audio upload was incomplete.")
-                self.json(200, transcribe_idea(audio));return
+                self.json(200, transcribe_idea(audio, output=self.server.store.root/'runs/voice'/uuid.uuid4().hex));return
             maximum = 16384
             if project_action and project_action[2] == 'ask':
                 maximum = 25_000_000
