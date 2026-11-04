@@ -238,10 +238,21 @@ function renderFlowNow(){flowQueued=false;if(typeof lifecycleSnapshot==='undefin
  $('flow-back').hidden=!(state==='plan'&&flowOverride==='plan'&&currentTest());renderProjectProgress(state);renderStatus();}
 // A timer, not requestAnimationFrame: the page must keep up while its tab is in the background.
 window.renderFlow=function(){if(flowQueued)return;flowQueued=true;setTimeout(renderFlowNow,0);};
-// The progress panel stays in view: the full panel at the top of the page, one compact row once the page scrolls past it,
-// so the overall picture and the current task are visible beside the plan, the run or the result.
-{const panel=$('progress-panel'),sentinel=document.createElement('div');sentinel.className='progress-sentinel';panel.parentNode.insertBefore(sentinel,panel);
- let compact=false;const update=()=>{if(panel.hidden){if(compact){compact=false;panel.classList.remove('compact');}return;}const top=sentinel.getBoundingClientRect().top;const next=compact?top<0:top<-12;if(next!==compact){compact=next;panel.classList.toggle('compact',compact);}};
+// The progress panel stays in view: the full panel in its place at the top of the page, and once that has scrolled out of
+// view, the same panel as one compact row fixed over the top of the window, so the overall picture and the current task
+// are visible beside the plan, the run or the result. A spacer holds the panel's place in the layout while the panel is
+// fixed, so the page keeps its length and nothing under the pointer jumps or clamps the scroll position.
+{const panel=$('progress-panel'),sentinel=document.createElement('div'),spacer=document.createElement('div');sentinel.className='progress-sentinel';spacer.className='progress-spacer';
+ panel.parentNode.insertBefore(sentinel,panel);panel.parentNode.insertBefore(spacer,panel.nextSibling);
+ let compact=false,fullSpan=0;
+ // The distance from the sentinel to the content after the panel: the panel's full margin box, whatever its margins are.
+ const span=()=>{let next=spacer.nextElementSibling;while(next&&next.hidden)next=next.nextElementSibling;return next?next.getBoundingClientRect().top-sentinel.getBoundingClientRect().top:panel.getBoundingClientRect().height;};
+ const place=()=>{const spare=Math.max(0,Math.round(fullSpan-(span()-spacer.offsetHeight)))+'px';if(spacer.style.height!==spare)spacer.style.height=spare;
+  const column=spacer.getBoundingClientRect();panel.style.left=(column.left-8)+'px';panel.style.width=(column.width+16)+'px';};
+ const apply=next=>{compact=next;if(compact){fullSpan=span();panel.classList.add('compact');place();}else{panel.classList.remove('compact');spacer.style.height='';panel.style.left='';panel.style.width='';}};
+ const update=()=>{if(panel.hidden){if(compact)apply(false);return;}
+  const next=compact?spacer.getBoundingClientRect().bottom<0:panel.getBoundingClientRect().bottom<-12;
+  if(next!==compact)apply(next);else if(compact)place();};
  window.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);new MutationObserver(update).observe(panel,{attributes:true,attributeFilter:['hidden']});window.progressPanelUpdate=update;}
 window.resetFlow=function(){flowPick=null;flowOverride=null;flowHold=null;flowRun=null;flowRunId=null;flowStep=null;flowLastState=null;window.closeCameraRegions?.();window.resetMappingRepair?.();window.renderFlow();};
 window.flowRunStarted=function(){window.closeCameraRegions?.();flowPick=null;window.flowFailedRun=null;flowPeak=0;$('autopilot-error').hidden=true;flowOverride=null;flowHold=null;flowRunId=null;window.renderFlow();};

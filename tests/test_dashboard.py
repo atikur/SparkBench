@@ -134,6 +134,15 @@ class HTTPTests(unittest.TestCase):
         for method in ['POST','PUT','DELETE','PATCH','OPTIONS']:
             self.assertEqual(self.request('/api/run',method)[0],405)
         self.assertIn("frame-ancestors 'none'",headers['Content-Security-Policy'])
+    def test_csp_allows_the_stylesheet_hosts_the_page_uses(self):
+        import re
+        html=self.request('/')[1].decode()
+        csp=self.request('/')[2]['Content-Security-Policy']
+        style_src=next(part for part in csp.split(';') if part.strip().startswith('style-src'))
+        for host in set(re.findall(r'<link rel="stylesheet" href="(https://[^/"]+)',html)):
+            self.assertIn(host,style_src,'the page links a stylesheet the CSP blocks: '+host)
+        if 'fonts.googleapis.com' in style_src:
+            self.assertIn('https://fonts.gstatic.com',csp,'Google Fonts stylesheets load fonts from fonts.gstatic.com')
     def test_origin_host_and_path_restrictions(self):
         self.assertEqual(self.request('/api/runs',headers={'Origin':'https://outside.invalid'})[0],403)
         self.assertEqual(self.request('/api/runs',headers={'Host':'outside.invalid'})[0],403)

@@ -875,9 +875,8 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 }
 
 /* Progress panel: pinned, and compact once the page scrolls past its full form. */
-.progress-sentinel { height: 0; }
-.progress-panel { position: sticky; top: 0; z-index: 5; }
-.progress-panel.compact { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px 20px; padding: 8px 14px; margin: 0 -8px; border-radius: 0 0 10px 10px; box-shadow: 0 10px 24px rgba(28, 26, 23, .12); }
+.progress-sentinel, .progress-spacer { height: 0; }
+.progress-panel.compact { position: fixed; top: 0; z-index: 5; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px 20px; padding: 8px 14px; margin: 0; border-radius: 0 0 10px 10px; box-shadow: 0 10px 24px rgba(28, 26, 23, .12); }
 .progress-panel.compact .progress-heading, .progress-panel.compact #activity-note, .progress-panel.compact #activity-recent, .progress-panel.compact .activity-context { display: none; }
 .progress-panel.compact #project-progress { display: flex; gap: 6px; margin: 0; }
 .progress-panel.compact #project-progress li { padding: 5px 9px 5px 5px; gap: 6px; border-radius: 999px; font-size: 12px; }
