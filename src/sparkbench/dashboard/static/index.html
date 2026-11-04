@@ -137,6 +137,14 @@
   <section class="card stage-card meta-card" id="plan-stage" hidden>
     <div class="stage-head"><h2>Plan</h2><button id="flow-back" class="link-button" type="button" hidden>← Back to the result</button><span id="proposal-status" class="pill"></span><span id="proposal-usage" class="meta-chip">Muse Spark</span></div>
     <p id="lifecycle-next" class="next-line"></p>
+    <div id="plan-activity" class="plan-activity" hidden>
+      <ol id="plan-activity-list" class="phases">
+        <li data-step="brief"><span class="phase-dot"></span><div><strong>Reading the idea and drafting the brief</strong><span class="help"></span></div></li>
+        <li data-step="steps"><span class="phase-dot"></span><div><strong>Writing the steps as strict JSON</strong><span class="help"></span></div></li>
+        <li data-step="check"><span class="phase-dot"></span><div><strong>Checking the steps against the bench limits</strong><span class="help"></span></div></li>
+      </ol>
+      <p class="help"><span id="plan-activity-elapsed"></span></p>
+    </div>
     <p id="guide-summary" class="copy muted"></p>
     <ul id="guide-goals" class="goals"></ul>
     <div id="guide-questions" class="question-box" hidden></div>
@@ -152,15 +160,13 @@
       <p id="proposal-validation" class="help"></p>
           </div>
     <p id="planner-error" class="error-line" role="alert" hidden></p>
-        <form id="plan-edit-form" hidden>
-      <label for="plan-edit">What should change?</label>
-      <textarea id="plan-edit" rows="2" maxlength="3000" required placeholder="For example: say GO instead of START, or use green while counting and red at the end."></textarea>
-      <div class="actions wrap"><button class="primary-button" type="submit">Update the plan</button><button id="plan-edit-cancel" class="button" type="button">Cancel</button></div>
-    </form>
-    <div class="actions wrap">
-      <button id="plan-camera-regions" type="button" hidden>Set up camera regions</button>
+    <div class="actions wrap plan-actions">
       <button id="approve-run" class="primary-button" type="button" hidden>Approve plan and run on the bench →</button>
-      <button id="plan-edit-open" class="button" type="button" hidden>Change something</button>
+      <form id="plan-edit-form" class="plan-adjust" hidden>
+        <label for="plan-edit" class="sr-only">What should change?</label>
+        <input id="plan-edit" maxlength="3000" required placeholder="Say GO instead of START, or green while counting…">
+        <button class="button" type="submit">Adjust plan</button>
+      </form>
       <button id="accept-brief" class="primary-button" type="button" hidden>Accept and plan the steps →</button>
       <button id="project-firmware" class="button" type="button" hidden>Plan the steps →</button>
                       </div>
@@ -280,6 +286,7 @@
     <p id="execution-error" class="error-line" role="alert" hidden></p>
     <details class="quiet" id="manual-controls">
       <summary>Manual controls, devices and logs</summary>
+      <div class="actions wrap"><button id="plan-camera-regions" class="button" type="button" hidden>Set up camera regions by hand</button><span class="help">The agent sets the camera up by itself when the view is blocked; this opens the editor for a tested view you want to redo.</span></div>
       <section id="execution-panel" hidden aria-label="Bench controls">
         <ol class="checklist">
           <li id="row-compile" data-state="current"><span class="dot" aria-hidden="true"></span><div class="row-body"><strong>Compile</strong><span id="row-compile-note" class="help"></span></div><div class="row-actions"><button id="compile-proposal" class="button" type="button">Compile</button></div></li>

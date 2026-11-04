@@ -895,3 +895,16 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 .progress-panel.compact .activity-copy { display: flex; align-items: center; gap: 4px 10px; flex-wrap: wrap; }
 .progress-panel.compact .activity-copy h2 { margin: 0; font-size: 15px; }
 @media (max-width: 760px) { .progress-panel.compact { grid-template-columns: minmax(0, 1fr); } .progress-panel.compact #project-progress li:not([data-state="current"]) { padding-right: 5px; } }
+.plan-actions { align-items: center; }
+.plan-adjust { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.plan-adjust input { width: min(380px, 50vw); }
+.plan-adjust[hidden] { display: none; }
+.plan-activity { display: grid; gap: 10px; margin: 4px 0 14px; padding: 14px 16px; border-radius: 6px; background: var(--soft); border-left: 3px solid var(--accent); }
+.plan-activity .phases { gap: 8px; }
+.plan-activity .phases li strong { font-size: 13.5px; }
+.plan-activity .phases li[data-state="running"] strong { color: var(--accent); }
+.plan-activity > .help { margin: 0; font-variant-numeric: tabular-nums; }
+.plan-activity > .help:empty { display: none; }
+@media (max-width: 760px) { .plan-adjust { margin-left: 0; width: 100%; } .plan-adjust input { width: 100%; } }
+.plan-adjust button { white-space: nowrap; }
+.plan-adjust input { width: min(320px, 40vw); }

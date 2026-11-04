@@ -66,7 +66,7 @@ function updateProjectActionsCore(){const draft=project?.draft,accepted=project?
  const cameraSaved=planReady&&(window.cameraSetupSavedPlans?.has(proposalResult.id)||(typeof executionJobs!=='undefined'&&executionJobs.some(j=>j.proposal_id===proposalResult.id&&j.action==='camera_setup'&&j.status==='setup_ready')));
  $('plan-camera-status').hidden=!cameraSaved;
  const setupLocked=planReady&&(proposalResult.origin==='mapping_repair'||(typeof executionJobs!=='undefined'&&executionJobs.some(j=>j.proposal_id===proposalResult.id&&j.action==='test')));
- $('plan-edit-open').hidden=!planReady||busy||!$('plan-edit-form').hidden||!!(typeof autopilot!=='undefined'&&autopilot);if(busy)$('plan-edit-form').hidden=true;
+ $('plan-edit-form').hidden=!planReady||busy||!!(typeof autopilot!=='undefined'&&autopilot)||!!(typeof activeExecution!=='undefined'&&activeExecution);
  $('plan-camera-regions').hidden=!planReady||busy||setupLocked||!!(typeof autopilot!=='undefined'&&autopilot)||!!(typeof activeExecution!=='undefined'&&activeExecution);
  $('approve-run').hidden=!planReady||busy||!!(typeof activeExecution!=='undefined'&&activeExecution)||!!(typeof autopilot!=='undefined'&&autopilot);$('approve-run').textContent=planReady&&proposalResult.review_status==='reviewed'?'Run on the bench →':'Approve plan and run on the bench →';
  $('project-firmware').hidden=canAccept||!accepted||planReady;$('project-firmware').disabled=busy;$('project-firmware').textContent=hasPlan?'Replan the steps':'Plan the steps →';$('project-firmware').className=hasPlan?'link-button':'primary-button';
@@ -78,7 +78,20 @@ function updateProjectActionsCore(){const draft=project?.draft,accepted=project?
  else if(unresolved)$('lifecycle-next').textContent=draft.decision==='clarify'?'Next: answer the question so Muse Spark can finish the brief.':'Next: change the idea so it fits the bench, then ask again below.';
  else if(canAccept)$('lifecycle-next').textContent='Next: accept the '+(changed?'revised ':'')+'brief and plan the firmware.';
  else if(!snap)$('lifecycle-next').textContent='';}
-function updateProjectActions(){updateProjectActionsCore();window.renderFlow?.();}
+// What Muse Spark is doing while a plan is made: the brief, the steps, the limits check, with timing and tokens as each lands.
+let planActivityStart=null,planActivityTimer=null;
+function planActivityDetail(latency,usage){return [typeof latency==='number'?latency.toFixed(1)+' s':null,typeof usage?.total_tokens==='number'?usage.total_tokens.toLocaleString()+' tokens':null].filter(Boolean).join(' · ');}
+function renderPlanActivity(){const box=$('plan-activity');if(!project){box.hidden=true;return;}
+ const latest=project.turns?.at(-1),briefBusy=!!project.busy||(planUpdating&&latest?.status!=='complete'),plan=typeof proposalResult!=='undefined'?proposalResult:null,stepsBusy=typeof plannerBusy!=='undefined'&&plannerBusy;
+ const ready=plan?.status==='ready'&&!stepsBusy,failed=plan&&!stepsBusy&&!['ready','queued','generating'].includes(plan.status);
+ const rows={brief:latest?.error||project.draft?.decision==='unsupported'?['stopped',latest?.error||'Outside the supported bench']:briefBusy?['running','']:latest?.status==='complete'?['done',planActivityDetail(latest.latency_seconds,latest.usage)+(project.draft?.decision==='clarify'?' · asked a question':'')]:['pending',''],
+  steps:briefBusy?['pending','']:stepsBusy?['running','']:ready||failed?[failed?'stopped':'done',failed?(plan.error||plan.status.replace('_',' ')):planActivityDetail(plan.latency_seconds,plan.usage)]:['pending',''],
+  check:briefBusy||stepsBusy?['pending','']:ready?['done',(plan.proposal?.steps?.length||0)+' steps within the bench limits']:failed?['stopped','No executable plan']:['pending','']};
+ const active=briefBusy||stepsBusy||planUpdating;box.hidden=!(active||failed);
+ for(const li of $('plan-activity-list').children){const [state,note]=rows[li.dataset.step];li.dataset.state=state;li.querySelector('.help').textContent=note;}
+ if(active){if(!planActivityStart)planActivityStart=Date.now();if(!planActivityTimer)planActivityTimer=setInterval(()=>{if(planActivityStart)$('plan-activity-elapsed').textContent='Muse Spark has been working for '+Math.round((Date.now()-planActivityStart)/1000)+' s';},1000);$('plan-activity-elapsed').textContent='Muse Spark has been working for '+Math.round((Date.now()-planActivityStart)/1000)+' s';}
+ else{planActivityStart=null;if(planActivityTimer){clearInterval(planActivityTimer);planActivityTimer=null;}$('plan-activity-elapsed').textContent=failed?'Nothing was retried. Adjust the idea and plan again.':'';}}
+function updateProjectActions(){updateProjectActionsCore();renderPlanActivity();window.renderFlow?.();}
 window.updateProjectActions=updateProjectActions;
 async function prepareFirmware(){if(!project?.accepted||project.busy)return;try{if(!await queueSave(()=>({})))return;const job=await planningPost('/api/projects/'+project.id+'/firmware',{accepted_sha256:project.accepted.sha256,request_id:uid()});plannerBusy=true;showPlanner();pollProposal(job.id,++pollVersion);const id=project.id,fresh=await api('/api/projects/'+id);if(project?.id===id){project=fresh;renderProject();}}catch(e){projectError(e.message);}}
 async function acceptAndPlan(){if(!project||project.busy)return;const latest=project.turns.findLast(t=>t.status==='complete');if(!latest)return;$('accept-brief').disabled=true;try{project=await planningPost('/api/projects/'+project.id+'/accept',{turn_id:latest.id});renderProject();await prepareFirmware();}catch(e){projectError(e.message);updateProjectActions();}}
@@ -114,15 +127,6 @@ const DEFAULT_REPLY='Yes, I have every listed part, assembled and wired as the k
 $('brief-defaults').addEventListener('click',()=>{if(!project||project.busy)return;autoPlanNext=true;sendGuide(DEFAULT_REPLY);});
 // "Change something": the change goes to Muse Spark as a brief revision, which is accepted and re-planned automatically.
 function requestPlanChange(text){if(!project||project.busy||!text)return Promise.resolve(false);autoPlanNext=true;return sendGuide('Please change the plan: '+text+' Keep everything else as it is, update the brief and the firmware intent, and return planned.');}
-$('plan-edit-open').addEventListener('click',()=>{
- $('plan-edit-form').hidden=false;
- $('plan-edit-open').hidden=true;
- $('plan-edit').focus();
-});
-$('plan-edit-cancel').addEventListener('click',()=>{
- $('plan-edit-form').hidden=true;
- updateProjectActions();
-});
 $('plan-edit-form').addEventListener('submit',async event=>{
  event.preventDefault();
  const field=$('plan-edit'), text=field.value.trim();

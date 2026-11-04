@@ -250,7 +250,7 @@ window.flowRunEnded=function(text,hold){flowHold=hold?text:null;window.renderFlo
 function startAgain(){flowHold=null;runBench();}
 $('result-again').addEventListener('click',startAgain);$('run-again').addEventListener('click',startAgain);
 $('run-to-plan').addEventListener('click',()=>{flowHold=null;flowOverride='plan';window.renderFlow();});
-$('result-change').addEventListener('click',()=>{flowOverride='plan';renderFlowNow();$('plan-edit-open').click();});
+$('result-change').addEventListener('click',()=>{flowOverride='plan';renderFlowNow();setTimeout(()=>$('plan-edit').focus(),50);});
 $('flow-back').addEventListener('click',()=>{flowOverride=null;$('plan-edit-form').hidden=true;window.renderFlow();window.updateProjectActions?.();});
 $('result-evidence').addEventListener('click',async()=>{if(!flowRun)return;await loadRuns();await selectRun(flowRun.id);});
 $('result-explain-run').addEventListener('click',async()=>{const run=flowRun;if(!run)return;$('result-explain-run').hidden=true;$('result-explain').hidden=false;renderExplanationBlock(run,null,true);try{const r=await explainRun(run);if(flowRun!==run)return;if(r.status==='explained')renderExplanationBlock(run,r);else{renderExplanationBlock(run);$('result-error').textContent=r.error||'No explanation came back. Nothing was retried.';$('result-error').hidden=false;}}catch(e){renderExplanationBlock(run);$('result-error').textContent=e.message;$('result-error').hidden=false;}});

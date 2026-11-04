@@ -51,7 +51,7 @@ Source report, frozen specification, camera metadata and frame index are checked
 
 A project page shows one state at a time, with one status at the top.
 
-- **Plan:** the idea and the steps, with the run button always in view. **Change something** sends a revision to Muse Spark.
+- **Plan:** the idea and the steps, with the run button always in view. **Adjust plan** sends a one-line change to Muse Spark.
 - **Running:** the camera frame, five phases (Ready, Installed, Recorded, Read by Muse Spark, Verdict), overall progress and one chip per plan step. During reading the picture follows the frame just read and shows what Muse Spark returned. This is display only, and the verifier still decides at the end.
 - **Result:** the verdict first. Each step's chip opens its frame with what the plan expected, what the camera measured and what Muse Spark read, with LED states drawn as dots. A failed or incomplete run shows the explanation or the next action in the same place. Earlier tests of the same build appear below the steps. A pass following a mismatch or incomplete result is labeled **passed on retest**. The results show what each attempt measured; they do not establish what the operator changed.
 
