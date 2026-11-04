@@ -22,7 +22,7 @@ observations with the approved plan.
 Verification covers sampled settled windows in the calibrated view. The submitted bench is the
 classic ESP32, two LEDs and an OLED. Muse Spark returns structured data, and a trusted renderer
 writes the firmware. The operator handles any physical changes. See the [recorded evidence](evidence/README.md)
-and [demo script](demo.md).
+and [demo video guide](demo.md).
 
 ## Submission checklist
 
@@ -31,11 +31,11 @@ in Dhaka. [Event schedule](https://dev.meta.ai/events/global-hackathon).
 
 - [ ] Select **Indie Developer** and **Push the Frontier**. List all human contributors.
 - [ ] Check the signed-in submission form for required fields and link visibility.
-- [ ] Record and upload the demo, then verify the link as a signed-out viewer.
+- [x] Record and upload the demo, then verify the link as a signed-out viewer: https://youtu.be/y6KSh-sNYX0
 - [ ] Make the repository public when ready and verify that the evidence link opens.
 - [ ] Paste the [form answers](submission.md), add the video link to the form and README, and review the permission field.
 - [ ] Include the dated [engineering log](history.md) to identify the work built during the event.
 - [ ] Complete any separate participant credit claim or optional prize entry that applies.
 
-For the demo, spend most of the time on the live fault and recovery. The [timed script](demo.md)
-is one take from a new project, with the wires swapped and that disclosed on screen.
+The demo spends most of its time on the live fault and recovery. The [demo video guide](demo.md)
+lists what each part shows and which recording it comes from, with the wire swap disclosed on screen.

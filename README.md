@@ -8,7 +8,7 @@ with the approved plan.
 Built for **Push the Frontier** at the Meta Global AI Developer Hackathon, 26 October to
 4 November 2026. SparkBench was built during the event with development assistance from Codex
 and Claude Code. [Event page](https://cerebralvalley.ai/e/meta-ai-developer-hackathon) ·
-[Engineering log](docs/history.md)
+[Demo video](https://youtu.be/y6KSh-sNYX0) · [Engineering log](docs/history.md)
 
 ## Built during the hackathon
 
@@ -16,7 +16,8 @@ Everything in this repository was built during the event's building period, 27 O
 4 November 2026: the dashboard and bench agent, the Muse Spark, SAM 3.1 and Muse Voice integrations,
 the ESP32 LED/OLED runtime, the camera verifier and the mapping repair workflow. It was built with
 development assistance from Codex and Claude Code. The dependencies are listed below under
-[License](#license).
+[License](#license). The [demo video](https://youtu.be/y6KSh-sNYX0) shows only this work, and the
+[demo video guide](docs/demo.md) names the recording each part comes from.
 
 This git history begins on 3 November, when the project moved into this repository. The work before
 that is recorded in the dated [engineering log](docs/history.md) and the
@@ -41,8 +42,8 @@ dates each recorded run.
 | ![Fault test. OLED reads READY and the red LED is lit.](docs/evidence/repair-fault.jpg) | ![Retest with the same wires. OLED reads READY and the green LED is lit.](docs/evidence/repair-pass.jpg) |
 
 The [recorded evidence bundle](docs/evidence/README.md) includes selected camera frames, source
-records and integrity hashes. The [demo script](docs/demo.md) keeps the recorded examples separate
-and gives a sequence for a joint bench recording. The final demo video link is pending.
+records and integrity hashes. The [demo video guide](docs/demo.md) lists what each part of the video
+shows and which recording it comes from. [Watch the demo video](https://youtu.be/y6KSh-sNYX0), 2 minutes 56 seconds.
 
 ## How it works
 
@@ -85,7 +86,7 @@ OLED requests, each for one eligible crop.
 | **SAM region proposer** | A fresh setup photo and selected lens points produce component regions for confirmation. A separate capture checks the resulting reference; SAM does not decide behavior pass/fail. |
 | **Voice transcriber** (`muse-voice-transcribe-1.0`) | A spoken idea of up to 30 seconds becomes editable text in the idea box. The audio is never stored; the request record is. Nothing is planned until the person reviews the text. |
 | **Evidence analyst** | The approved steps, measurements and up to three saved frames produce an advisory explanation, cited frames and one next check. Local code validates the citations. |
-| **Mapping repair analyst** | The fixed probe's camera measurements and current firmware assumption produce a proposed GPIO25/26 mapping and cited evidence. Local inference must agree; installation requires approval. Live validation of this new role is pending. |
+| **Mapping repair analyst** | The fixed probe's camera measurements and current firmware assumption produce a proposed GPIO25/26 mapping and cited evidence. Local inference must agree; installation requires approval. It ran on the real board on 4 November with a disclosed wire swap. |
 
 The model proposes bounded data. Local code validates the pin and step limits, renders a C++
 data table for the trusted runtime and runs the bench. The verifier measures LED pixels and
