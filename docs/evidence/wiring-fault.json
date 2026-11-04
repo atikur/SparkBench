@@ -1,0 +1,1015 @@
+{
+  "recorded_at": "2026-11-03T08:55:17Z",
+  "source_kind": "live_camera",
+  "scope": "LEDs only · sampled settled windows",
+  "acquisition_status": "captured",
+  "behavior_verdict": "fail",
+  "qualification_outcome": "fault_detected",
+  "geometry_rejected_sample_count": 0,
+  "frame_count": 103,
+  "evaluated_sample_count": 47,
+  "mismatch_count": 36,
+  "unknown_count": 0,
+  "finding_unit": "channel readings",
+  "oled_evaluated": false,
+  "full_behavior_verdict": "incomplete",
+  "model_activity": {
+    "model": null,
+    "role": "No model requests in this test"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "label": "DARK",
+      "samples": 9
+    },
+    {
+      "id": 2,
+      "label": "GREEN",
+      "samples": 9
+    },
+    {
+      "id": 3,
+      "label": "BOTH",
+      "samples": 10
+    },
+    {
+      "id": 4,
+      "label": "RED",
+      "samples": 9
+    },
+    {
+      "id": 5,
+      "label": "DARK END",
+      "samples": 10
+    }
+  ],
+  "failures": [
+    {
+      "step": 2,
+      "file": "frame-000022.jpg",
+      "channel": "red",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 2,
+      "file": "frame-000022.jpg",
+      "channel": "green",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 2,
+      "file": "frame-000023.jpg",
+      "channel": "red",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 2,
+      "file": "frame-000023.jpg",
+      "channel": "green",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 2,
+      "file": "frame-000024.jpg",
+      "channel": "red",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 2,
+      "file": "frame-000024.jpg",
+      "channel": "green",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 2,
+      "file": "frame-000025.jpg",
+      "channel": "red",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 2,
+      "file": "frame-000025.jpg",
+      "channel": "green",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 2,
+      "file": "frame-000026.jpg",
+      "channel": "red",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 2,
+      "file": "frame-000026.jpg",
+      "channel": "green",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 2,
+      "file": "frame-000027.jpg",
+      "channel": "red",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 2,
+      "file": "frame-000027.jpg",
+      "channel": "green",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 2,
+      "file": "frame-000028.jpg",
+      "channel": "red",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 2,
+      "file": "frame-000028.jpg",
+      "channel": "green",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 2,
+      "file": "frame-000029.jpg",
+      "channel": "red",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 2,
+      "file": "frame-000029.jpg",
+      "channel": "green",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 2,
+      "file": "frame-000030.jpg",
+      "channel": "red",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 2,
+      "file": "frame-000030.jpg",
+      "channel": "green",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000051.jpg",
+      "channel": "red",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000051.jpg",
+      "channel": "green",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 4,
+      "file": "frame-000052.jpg",
+      "channel": "red",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000052.jpg",
+      "channel": "green",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 4,
+      "file": "frame-000053.jpg",
+      "channel": "red",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000053.jpg",
+      "channel": "green",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 4,
+      "file": "frame-000054.jpg",
+      "channel": "red",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000054.jpg",
+      "channel": "green",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 4,
+      "file": "frame-000055.jpg",
+      "channel": "red",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000055.jpg",
+      "channel": "green",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 4,
+      "file": "frame-000056.jpg",
+      "channel": "red",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000056.jpg",
+      "channel": "green",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 4,
+      "file": "frame-000057.jpg",
+      "channel": "red",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000057.jpg",
+      "channel": "green",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 4,
+      "file": "frame-000058.jpg",
+      "channel": "red",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000058.jpg",
+      "channel": "green",
+      "expected": false,
+      "observed": true
+    },
+    {
+      "step": 4,
+      "file": "frame-000059.jpg",
+      "channel": "red",
+      "expected": true,
+      "observed": false
+    },
+    {
+      "step": 4,
+      "file": "frame-000059.jpg",
+      "channel": "green",
+      "expected": false,
+      "observed": true
+    }
+  ],
+  "unknowns": [],
+  "provenance": {
+    "report": "runs/live/led-oled-resume-2026-11-03-v1/physical-led-swap-negative-fresh-v2/result.json",
+    "specification": "runs/live/led-oled-resume-2026-11-03-v1/physical-led-swap-negative-fresh-v2/spec.snapshot.json",
+    "capture": "runs/live/led-oled-resume-2026-11-03-v1/physical-led-swap-negative-fresh-v2/capture",
+    "report_sha256": "5c259c75538cf55002e15af9e6336c0d1b16b0ca2d2e3e0e13c49fc038836ddd"
+  },
+  "measured_frames": [
+    {
+      "file": "frame-000008.jpg",
+      "offset_seconds": 1.479,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "6d8cbe4a81602e12cac4124fd727f28b2fd6259a3ac6d5c70dc8612a10ab0968"
+    },
+    {
+      "file": "frame-000009.jpg",
+      "offset_seconds": 1.679,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "52cf6f5e3ca055d5805912883ce3ea3372625c9d3abb10b17716306cab397b80"
+    },
+    {
+      "file": "frame-000010.jpg",
+      "offset_seconds": 1.879,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "3990386fe21247b1c8ae3475971be9b0937e9e20dd3c04c52f0ea33f4f0dec5a"
+    },
+    {
+      "file": "frame-000011.jpg",
+      "offset_seconds": 2.112,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "1f7a68fd675ee1d2524fd7699efb9a3ebfbc292ea932e4d6a7f848be162c7b88"
+    },
+    {
+      "file": "frame-000012.jpg",
+      "offset_seconds": 2.313,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "60d3ea82f936889ca43718badc87eabfa85aec52d8916b87758d832ceada16d4"
+    },
+    {
+      "file": "frame-000013.jpg",
+      "offset_seconds": 2.546,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "542cbe7087035489e5c3bda9058467070bd5e99082d81027d18eccdf19d0954b"
+    },
+    {
+      "file": "frame-000014.jpg",
+      "offset_seconds": 2.78,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "c87a6dc78cae783a5ab64c7822158640f0990f77b3403ae19c369d623fc82c1b"
+    },
+    {
+      "file": "frame-000015.jpg",
+      "offset_seconds": 3.113,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "473b352d9c6471eb01ac5e5e6b880714bbd348dd0d63f51513a7b8de1c279dab"
+    },
+    {
+      "file": "frame-000016.jpg",
+      "offset_seconds": 3.314,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "29ddd20d3dfe661220f840d6881c175af07cc0fcc9c6a7bf65bb491f4487217b"
+    },
+    {
+      "file": "frame-000022.jpg",
+      "offset_seconds": 4.614,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "a9a55c4fea604b3af7dfafc9d614f6f63850df924dac7528e8070a28e3d0dd69"
+    },
+    {
+      "file": "frame-000023.jpg",
+      "offset_seconds": 4.881,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "17e4e03fe89363db34b2cfb9d42d79811d84095a1eb4d71c567cc6971b7751e1"
+    },
+    {
+      "file": "frame-000024.jpg",
+      "offset_seconds": 5.081,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "ce4ceea739181b20aec4bc1dd2b3a3974f03a112ea68443e9ee09ff185247f0b"
+    },
+    {
+      "file": "frame-000025.jpg",
+      "offset_seconds": 5.315,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "7c99838132e99a959f4069f67a454464cb0bcc667ff8eee5e22f4d7adc0f96a5"
+    },
+    {
+      "file": "frame-000026.jpg",
+      "offset_seconds": 5.515,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "6d9851eda34e9777b9adc54654b11dac9ecdec4369b7034de6e389d5ae1ebaa2"
+    },
+    {
+      "file": "frame-000027.jpg",
+      "offset_seconds": 5.748,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "bad1c6ef37e8624c0667f44dcbce80bee3ab9bdc7ac2fa8e28160d7da8ee6ef0"
+    },
+    {
+      "file": "frame-000028.jpg",
+      "offset_seconds": 5.948,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "2869bcf1c6cd1e89594905332912fa3f6d5c2ee77cecf0e7e5ba2c86c4a336cd"
+    },
+    {
+      "file": "frame-000029.jpg",
+      "offset_seconds": 6.148,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "a2b183e75f282357f6c8de4e60ebc3bf8ede952b25b6ac2ba60e85baaa2c1b0f"
+    },
+    {
+      "file": "frame-000030.jpg",
+      "offset_seconds": 6.382,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "043218356495afbbf4031f0c2bb0c7e67d7d4d59eb54b63db57adba1973c93ca"
+    },
+    {
+      "file": "frame-000036.jpg",
+      "offset_seconds": 7.683,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "e5da302097c9db813ab903baa8955e534c02419d8cf0ffa89e559c08bce5ebca"
+    },
+    {
+      "file": "frame-000037.jpg",
+      "offset_seconds": 7.916,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "a480d953f1da85d3e0ec7181cfd8dcf85cb3d994571a94dc1137d4a539846eb8"
+    },
+    {
+      "file": "frame-000038.jpg",
+      "offset_seconds": 8.116,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "b2d85fb7e2b75b7ada07ae5fcab86c697c678d32d0a505a4b008308ac4c57bc0"
+    },
+    {
+      "file": "frame-000039.jpg",
+      "offset_seconds": 8.316,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "f9ba8dd37bdb1c06311c6ec4c0fa2affd9054d45f3a9b996740b6d7c34c4b51a"
+    },
+    {
+      "file": "frame-000040.jpg",
+      "offset_seconds": 8.55,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "8b23131f4b1eb505ab78c22f8fa1d31cb6d46e93832c748d8fdb0243391a5f8d"
+    },
+    {
+      "file": "frame-000041.jpg",
+      "offset_seconds": 8.75,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "417ec6ef62723ed65216126f0ef87be5093ebe0ffb4ac7b701842a34cf864222"
+    },
+    {
+      "file": "frame-000042.jpg",
+      "offset_seconds": 8.95,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "fc7e58bf83daaf6c6b0fe9734d6ea81069b076d5331a10550a64235c76da8b68"
+    },
+    {
+      "file": "frame-000043.jpg",
+      "offset_seconds": 9.183,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "3eb69307844987cf93d29e7f52f847e1e3ed895d17fe18c9ce7256b84237b5cb"
+    },
+    {
+      "file": "frame-000044.jpg",
+      "offset_seconds": 9.383,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "c75f4e8b522947d33b32972064fb25c6f27462ebdab0b0689219331c80c3d2d7"
+    },
+    {
+      "file": "frame-000045.jpg",
+      "offset_seconds": 9.617,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true
+      },
+      "observed": {
+        "red": true,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "331759b38c9f0a838da6542b556cd51907281e935741ef4561cd7e6d28d1a5f6"
+    },
+    {
+      "file": "frame-000051.jpg",
+      "offset_seconds": 10.917,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "15974e3e34088817b5d05b6c7548371eee5ef4d9ceb9fe2623bd963a4d0d2f41"
+    },
+    {
+      "file": "frame-000052.jpg",
+      "offset_seconds": 11.117,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "2202f35c476ecfc94b80f8c85d5bb06210417bca22ff68b6eb459f8805127eaf"
+    },
+    {
+      "file": "frame-000053.jpg",
+      "offset_seconds": 11.351,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "7b5a6ddd7b44e3a4d6a814dcf65edd9b95b417031171e76c663abc245c6094ac"
+    },
+    {
+      "file": "frame-000054.jpg",
+      "offset_seconds": 11.551,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "b3d30e8193d11ce658fb422a99b8f0320471d012351adb9a889557c1bddb25b9"
+    },
+    {
+      "file": "frame-000055.jpg",
+      "offset_seconds": 11.751,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "1fdf318814baa09c23251779a6bcae8dc059dd0aa4940f9b4faba0e7ef083c41"
+    },
+    {
+      "file": "frame-000056.jpg",
+      "offset_seconds": 11.984,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "0bddaa04ad5d686feb78b28b3ac2104718dd1ea410bad62ddc62fb85685fa47d"
+    },
+    {
+      "file": "frame-000057.jpg",
+      "offset_seconds": 12.218,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "01a2a8fd6b194d321a081fa107460a28be58c180692ba77dbd07b5716130f27d"
+    },
+    {
+      "file": "frame-000058.jpg",
+      "offset_seconds": 12.451,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "4e5cadec39ed6a0873c8d1c6355634a6ec2f1935276c551125363cd5ec3d0ff9"
+    },
+    {
+      "file": "frame-000059.jpg",
+      "offset_seconds": 12.651,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": true
+      },
+      "geometry_supported": true,
+      "image_sha256": "5c5b08c4727f36470e0a7ec2f5764de25d15ad189ef4b961ddce5b5cacafef2c"
+    },
+    {
+      "file": "frame-000065.jpg",
+      "offset_seconds": 13.985,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "abc2fa7924a9358e4b19bf09a920884cbbac9fc4a2363a2fac5300ec72c3b651"
+    },
+    {
+      "file": "frame-000066.jpg",
+      "offset_seconds": 14.185,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "2401bb2602cc6bba8679b191f7b0c625b0a87baa5d2fe8902011683199a1c898"
+    },
+    {
+      "file": "frame-000067.jpg",
+      "offset_seconds": 14.385,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "d79ba6e35dde0c8c71d118602fe006b52302268800eacc1873b699cf6a08ae0d"
+    },
+    {
+      "file": "frame-000068.jpg",
+      "offset_seconds": 14.585,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "3ce0950d12ef9fb2ab6db25f1a86d1117984496575387c621dc09ffec6cfd77a"
+    },
+    {
+      "file": "frame-000069.jpg",
+      "offset_seconds": 14.819,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "3d981cdedb7c4a4c52a65181a3e32165b32292be878a5b0e44b5468bc3dd4aca"
+    },
+    {
+      "file": "frame-000070.jpg",
+      "offset_seconds": 15.019,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "e56fdb5aef62918a870abd60bc5c258c0350e2a484827f26de7fe4c615b9e187"
+    },
+    {
+      "file": "frame-000071.jpg",
+      "offset_seconds": 15.219,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "61fbc25084c3d25d3572e7644e40f32f40476449f60e5cc6e4f98712088bd639"
+    },
+    {
+      "file": "frame-000072.jpg",
+      "offset_seconds": 15.452,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "c882a13078885d13427eccbaf4af75a108c9e8ca894d035233e8ad1c0d3261a7"
+    },
+    {
+      "file": "frame-000073.jpg",
+      "offset_seconds": 15.685,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "441aa7d629d2bed9ffa1a4bbfa0d1fd41dd92ba2a718632f57194a309be8b7fe"
+    },
+    {
+      "file": "frame-000074.jpg",
+      "offset_seconds": 15.886,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false
+      },
+      "observed": {
+        "red": false,
+        "green": false
+      },
+      "geometry_supported": true,
+      "image_sha256": "97ac8decfcde133320c7dfdf68ff133eb6b9d27a0198a07f2e5525372ddb0d97"
+    }
+  ]
+}

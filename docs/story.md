@@ -1,137 +1,41 @@
-# SparkBench: the story, the scope, the claims
+# SparkBench submission story
 
-This is the single source of truth for the hackathon submission. If a screen, a sentence in the
-README, or an hour of work does not serve this story, it goes.
+SparkBench gives makers and students a way to check whether the behavior they asked for actually
+ran on a physical board. Describe the behavior in plain language, review the plan Muse Spark
+proposes, and approve a bench run. Trusted local code builds and installs the application. A
+fixed iPhone camera records the ESP32, two LEDs and OLED while the plan runs. Muse Spark reads
+the OLED crop without the expected label. Local code measures the LEDs and compares both
+observations with the approved plan.
 
-## The story in one breath
+## Claims and evidence
 
-AI can write firmware in seconds and say "done". Nobody checks whether the board actually did it.
-SparkBench makes the AI prove it. You describe what the board should do. Muse Spark turns it into a
-plan. Trusted code builds and installs it. An iPhone watches the board while it runs. Muse Spark
-reads the display without being told what to expect, and an independent verifier compares what
-happened with what was planned. When it fails, Muse Spark explains why from the evidence, you fix
-the bench, and the same run proves the fix. Unknowns stay unknown. **Proof beyond the build.**
+| Claim | Evidence to show |
+| --- | --- |
+| Muse Spark turns plain language into a bounded plan | Show the READY/BUSY/DONE step table. The planner also matched independently frozen expectations in eight benchmark cases. |
+| The verifier measured the hero project's behavior | The 4 November READY/BUSY/DONE run passed all 26 sampled observations, with zero mismatches and zero unknowns. |
+| The camera caught an intentional physical fault | In a separate 3 November wiring-swap capture, 36 wrong-channel findings appeared across 47 samples. That test measured the LEDs. |
+| Unreadable evidence stays incomplete | In a separate historical LED/OLED analysis, 45 of 48 OLED readings were unknown. |
+| Muse Spark can suggest a next check grounded in evidence | Show a saved explanation of a separate incomplete run and its cited frames. The explanation is advisory, and invalid citations are rejected. |
+| The agent supports a human fix and re-test | The dashboard can wait for an operator and re-test the same approved plan. A single hero-project fault, explanation, repair and passing re-test is still pending on hardware. |
 
-## Who it is for
+Verification covers sampled settled windows in the calibrated view. The submitted bench is the
+classic ESP32, two LEDs and an OLED. Muse Spark returns structured data, and a trusted renderer
+writes the firmware. The operator handles any physical changes. See the [recorded evidence](evidence/README.md)
+and [demo script](demo.md).
 
-Makers, students and educators who use AI to build small hardware and have no way to tell "it
-compiled" from "it works". The gap is real and growing: the easier AI makes firmware, the more
-boards get flashed with code nobody verified. SparkBench is the verification layer that closes it,
-with nothing more than a board, a phone and a Meta key.
+## Submission checklist
 
-## The loop, and where Meta works
+The official deadline is Wednesday 4 November at 9:00 PM ET, Thursday 5 November at 8:00 AM
+in Dhaka. [Event schedule](https://dev.meta.ai/events/global-hackathon).
 
-| Beat | What the judge sees | Meta's role |
-| --- | --- | --- |
-| 1. Describe | A sentence about a desk status light | Muse Spark clarifies it, picks parts from the kit, writes a brief |
-| 2. Plan | A step table: red, green, OLED label, 3 s each | Muse Spark turns the brief into at most 8 steps, or asks one question |
-| 3. Approve and run | One approval; the agent compiles, connects, installs and confirms identity, skipping what the records already prove | None. Trusted code only; Meta never writes C++ |
-| 4. Verify | The camera test passes: 45 samples, 0 mismatches, 0 unknown | Muse Spark reads each OLED frame blind |
-| 5. Catch | Two LED wires swapped on purpose; the verifier flags 36 mismatches | None. The verifier is deterministic |
-| 6. Explain | "Why?" Muse Spark reads the evidence and names the swap, with the frames it used | Muse Spark reasons over expected steps, measurements and images |
-| 7. Fix | The wires go back; "I fixed it, test again"; the same run checks the camera and passes | None. The agent waits for a person and never edits the plan |
+- [ ] Select **Indie Developer** and **Push the Frontier**. List all human contributors.
+- [ ] Check the signed-in submission form for required fields and link visibility.
+- [ ] Record and upload the demo, then verify the link as a signed-out viewer.
+- [ ] Make the repository public when ready and verify that the evidence link opens.
+- [ ] Paste the [form answers](submission.md), add the video link to the form and README, and review the permission field.
+- [ ] Include the dated [engineering log](history.md) to identify the work built during the event.
+- [ ] Complete any separate participant credit claim or optional prize entry that applies.
 
-Five distinct Meta roles in one loop, and three deliberate places where Meta is kept out. That contrast
-is the point: the model plans and perceives, trusted code acts, a person repairs, and nothing grades
-its own work.
-
-## What we claim
-
-- Meta Muse Spark plans supported embedded behaviours and reads the physical display.
-- An independent camera verifier checks what the hardware actually did, catches a real wiring
-  fault, and reports incomplete instead of pass when it cannot read the display.
-- When a run fails, Muse Spark explains the failure from the recorded evidence and proposes one next
-  check. The explanation is advisory and cannot change a verdict.
-- Every Meta request and every hardware action is an explicit button, audited to disk with hashes.
-
-## What we do not claim
-
-- No arbitrary firmware generation. Meta proposes data; a trusted renderer writes the C++.
-- No servo, no sensors, no other boards. One kit: ESP32, two LEDs, one OLED.
-- No continuous verification. Verdicts cover sampled settled windows in the recorded view.
-- No autonomous repair. The explanation proposes; a person acts and the same run re-checks. The
-  plan is never edited to match a fault.
-
-## Scope for the submission
-
-**Keep, as built:** Projects flow with one action per stage; Plan, build, verify page; Evidence
-with proof cards; the Limits dialog.
-
-**Add, in this order:**
-
-1. **Explain a failure with Muse Spark.** One button on a failed or incomplete run, on the run page
-   and in the Verify card. Meta receives the frozen expected steps, the per-sample measurements and
-   two or three frames, and returns a structured explanation with the evidence it cited, a
-   confidence, and one bounded next check. It never receives the verdict logic and cannot mark
-   anything passed. This closes the loop and is the strongest single answer to "went beyond a
-   basic integration".
-2. **A camera pass on the hero project.** Done: calibrate the phone position and run the test on the
-   installed READY/BUSY/DONE firmware so the project a judge opens first ends in a verified pass,
-   not "installed".
-3. **A fresh wiring-swap run on the hero project, if time allows,** so the caught fault and its
-   explanation belong to the same project the demo starts with.
-
-**Cut:** SAM 3.1 segmentation, servo calibration, full-rig acceptance, new peripherals, any planner
-benchmark expansion. All remain documented as future work.
-
-## Demo script, 3 minutes
-
-The rules allow three minutes, require that the video show only work built during the hackathon,
-and say judges must be able to tell what that is. All of SparkBench was built between 27 October
-and 4 November, so say it once at the start, keep it on screen, and label recorded footage.
-
-1. 0:00 Title card: "SparkBench. Built from scratch, 27 Oct – 4 Nov 2026." One line over the home
-   page: "AI builds it. Who checks it?"
-2. 0:15 On the home page, type the desk-light sentence into the box and press "Plan it with Muse
-   Spark". A panel opens: Muse Spark's brief, then the step table.
-3. 0:45 Press "Approve plan and run on the bench" in the panel. The project opens on the running
-   screen: the camera frame, five phases and one chip per plan step, filling in as the agent works.
-4. 1:10 The phone watches the board. Verdict: verified on camera, with the numbers and the frame.
-5. 1:40 Swap the two LED wires. Press "Run again". The result screen shows mismatch, with the failing steps marked.
-6. 2:05 The agent asks Muse Spark to explain; its explanation names the swap and gives one next check,
-   and the plan stays unchanged. Swap the wires back, press "I fixed it, test again", and the
-   same run re-tests and passes.
-7. 2:30 Evidence tab: pass, caught fault and an honest incomplete side by side. Limits dialog for
-   two seconds.
-8. 2:45 Closing card: what Meta does (plans, reads the display, explains) and what it never does
-   (write the firmware, grade itself). Tagline. Repository link.
-
-Record the dashboard at desktop width with the phone's view in a corner.
-
-## Submission checklist, from the participant guide
-
-Deadline: Wednesday 4 November, 9:00 PM ET (Thursday 5 November, 8:00 AM in Dhaka), on the
-Cerebral Valley platform. Late submissions are not considered.
-
-- [ ] **Problem statement:** Push the Frontier. Say it in the form and in the README (done).
-- [ ] **Track:** Indie Developer or Startups, one only. The Representative submits for the team.
-- [ ] **Repository public** before submitting. It is private now.
-- [ ] **Everyone who worked on the project listed** on the submission page.
-- [ ] **Three-minute video** at an accessible link, showing only hackathon-built work, opening with
-      the built-from-scratch card.
-- [ ] **New work only, clearly identified.** The README states it and `docs/history.md` is the
-      dated log. Repeat it in the form's description.
-- [ ] **Meta Model API use stated plainly:** `muse-spark-1.3-contributor` (Muse Spark series) for
-      the brief, the plan, the blind OLED read and the explanation; every request saved on disk.
-- [ ] **$150 Meta credits** claimed by each participant individually by the same deadline.
-- [ ] **Bonus prizes to tick:** Best Agentic Use-Case (the bench agent: one click runs compile,
-      install, identity and camera test, skips what the records already prove, reads a non-pass
-      result with Muse Spark and decides the next step, stopping wherever a person is needed); Community Vote (share the gallery
-      link after submitting); Most Viral (post the video on X and submit the post link).
-- [ ] **Do not claim:** Best Build on Meta Open Weight Models (we use the hosted API, not Muse
-      Glimmer or Muse Spark Open) and Best Creative Build (no Muse Image or Muse Wonder).
-
-Optional, only with hours to spare after everything above: route the Explain step through Muse
-Spark Open on Baseten (`meta-models/muse-spark-open-1026`, which accepts images) as a selectable
-provider, which would make the open-weight bonus eligible. It needs a Baseten key and about three
-hours, so it is not in the plan.
-
-## How the rubric reads this
-
-- **Impact 30%.** A concrete trust gap with a concrete user, solved with hardware people already
-  own. The honest incomplete state is the credibility that makes the pass believable.
-- **Use of Meta AI tooling 25%.** Four roles, including blind perception and evidence-grounded
-  reasoning, with every input and output on disk. Judges can see what the model saw.
-- **Demo 25%.** Six beats, each one screen, the last one a payoff.
-- **Technical depth 20%.** A trust boundary that keeps the model out of the actuation path, a
-  deterministic verifier, integrity-checked evidence, 250 tests. Say it once, show it in the Limits.
+For the demo, spend most of the time on the plan, its camera evidence, and one practical
+diagnosis. The [timed script](demo.md) has a recorded cut and a conditional sequence for the
+joint bench session.

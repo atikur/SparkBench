@@ -1,0 +1,224 @@
+{
+  "hero.json": {
+    "representation": "Selected recorded metadata and all evaluated frame observations",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/analysis/verification.json",
+        "sha256": "1a8cd2e65f62ff41a31e302225e88c1e4cde7ebd1920e95727b161c3add83fe0"
+      },
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/analysis/spec.snapshot.json",
+        "sha256": "7143d895ca0fc674877cdf7343a4aab6dba595558fdb75b183b2252ec00deb09"
+      },
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/capture/camera/capture.json",
+        "sha256": "a1a395f2e0cc4e064bcda4d3b550b56ff0c3f546a911cd11bdbff5cf5be0cd6b"
+      },
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/capture/camera/frames.jsonl",
+        "sha256": "1e40512d8a038b1ce29ace5095f1d1805d456b20c792b5e3c2123f5355de713c"
+      },
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/reader-policy.snapshot.json",
+        "sha256": "78d107f7c95baa2235642b072b72d3648263b8ed67ce15cbee13c946bec70ca1"
+      },
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/capture/run.json",
+        "sha256": "2bf288a0ce9ec649a6d0f5ec5ca038528894a12c7d460788ec5b410b7037fea6"
+      }
+    ]
+  },
+  "wiring-fault.json": {
+    "representation": "Selected recorded metadata and all evaluated frame observations",
+    "sources": [
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/physical-led-swap-negative-fresh-v2/result.json",
+        "sha256": "5c259c75538cf55002e15af9e6336c0d1b16b0ca2d2e3e0e13c49fc038836ddd"
+      },
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/physical-led-swap-negative-fresh-v2/spec.snapshot.json",
+        "sha256": "1601d7a68cdbc5437ba15a3e77203153617767a8407948a32ea3c05d9d01ad45"
+      },
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/physical-led-swap-negative-fresh-v2/capture/camera/capture.json",
+        "sha256": "1fc39e2af7133ccc27352f8b7d3289549de9657671acd6ef8b3ad07bc9fb89ea"
+      },
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/physical-led-swap-negative-fresh-v2/capture/camera/frames.jsonl",
+        "sha256": "f31036ca23d0cf97f650d49bc7b52c3cfb5bdb17ff3953900f6d69adb9b025b5"
+      }
+    ]
+  },
+  "incomplete.json": {
+    "representation": "Selected recorded metadata and all evaluated frame observations",
+    "sources": [
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/latest-view-oled-verification/analysis/verification.json",
+        "sha256": "9cbe31a50964e1849f95e0cc75ea295a183f06153017dacff2ad876ac04d54b3"
+      },
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/latest-view-oled-verification/analysis/spec.snapshot.json",
+        "sha256": "1601d7a68cdbc5437ba15a3e77203153617767a8407948a32ea3c05d9d01ad45"
+      },
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/restored-positive-control/capture/camera/capture.json",
+        "sha256": "c5c08c655675d44556fe163c89f6f737e5d3adeaecac0cac1a71c5101736836c"
+      },
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/restored-positive-control/capture/camera/frames.jsonl",
+        "sha256": "ab2a7945c3e94fe9b15772fdc902ea3ced18ee57bcc3c02846ede1df2f171f56"
+      },
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/latest-view-oled-verification/reader-policy.snapshot.json",
+        "sha256": "7e0fa50a9409af5717ad1923899186127fe6645abca542647bdf6fa40d17e5cd"
+      }
+    ]
+  },
+  "diagnosed-run.json": {
+    "representation": "Selected recorded metadata and all evaluated frame observations",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/77d52b8576bf4e529996ece8a808ab98/workflow/analysis/verification.json",
+        "sha256": "04f73e93f0bf14ec9e41417efdedd43223ab48480d07c7275dc02c93f71dded8"
+      },
+      {
+        "path": "runs/dashboard-execution/77d52b8576bf4e529996ece8a808ab98/workflow/analysis/spec.snapshot.json",
+        "sha256": "5e70d6d79665ed0abe5b6f3403f737fbc0bc15bbe64c224167f448ecc0e4010a"
+      },
+      {
+        "path": "runs/dashboard-execution/77d52b8576bf4e529996ece8a808ab98/workflow/capture/camera/capture.json",
+        "sha256": "210ba7c809ba8781c4b853be0e46945eff9292671e3ac6782dcab32bbd3a35fb"
+      },
+      {
+        "path": "runs/dashboard-execution/77d52b8576bf4e529996ece8a808ab98/workflow/capture/camera/frames.jsonl",
+        "sha256": "034c8280f848146eabf9a1671e936130bfed0aec03821d309eea392e9ee5308b"
+      },
+      {
+        "path": "runs/dashboard-execution/77d52b8576bf4e529996ece8a808ab98/workflow/reader-policy.snapshot.json",
+        "sha256": "3215866847e434fd4fd9edef5080c3906e02741c442d16cae566df28ddbda538"
+      }
+    ]
+  },
+  "hero-ready.jpg": {
+    "representation": "Original frame bytes",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/capture/camera/frame-000008.jpg",
+        "sha256": "440748d851627782693a1644ee213a32cdbf9a544612ee7acb53722c21bcd128"
+      }
+    ]
+  },
+  "hero-busy.jpg": {
+    "representation": "Original frame bytes",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/capture/camera/frame-000020.jpg",
+        "sha256": "e0b68f50c23a5e38e13e355925b6aa8a28083cb70ce814e262ab9d8c548bc0ce"
+      }
+    ]
+  },
+  "hero-done.jpg": {
+    "representation": "Original frame bytes",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/capture/camera/frame-000034.jpg",
+        "sha256": "348de054132a782ea3b966d143cec50a7f74d4a73bfae757385bdc3e89ad7260"
+      }
+    ]
+  },
+  "wiring-fault.png": {
+    "representation": "Original saved crop bytes",
+    "sources": [
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/physical-led-swap-negative-fresh-v2/pixels/crops/frame-000022-oled.png",
+        "sha256": "882393f9487781fc2a685a53f9afdbc8c3e134a425989df4e370827076dae3d4"
+      }
+    ]
+  },
+  "incomplete.png": {
+    "representation": "Original saved crop bytes",
+    "sources": [
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/latest-view-oled-verification/analysis/meta/frame-000008/image.png",
+        "sha256": "a218f57456d405e0768901d17e4e95c61cce7a7c9c6be73be0d03d6b3d606cec"
+      }
+    ]
+  },
+  "hero-reader-input.png": {
+    "representation": "Original saved crop bytes",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/analysis/meta/frame-000008/image.png",
+        "sha256": "0a0148088963c3a777a67eef75eb960be8ec5f65f5916723170e008e6b3c04d1"
+      }
+    ]
+  },
+  "hero-reader.json": {
+    "representation": "Request excerpt with local path omitted, reply excerpt and saved reading",
+    "sources": [
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/analysis/meta/frame-000008/request.json",
+        "sha256": "0c4afad38af616d52b35ee785da880c0e9bd162fa44ac69c34d3eb26ed80333f"
+      },
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/analysis/meta/frame-000008/response.json",
+        "sha256": "965b435bdab393531dcba5a2fbeb280cadaf02301fd91e6a6393edccb8a3e554"
+      },
+      {
+        "path": "runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/analysis/meta/frame-000008/reading.json",
+        "sha256": "34800c36e41fec4b5772cc12e649e16cf2526a113ca8bfab991c0c0beaf0b18a"
+      }
+    ]
+  },
+  "incomplete-reader.json": {
+    "representation": "Request excerpt with local path omitted, reply excerpt and saved reading",
+    "sources": [
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/latest-view-oled-verification/analysis/meta/frame-000008/request.json",
+        "sha256": "e7f012d224784b8b7f550d29c9943575f2fc4019126579481837178c0255c918"
+      },
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/latest-view-oled-verification/analysis/meta/frame-000008/response.json",
+        "sha256": "fbdfbd0a56f1b7bfd87fc77829b4711241241ae65c6bf3ee52677c95761a0f19"
+      },
+      {
+        "path": "runs/live/led-oled-resume-2026-11-03-v1/latest-view-oled-verification/analysis/meta/frame-000008/reading.json",
+        "sha256": "974ba54a2ada9c2e718b21e94d4bb61d312de1d922956e7ff90909ec56ac7feb"
+      }
+    ]
+  },
+  "diagnosis-accepted.json": {
+    "representation": "Selected prompt, request evidence and reply with recorded outcome",
+    "sources": [
+      {
+        "path": "runs/diagnosis/test-77d52b8576bf4e529996ece8a808ab98/54730242c17f4fa5ad69f56e465b8aaf/request.json",
+        "sha256": "17bbaf32ec75f2465995548edb8a8a0d852e08b04f818725b133672ebf4dd0b0"
+      },
+      {
+        "path": "runs/diagnosis/test-77d52b8576bf4e529996ece8a808ab98/54730242c17f4fa5ad69f56e465b8aaf/response.json",
+        "sha256": "1632c76fec02974c073ec9d8681f1b6eb768619a19137efaf73c389044ed7c59"
+      },
+      {
+        "path": "runs/diagnosis/test-77d52b8576bf4e529996ece8a808ab98/54730242c17f4fa5ad69f56e465b8aaf/result.json",
+        "sha256": "736f1924b2cae04357f81017be3edc4082538611b1e4da48dfb0858e2cb45956"
+      }
+    ]
+  },
+  "diagnosis-rejected.json": {
+    "representation": "Selected prompt, request evidence and reply with recorded outcome",
+    "sources": [
+      {
+        "path": "runs/diagnosis/test-77d52b8576bf4e529996ece8a808ab98/fec376e958c244dca129373c0c40fcb9/request.json",
+        "sha256": "d9fb10dbecf4836584d1ecbd0d2bfc5fb93269207dd0293c1e0bfa241659fc68"
+      },
+      {
+        "path": "runs/diagnosis/test-77d52b8576bf4e529996ece8a808ab98/fec376e958c244dca129373c0c40fcb9/response.json",
+        "sha256": "323e0240292b83b4c1466fb770c8323bc4371678571c6f3d74e25fa52dee1a54"
+      },
+      {
+        "path": "runs/diagnosis/test-77d52b8576bf4e529996ece8a808ab98/fec376e958c244dca129373c0c40fcb9/result.json",
+        "sha256": "e6859f5f4e4b8d193bf222f3bcc7df18648b54ecb47284b52c663709aa2c72b3"
+      }
+    ]
+  }
+}

@@ -28,7 +28,7 @@ A project page shows one state at a time, with one status at the top.
 
 - **Plan:** the idea and the steps, with the run button always in view. **Change something** sends a revision to Muse Spark.
 - **Running:** the camera frame, five phases (Ready, Installed, Recorded, Read by Muse Spark, Verdict), overall progress and one chip per plan step. During reading the picture follows the frame just read and shows what Muse Spark returned. This is display only, and the verifier still decides at the end.
-- **Result:** the verdict first. Each step's chip opens its frame with what the plan expected, what the camera measured and what Muse Spark read, with LED states drawn as dots. A failed or incomplete run shows the explanation or the next action in the same place. When the firmware has been tested more than once, a row of earlier tests sits under the steps, so a caught fault stays visible next to the pass that followed it, and a pass straight after a mismatch is marked as after a fix.
+- **Result:** the verdict first. Each step's chip opens its frame with what the plan expected, what the camera measured and what Muse Spark read, with LED states drawn as dots. A failed or incomplete run shows the explanation or the next action in the same place. Earlier tests of the same build appear below the steps. A pass following a mismatch or incomplete result is labeled **passed on retest**. The results show what each attempt measured; they do not establish what the operator changed.
 
 A project's status comes from the latest test of its current firmware. **Details** holds the run log, manual controls, firmware source, optional project details, the Muse Spark chat, and parts and wiring.
 
@@ -50,7 +50,7 @@ The firmware shows each step's text in the largest font that fits, so a lone dig
 
 On a reviewed plan, **Run on the bench** runs the same explicit jobs a person would click, in order: camera check, compile, install, identity check, camera test. It skips a step only when the saved records show it is done (a compiled build for this plan with the current runtime, an install record for that exact firmware, a confirmed identity). It never changes wiring, mappings or limits.
 
-When the test does not pass, the agent asks Muse Spark to explain the evidence, shows the diagnosis, the next check and the frame that shows the problem, and waits. **I fixed it, test again** continues the same run: the agent checks the camera again and records a new test. A pass after a fix is reported as such. The agent never edits the plan to match a fault, and each attempt is a separate saved test. **Stop** ends the run at any wait.
+When a test has usable non-pass evidence, the agent can ask Muse Spark to explain it, show the diagnosis, next check and a frame, then wait. **I fixed it, test again** or **I checked it, test again** continues the same dashboard session. The agent checks the camera again and records a separate test of the same plan. A successful continuation reports **Passed on retest**. **Stop** ends the run at any wait. If every frame was rejected for geometry, the agent directs the operator to restore framing without asking for a diagnosis.
 
 ## Explain a failed or incomplete run
 
@@ -58,7 +58,7 @@ A failed or incomplete run page has a **Why did this happen?** card. **Explain w
 
 The catalog is explicit in `src/sparkbench/dashboard/catalog.py`; the incomplete analysis intentionally references its original `restored-positive-control/capture` images. No current calibration/default file is substituted for a recorded run's frozen specification.
 
-The plan page is the [Meta intent planner](intent-planning.md). It opens from a project's **Open plan & bench →** button. Every plan belongs to a project: the planner receives the accepted brief's firmware intent, and changing that intent means revising the brief. Saved proposals and recorded evidence remain read-only to browse. **Prepare firmware plan** on a project makes a planning request; **Run camera test** makes separate Meta OLED-reading requests. The current servo angle and full-rig acceptance remain unmeasured/incomplete. Evidence-grounded failure diagnosis remains pending.
+The plan page is the [Meta intent planner](intent-planning.md). It opens from a project's **Open plan & bench →** button. Every plan belongs to a project: the planner receives the accepted brief's firmware intent, and changing that intent means revising the brief. Saved proposals and recorded evidence remain read-only to browse. **Prepare firmware plan** on a project makes a planning request; **Run camera test** makes separate Meta OLED-reading requests. The current servo angle and full-rig acceptance remain unmeasured/incomplete. Recorded Meta diagnoses cover incomplete runs; a complete physical wiring fault, diagnosis and retest in one dashboard session is still pending.
 
 ## Run a reviewed LED/OLED plan
 

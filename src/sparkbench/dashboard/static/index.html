@@ -38,7 +38,7 @@
   <div class="hero hero-grid">
     <div class="hero-copy">
       <h1 class="hero-title">Describe it. Meta plans it.<br><em class="hero-em">The camera proves it.</em></h1>
-      <p class="lead">A phone watches the real board. When something is wrong, Muse Spark says why, and the same run proves your fix.</p>
+      <p class="lead">A phone watches the real board. If the test doesn’t pass, Muse Spark can suggest what to check before you test again.</p>
       <form id="home-plan-form" class="home-plan">
         <label for="home-idea" class="sr-only">What should the board do?</label>
         <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
@@ -61,8 +61,8 @@
     <li class="meta"><span class="loop-n">2</span><strong>Plan</strong><span>Muse Spark writes up to 8 steps; you approve them</span></li>
     <li><span class="loop-n">3</span><strong>Run</strong><span>The agent builds, installs and tests, skipping what is already proven</span></li>
     <li class="meta"><span class="loop-n">4</span><strong>Prove</strong><span>The camera watches the board; Muse Spark reads the display blind</span></li>
-    <li class="meta"><span class="loop-n">5</span><strong>Explain</strong><span>When it fails, Muse Spark says why from the frames</span></li>
-    <li><span class="loop-n">6</span><strong>Fix</strong><span>You fix the bench; the same run re-tests and proves the fix</span></li>
+    <li class="meta"><span class="loop-n">5</span><strong>Explain</strong><span>Muse Spark can suggest what to check from the frames</span></li>
+    <li><span class="loop-n">6</span><strong>Retest</strong><span>Check the bench and run the same plan again</span></li>
   </ol>
   <p class="loop-legend help"><span class="loop-n meta-dot" aria-hidden="true"></span> are where Muse Spark works. The rest is trusted local code and the camera.</p>
 
@@ -170,7 +170,7 @@
         <div><strong id="test-unknowns"></strong><span>unknown</span></div>
       </div>
     </div>
-    <p id="result-after-fix" class="after-fix" hidden></p>
+    <p id="result-retest" class="retest-note" hidden></p>
     <div id="result-strip" class="step-strip" aria-label="Plan steps: choose one to see its frame"></div>
     <div id="result-history" class="result-history" aria-label="Tests of this firmware"></div>
     <div class="result-cols">

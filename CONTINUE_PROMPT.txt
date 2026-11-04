@@ -1,3 +1,32 @@
+SUBMISSION PREPARATION — 4 NOVEMBER 2026
+
+Current dashboard: READY/BUSY/DONE has passed real camera verification on the
+recorded build. Latest test 290be0bca1f94b7ca35e6e4b89476251: 26 sampled
+observations, 0 mismatches and 0 unknowns. Verification: runs/dashboard-execution/290be0bca1f94b7ca35e6e4b89476251/workflow/analysis/verification.json.
+Board record: LED/OLED-only app 33d02097736d05e49576e0f4aa0f1cb0a8e68df1da0ab704f7e3f29528b20265;
+build 35d4a8568de94872aed962e75c035887, install ba8a0059b21148aeae8060ef60854d65.
+UART identity and the camera verdict are distinct. GPIO27 stays unused.
+
+The separate November 3 wiring-swap run found 36 wrong-channel readings in 47
+samples. Meta explanations were recorded for incomplete captures. The new
+same-session wiring fault, diagnosis, operator repair and retest sequence
+has not yet been recorded on hardware. Latest saved view job 37ddce83240f4be290731de0e3335cd3
+was blocked by changed camera position. Recheck framing before a live run.
+
+UI reports "Passed on retest" for a successful continuation and lists the
+prior attempt without inferring a repair. All 252 host tests pass; simulated
+mismatch and incomplete retry paths and read-only browser result checked.
+No new hardware action or Meta request during preparation.
+Read runs/software/submission-prep-2026-11-04-v1/summary.json for the current index.
+
+Submission draft: docs/submission.md. Recorded demo script and conditional live
+cut: docs/demo.md. Selected evidence: docs/evidence/README.md. Clean-checkout
+limits: docs/commissioning.md. The repository and final video still require
+publication for submission. The full-rig and servo acceptance scope remains
+incomplete and is outside this demo.
+
+Earlier entries below are historical; the newest entry takes precedence.
+
 PROJECT FIRMWARE INSTALLATION — 3 NOVEMBER 2026
 
 The recommended dashboard installation milestone is complete. All222hosttests

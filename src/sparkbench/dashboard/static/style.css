@@ -571,7 +571,7 @@ button.step-chip[aria-pressed="true"] { outline: 2px solid var(--accent); outlin
 .led.unknown { border-style: dashed; border-color: var(--muted); }
 .led-text { margin-left: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .result-off .led-text, .result-off .help + .leds { color: var(--fail); }
-.after-fix { margin: -4px 0 0; padding: 10px 14px; border-radius: 8px; background: var(--pass-bg); color: var(--pass); font-size: 14px; }
+.retest-note { margin: -4px 0 0; padding: 10px 14px; border-radius: 8px; background: var(--pass-bg); color: var(--pass); font-size: 14px; }
 .result-history { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .result-history:empty { display: none; }
 .history-row { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--text); font-size: 13px; }
@@ -700,7 +700,7 @@ textarea:focus, input:focus, select:focus { outline: 2px solid var(--accent); ou
 .run-bar { border-radius: 0; height: 6px; }
 .run-bar i { background: var(--accent); }
 dialog { border-radius: 6px; border: 2px solid var(--ink); }
-.after-fix { border-radius: 4px; }
+.retest-note { border-radius: 4px; }
 .led-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 /* Hero */
 .hero-title { font-family: var(--serif); font-size: 52px; line-height: 1.02; letter-spacing: -1px; font-weight: 700; }

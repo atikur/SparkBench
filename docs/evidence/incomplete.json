@@ -1,0 +1,920 @@
+{
+  "recorded_at": "2026-11-03T09:27:26Z",
+  "source_kind": "live_camera",
+  "scope": "LED/OLED · sampled settled windows",
+  "acquisition_status": "captured",
+  "behavior_verdict": "incomplete",
+  "qualification_outcome": null,
+  "geometry_rejected_sample_count": 0,
+  "frame_count": 103,
+  "evaluated_sample_count": 48,
+  "mismatch_count": 0,
+  "unknown_count": 45,
+  "finding_unit": "field readings",
+  "oled_evaluated": true,
+  "full_behavior_verdict": "incomplete",
+  "model_activity": {
+    "model": "muse-spark-1.3-contributor",
+    "role": "OLED image transcription without expected labels"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "label": "DARK",
+      "samples": 9
+    },
+    {
+      "id": 2,
+      "label": "GREEN",
+      "samples": 10
+    },
+    {
+      "id": 3,
+      "label": "BOTH",
+      "samples": 10
+    },
+    {
+      "id": 4,
+      "label": "RED",
+      "samples": 9
+    },
+    {
+      "id": 5,
+      "label": "DARK END",
+      "samples": 10
+    }
+  ],
+  "failures": [],
+  "unknowns": [
+    "step 1 frame-000008.jpg oled_text: unknown",
+    "step 1 frame-000009.jpg oled_text: unknown",
+    "step 1 frame-000010.jpg oled_text: unknown",
+    "step 1 frame-000011.jpg oled_text: unknown",
+    "step 1 frame-000012.jpg oled_text: unknown",
+    "step 1 frame-000013.jpg oled_text: unknown",
+    "step 1 frame-000014.jpg oled_text: unknown",
+    "step 1 frame-000015.jpg oled_text: unknown",
+    "step 1 frame-000016.jpg oled_text: unknown",
+    "step 2 frame-000022.jpg oled_text: unknown",
+    "step 2 frame-000023.jpg oled_text: unknown",
+    "step 2 frame-000024.jpg oled_text: unknown",
+    "step 2 frame-000026.jpg oled_text: unknown",
+    "step 2 frame-000027.jpg oled_text: unknown",
+    "step 2 frame-000028.jpg oled_text: unknown",
+    "step 2 frame-000029.jpg oled_text: unknown",
+    "step 2 frame-000030.jpg oled_text: unknown",
+    "step 3 frame-000036.jpg oled_text: unknown",
+    "step 3 frame-000037.jpg oled_text: unknown",
+    "step 3 frame-000038.jpg oled_text: unknown",
+    "step 3 frame-000039.jpg oled_text: unknown",
+    "step 3 frame-000040.jpg oled_text: unknown",
+    "step 3 frame-000041.jpg oled_text: unknown",
+    "step 3 frame-000042.jpg oled_text: unknown",
+    "step 3 frame-000043.jpg oled_text: unknown",
+    "step 3 frame-000044.jpg oled_text: unknown",
+    "step 3 frame-000045.jpg oled_text: unknown",
+    "step 4 frame-000051.jpg oled_text: unknown",
+    "step 4 frame-000052.jpg oled_text: unknown",
+    "step 4 frame-000053.jpg oled_text: unknown",
+    "step 4 frame-000054.jpg oled_text: unknown",
+    "step 4 frame-000055.jpg oled_text: unknown",
+    "step 4 frame-000056.jpg oled_text: unknown",
+    "step 4 frame-000057.jpg oled_text: unknown",
+    "step 4 frame-000058.jpg oled_text: unknown",
+    "step 4 frame-000059.jpg oled_text: unknown",
+    "step 5 frame-000065.jpg oled_text: unknown",
+    "step 5 frame-000066.jpg oled_text: unknown",
+    "step 5 frame-000067.jpg oled_text: unknown",
+    "step 5 frame-000068.jpg oled_text: unknown",
+    "step 5 frame-000069.jpg oled_text: unknown",
+    "step 5 frame-000070.jpg oled_text: unknown",
+    "step 5 frame-000072.jpg oled_text: unknown",
+    "step 5 frame-000073.jpg oled_text: unknown",
+    "step 5 frame-000074.jpg oled_text: unknown"
+  ],
+  "provenance": {
+    "report": "runs/live/led-oled-resume-2026-11-03-v1/latest-view-oled-verification/analysis/verification.json",
+    "specification": "runs/live/led-oled-resume-2026-11-03-v1/latest-view-oled-verification/analysis/spec.snapshot.json",
+    "capture": "runs/live/led-oled-resume-2026-11-03-v1/restored-positive-control/capture",
+    "report_sha256": "9cbe31a50964e1849f95e0cc75ea295a183f06153017dacff2ad876ac04d54b3"
+  },
+  "measured_frames": [
+    {
+      "file": "frame-000008.jpg",
+      "offset_seconds": 1.568,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "e4122619998ed22b2fd70b7ed01f08d42b687af2aeb9315cb5e4970e75a14f88"
+    },
+    {
+      "file": "frame-000009.jpg",
+      "offset_seconds": 1.768,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "ef4e817566ffb792a283d748ef24595ddc2a1d993a69d75cb47990031050d713"
+    },
+    {
+      "file": "frame-000010.jpg",
+      "offset_seconds": 2.001,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "c25884ec20a297aa43da19f62c22f7cdb33a20e02670518af87003e5753d66f9"
+    },
+    {
+      "file": "frame-000011.jpg",
+      "offset_seconds": 2.201,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "032b55c246fea1a4393841ccb39032485ddb5020436c211460dd9aa9fbf71da0"
+    },
+    {
+      "file": "frame-000012.jpg",
+      "offset_seconds": 2.401,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "aa93e64a41ce8b1883b2ed6113ef6d63ea701fa505eead39e7cdbffd45238e21"
+    },
+    {
+      "file": "frame-000013.jpg",
+      "offset_seconds": 2.602,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "c4c47bf59e2960a13ef104b7e16cd37a467222acb147b78a7bb144c1df7e02b3"
+    },
+    {
+      "file": "frame-000014.jpg",
+      "offset_seconds": 2.835,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "0cee0b58e65ade2cec151d8c8ed71125d144d6aa2d9c29471206796ab899dbac"
+    },
+    {
+      "file": "frame-000015.jpg",
+      "offset_seconds": 3.069,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "0fccfd3723142c93c377972a6eb21f20b4e5fffd0bdb79ddb18ac5a72e974311"
+    },
+    {
+      "file": "frame-000016.jpg",
+      "offset_seconds": 3.302,
+      "step": 1,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "5e8ee0eac26cdcf056d2c9145556e8b33a86d0104588d162ad4e680439efddec"
+    },
+    {
+      "file": "frame-000022.jpg",
+      "offset_seconds": 4.603,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "53dd02d2c7a1920ce4e9badd878695b9025d05a3b2b4d2e9ac54d293c465bba1"
+    },
+    {
+      "file": "frame-000023.jpg",
+      "offset_seconds": 4.836,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "1fc6872c16b5e410ed6b9657086c087ffc4e4907f6db146dcc40147ed88bb88f"
+    },
+    {
+      "file": "frame-000024.jpg",
+      "offset_seconds": 5.07,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "855c255bf4f0ca40fb56cd6c3d02432e1566d7cb6caf8fb4ff3da1534f85b06d"
+    },
+    {
+      "file": "frame-000025.jpg",
+      "offset_seconds": 5.27,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "geometry_supported": true,
+      "image_sha256": "42ef443a01c6a117cccc16f0d93a32a5321a7a81ea490a154b4844c8f3f0c6d7"
+    },
+    {
+      "file": "frame-000026.jpg",
+      "offset_seconds": 5.47,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "7be73c8cd10b912d09363675ab8a76301495f116d9997d3f2dcff0f1d6459ea8"
+    },
+    {
+      "file": "frame-000027.jpg",
+      "offset_seconds": 5.703,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "3099370941abc2b7a7b8f0cd88e7930b7daeb19a7a5a17330c6e5426309bb262"
+    },
+    {
+      "file": "frame-000028.jpg",
+      "offset_seconds": 5.903,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "7164af3b02600c878df867b831d7c67814987f0b2a252cca694bd4d5b02b84c9"
+    },
+    {
+      "file": "frame-000029.jpg",
+      "offset_seconds": 6.103,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "a74189f4b324b181723bbccc4bc52a6dd30c25fc712607c22338892e95dd4bfa"
+    },
+    {
+      "file": "frame-000030.jpg",
+      "offset_seconds": 6.337,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "6c2ba361f1c61af4c792d1baef57207468b055bdc0f1dcd29da726f13a01896a"
+    },
+    {
+      "file": "frame-000031.jpg",
+      "offset_seconds": 6.57,
+      "step": 2,
+      "expected": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "observed": {
+        "red": false,
+        "green": true,
+        "oled_text": "GREEN"
+      },
+      "geometry_supported": true,
+      "image_sha256": "c6a9b5258a30b9c604d2c55f7041d7654fcccba060b1f3114e59ecc5caf36eeb"
+    },
+    {
+      "file": "frame-000036.jpg",
+      "offset_seconds": 7.704,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "0621864c7dc44ff17f640e4f0a6b464eb57ce0ddba454b7e40c0282904b2e1f8"
+    },
+    {
+      "file": "frame-000037.jpg",
+      "offset_seconds": 7.771,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "49a05791f2d490f4976619b59069c26106f17f6def96581b266176938be2749b"
+    },
+    {
+      "file": "frame-000038.jpg",
+      "offset_seconds": 8.104,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "bbbee875fc65e4fa57c0503fda2509cabde39aeb5c5c70657e43d753c22b86b4"
+    },
+    {
+      "file": "frame-000039.jpg",
+      "offset_seconds": 8.304,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "225be634d55f2f73be79343ac1aeea63e87265775aeec350e6455ad6e33fd457"
+    },
+    {
+      "file": "frame-000040.jpg",
+      "offset_seconds": 8.504,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "baf3160fadb4404ff35763cc1fd8074a742cc5a940fb5556cbb1e9fbd2668b13"
+    },
+    {
+      "file": "frame-000041.jpg",
+      "offset_seconds": 8.738,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "d7f5338e64ad669ea3df69ecad1ef4f2ee834842c473615c69cbd112230c277a"
+    },
+    {
+      "file": "frame-000042.jpg",
+      "offset_seconds": 8.938,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "2483ae4111ac1679c3694e2a50ce61f074abb8f01396de64d9a522e8b1707fd8"
+    },
+    {
+      "file": "frame-000043.jpg",
+      "offset_seconds": 9.171,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "2c6d2d39d7afa756c71f263a5ba966a4290643af86c3c7655b8c16381822ee0b"
+    },
+    {
+      "file": "frame-000044.jpg",
+      "offset_seconds": 9.404,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "fcade86a8d8bae05830766533158cf564c624ae4cbfa3202359c16f1c2ad0126"
+    },
+    {
+      "file": "frame-000045.jpg",
+      "offset_seconds": 9.638,
+      "step": 3,
+      "expected": {
+        "red": true,
+        "green": true,
+        "oled_text": "BOTH"
+      },
+      "observed": {
+        "red": true,
+        "green": true,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "9028e95da2e04770bb3f8b79a2a71ede0e8e1f81551c356411c521de3a1dfd01"
+    },
+    {
+      "file": "frame-000051.jpg",
+      "offset_seconds": 11.005,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false,
+        "oled_text": "RED"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "3273fb41e1af71cc846f9d04fbd406f359fe6b70cafcc94617bab8857764a0c4"
+    },
+    {
+      "file": "frame-000052.jpg",
+      "offset_seconds": 11.239,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false,
+        "oled_text": "RED"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "452b0b86d69290015cff16eca63d4a954013c932b123cc67f5f0c9fb0e451b2b"
+    },
+    {
+      "file": "frame-000053.jpg",
+      "offset_seconds": 11.472,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false,
+        "oled_text": "RED"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "f0c337208393d2d17d6bc179f0ed5ecd3c60cc06902744ee6d0465eb84e5dba8"
+    },
+    {
+      "file": "frame-000054.jpg",
+      "offset_seconds": 11.672,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false,
+        "oled_text": "RED"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "420460c487537b8052aceec2612742b80afacd2ca37a7c58ca902fd291a95fd4"
+    },
+    {
+      "file": "frame-000055.jpg",
+      "offset_seconds": 11.872,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false,
+        "oled_text": "RED"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "17df9bc042fced9be19a621110f9f2e49afa9ecac58c59cf7415b1c8dd23f853"
+    },
+    {
+      "file": "frame-000056.jpg",
+      "offset_seconds": 12.106,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false,
+        "oled_text": "RED"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "82c1b1b947fb408114e59f4abb68f80365204c80e0c63f09008d3f0a76a1a3ad"
+    },
+    {
+      "file": "frame-000057.jpg",
+      "offset_seconds": 12.306,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false,
+        "oled_text": "RED"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "3e7a3aa72d3882de130d57049e744edf053f151baac26c2ae1b829718f486998"
+    },
+    {
+      "file": "frame-000058.jpg",
+      "offset_seconds": 12.539,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false,
+        "oled_text": "RED"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "46f56ac14fd22ec886468b8296e5a933dae3445b14ec36489b7fb1a8f82bd95a"
+    },
+    {
+      "file": "frame-000059.jpg",
+      "offset_seconds": 12.773,
+      "step": 4,
+      "expected": {
+        "red": true,
+        "green": false,
+        "oled_text": "RED"
+      },
+      "observed": {
+        "red": true,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "4e703f0f517340f6e96655326bf8c0716d50276754b7455820df3f81b401ab3b"
+    },
+    {
+      "file": "frame-000065.jpg",
+      "offset_seconds": 14.106,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "668165bf00a51ad78ed9944f2eea5e18ee3fc2f970048f142120c997a947de7c"
+    },
+    {
+      "file": "frame-000066.jpg",
+      "offset_seconds": 14.306,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "93cb23587a09b40c628c3cde23278174fdc2f38bd1c52e70ea8752707f12e742"
+    },
+    {
+      "file": "frame-000067.jpg",
+      "offset_seconds": 14.506,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "751f8334ee71a89c25184a50a5955236425a1cc5035292d9c9edda4c034e0ae8"
+    },
+    {
+      "file": "frame-000068.jpg",
+      "offset_seconds": 14.74,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "e977cb15eb8d430ac95f0a79cfef57507683d4c87ed19ac07ca165659cfa2d1a"
+    },
+    {
+      "file": "frame-000069.jpg",
+      "offset_seconds": 14.94,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "84731d8d3ff3d1abf176bc439ade0d36db9b7de5d9818bddbc3959af9ec247f4"
+    },
+    {
+      "file": "frame-000070.jpg",
+      "offset_seconds": 15.14,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "2daba46b90b67de585b8a67eac1c9d9f8bc0c8399f2698601e6bf7888c1379a2"
+    },
+    {
+      "file": "frame-000071.jpg",
+      "offset_seconds": 15.34,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "geometry_supported": true,
+      "image_sha256": "de88269ef88a2daecd9b173892cda872728d323d0736fd89772d46e21d760e85"
+    },
+    {
+      "file": "frame-000072.jpg",
+      "offset_seconds": 15.573,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "5e4ba5d7ccfe1600839e85e7629d296d60cdc73b882cc35b082c57eb23767c22"
+    },
+    {
+      "file": "frame-000073.jpg",
+      "offset_seconds": 15.773,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "ad53311b034a67c6907977e8e9a443ea87ebc96f70955a5eb13adf7adec494e6"
+    },
+    {
+      "file": "frame-000074.jpg",
+      "offset_seconds": 15.973,
+      "step": 5,
+      "expected": {
+        "red": false,
+        "green": false,
+        "oled_text": "DARK END"
+      },
+      "observed": {
+        "red": false,
+        "green": false,
+        "oled_text": null
+      },
+      "geometry_supported": true,
+      "image_sha256": "7e88c2ab2a9752461a5a1a223bf566d600c99704173c720abaaf325ebbc5061d"
+    }
+  ],
+  "reader_received_expected_labels": false
+}
