@@ -152,6 +152,12 @@ class HTTPTests(unittest.TestCase):
 
 
 class StaticPageTests(unittest.TestCase):
+    def test_suggest_ideas_is_on_the_home_page_and_only_fills_the_box(self):
+        static=Path(__file__).parent.parent/'src/sparkbench/dashboard/static'
+        html=(static/'index.html').read_text();script=(static/'projects.js').read_text()
+        self.assertIn('id="idea-suggest"',html)
+        self.assertIn("planningPost('/api/idea/suggest'",script)
+        self.assertIn("$('home-idea').value=chip.dataset.idea",script)
     def test_the_project_page_keeps_wiring_and_drops_the_chat(self):
         static=Path(__file__).parent.parent/'src/sparkbench/dashboard/static'
         html=(static/'index.html').read_text();script=(static/'projects.js').read_text()

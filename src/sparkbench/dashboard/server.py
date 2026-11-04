@@ -15,6 +15,7 @@ from .diagnosis import ExplanationService
 from .execution import ExecutionService
 from .projects import ProjectService
 from ..guide import CATALOG, ASSEMBLY
+from ..ideas import IdeaError, suggest_ideas
 from ..meta import configuration
 from ..sam_regions import propose_regions
 from ..voice import MAX_VOICE_BYTES, VoiceServiceError, transcribe_idea
@@ -165,7 +166,7 @@ class Handler(BaseHTTPRequestHandler):
         repair_approval=re.fullmatch(r'/api/repairs/([0-9a-f]{32})/approve',path)
         camera_confirmation=re.fullmatch(r'/api/camera/setup/([0-9a-f]{32})/confirm',path)
         camera_suggestion=re.fullmatch(r'/api/camera/setup/([0-9a-f]{32})/regions',path)
-        if path not in ("/api/plans",'/api/projects','/api/guide/photo','/api/camera/check','/api/camera/regions','/api/camera/setup','/api/repairs','/api/idea/transcribe') and not review and not operation and not cancellation and not project_action and not explain and not repair_approval and not camera_confirmation and not camera_suggestion:
+        if path not in ("/api/plans",'/api/projects','/api/guide/photo','/api/camera/check','/api/camera/regions','/api/camera/setup','/api/repairs','/api/idea/transcribe','/api/idea/suggest') and not review and not operation and not cancellation and not project_action and not explain and not repair_approval and not camera_confirmation and not camera_suggestion:
             self.method_rejected();return
         if not self.local_request(mutation=True): return
         try:
@@ -192,7 +193,9 @@ class Handler(BaseHTTPRequestHandler):
             self.connection.settimeout(30)
             body = json.loads(self.rfile.read(length))
             if not isinstance(body, dict): raise ValueError("JSON object required")
-            if path=='/api/projects':
+            if path=='/api/idea/suggest':
+                self.json(200,suggest_ideas(body,self.server.store.root/'runs/ideas'/uuid.uuid4().hex))
+            elif path=='/api/projects':
                 self.json(201,self.server.projects.get(self.server.projects.create(body)))
             elif path=='/api/repairs':
                 self.json(202,{'id':self.server.execution.start_repair(body)})
@@ -242,6 +245,8 @@ class Handler(BaseHTTPRequestHandler):
             self.json(404, {"error": "Unknown proposal or run"})
         except EvidenceError as exc:
             self.json(409, {"error": str(exc)})
+        except IdeaError as exc:
+            self.json(502,{"error":str(exc)})
         except VoiceServiceError as exc:
             self.json(502, {"error": str(exc)})
         except (ValueError, TypeError) as exc:

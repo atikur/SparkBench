@@ -98,7 +98,18 @@ async function approveAndRun() {
  }
 }
 $('approve-run').addEventListener('click',approveAndRun);
-document.querySelectorAll('.idea-chip').forEach(b=>b.addEventListener('click',()=>{$('home-idea').value=b.dataset.idea;$('home-idea').focus();}));
+document.querySelector('.idea-chips').addEventListener('click',e=>{const chip=e.target.closest('.idea-chip');if(!chip)return;$('home-idea').value=chip.dataset.idea;$('home-idea').focus();});
+// Suggested ideas only fill the box. Nothing is planned until the person asks, and each press is one explicit request.
+const ideaTitles=Array.from(document.querySelectorAll('.idea-chip'),chip=>chip.textContent);
+$('idea-suggest').addEventListener('click',async()=>{const button=$('idea-suggest'),status=$('idea-suggest-status');status.hidden=true;
+ if(!plannerSession?.planning_available){status.textContent='Connect the Meta API to get ideas, or use an example.';status.hidden=false;return;}
+ button.disabled=true;button.dataset.busy='true';button.textContent='Muse Spark is thinking…';
+ try{const result=await planningPost('/api/idea/suggest',{avoid:ideaTitles.slice(-12)});
+  for(const chip of document.querySelectorAll('.idea-chip'))chip.remove();
+  for(const {title,idea} of result.ideas){const chip=node('button',title,'idea-chip');chip.type='button';chip.dataset.idea=idea;chip.title=idea;button.before(chip);ideaTitles.push(title);}
+  button.textContent='More ideas';}
+ catch(e){status.textContent=e.message;status.hidden=false;button.textContent=ideaTitles.length>3?'More ideas':'Suggest ideas';}
+ finally{button.disabled=false;delete button.dataset.busy;}});
 $('project-more').addEventListener('click',()=>{showAllProjects=!showAllProjects;refreshProjects().catch(()=>{});});
 $('home-plan-form').addEventListener('submit',e=>{e.preventDefault();const idea=$('home-idea').value.trim();if(!idea)return;if(autopilot||window.cameraSetupActive||planApproving||planUpdating||plannerBusy){showGuide();return;}window.resetFlow?.();projectVersion++;project=null;window.resetPlanStage?.();fillProfile();planUpdating=true;$('project-idea').value=idea;$('project-experience').value='beginner';$('project-budget').value='';$('project-parts-notes').value='';$('project-error').hidden=true;showGuide();renderProject();$('home-idea').value='';$('project-form').requestSubmit();});
 // One click answers a question with the bench's standing facts and lets Muse Spark pick the defaults.

@@ -1018,3 +1018,12 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
  .tabs { gap: 0; }
  .tab { margin-right: 6px; font-size: 13px; }
 }
+
+/* Home: ask Muse Spark for ideas */
+.idea-suggest { flex: none; padding: 0; border: 0; background: none; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; }
+.idea-suggest::before { content: "+ "; color: var(--accent); }
+.idea-suggest:hover:not(:disabled) { color: var(--accent); }
+.idea-suggest:disabled { cursor: progress; font-weight: 500; color: var(--muted); }
+.idea-suggest[data-busy]::before { content: none; }
+.idea-suggest-status { flex: 1 0 100%; margin: 0; font-size: 12.5px; }
+.idea-suggest-status[hidden] { display: none; }

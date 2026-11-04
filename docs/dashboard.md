@@ -29,6 +29,11 @@ Transcribe and adds the transcript to the idea box for editing. SparkBench
 does not save the audio. Review the text and press **Plan it with Muse Spark**
 to start planning.
 
+**Suggest ideas** asks Muse Spark for three projects this bench can run, in one
+request with no retry. Each idea must carry steps that pass the same validator as
+a real plan, and an idea that promises something the bench lacks is dropped.
+Clicking one only fills the idea box. Records are saved under `runs/ideas/`.
+
 The progress panel names the current task and its worker (Muse Spark, SAM,
 the camera or local code). Active jobs have animated indicators, while approval,
 blocked and completed states remain still. OLED reading progress uses the job's
