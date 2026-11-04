@@ -1,13 +1,14 @@
 # SparkBench demo script
 
-The recorded cut takes about 2 minutes 35 seconds. Use desktop width, show the plan and camera
+The recorded cut takes about 2 minutes 35 seconds. The first 20 seconds state the problem and show the proof before the product name is said. Use desktop width, show the plan and camera
 frames large enough to read, and place a persistent date and run label on each recorded example.
 The [evidence index](evidence/README.md) provides the visual assets and provenance.
 
 | Time | Screen | Narration |
 | --- | --- | --- |
-| 0:00–0:15 | Title over the home page. “SparkBench · Built during the Meta Global AI Developer Hackathon · 27 Oct – 4 Nov 2026” | “A build and a serial response tell us the board is running. SparkBench checks what the board actually does.” |
-| 0:15–0:40 | Describe the desk light, then show the saved READY/BUSY/DONE plan. Highlight the LEDs, OLED labels and durations. | “I ask for READY with the green LED, BUSY with the red LED, and DONE with both off. Muse Spark drafts the plan, which I review before running it.” |
+| 0:00–0:06 | Title card, problem first: **“Build passed. Did the board actually do it?”** Subtitle in one line: “SparkBench · built from scratch, 27 Oct – 4 Nov 2026, Meta Global AI Developer Hackathon”. | “An AI wrote the firmware. It compiled, and the serial port said done. Nobody checked the board.” |
+| 0:06–0:20 | Cut to the home page: the stamped READY frame on the right, the idea box on the left. Hold on the photo. | “SparkBench makes it prove it. A phone watches the real board, two Meta models read and reason about what it did, and only the camera decides.” |
+| 0:20–0:40 | Describe the desk light, then show the saved READY/BUSY/DONE plan. Highlight the LEDs, OLED labels and durations. | “I ask for READY with the green LED, BUSY with the red LED, and DONE with both off. Muse Spark drafts the plan, which I review before running it.” |
 | 0:40–1:00 | Show **Approve plan and run on the bench** and the agent timeline. Label any cut or sped-up footage. | “One approval starts the workflow. Local code checks the camera, builds and installs when needed, and checks the application identity before the test.” |
 | 1:00–1:30 | **Recorded 4 Nov · READY/BUSY/DONE · 290be0…** Show the pass counts and one frame per step. [READY](evidence/hero-ready.jpg) · [BUSY](evidence/hero-busy.jpg) · [DONE](evidence/hero-done.jpg) | “This run passed all 26 sampled observations. The LEDs are measured from pixels. Muse Spark reads each eligible OLED crop without the expected label. Local code compares the observations with the approved plan.” |
 | 1:30–1:55 | **Separate recording · 3 Nov · intentional LED swap.** Show the recorded LED observations beside the [display crop](evidence/wiring-fault.png). | “We also deliberately swapped the LED connections in a separate test. The verifier recorded 36 wrong-channel findings across 47 samples.” |

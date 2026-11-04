@@ -34,25 +34,36 @@ suite.
 
 ## Describe your use of Meta products to build the submitted project
 
-The runtime uses the Meta Model API with `muse-spark-1.3-contributor`. Responses use JSON Schema.
-Planning and explanation have separate bounded requests. During testing, the OLED reader can make
-multiple requests, each for an eligible display crop. The workstation records model inputs,
-outputs, latency and reported token usage. The evidence bundle includes selected records.
+SparkBench uses two Meta models through the Meta Model API: Muse Spark
+(`muse-spark-1.3-contributor`) in six roles, and SAM 3.1 for camera setup. Every Muse Spark
+call returns strict JSON through JSON Schema, one bounded request per action with no retries, and
+the workstation records each request, response, latency and token count with integrity hashes.
+The evidence bundle in the repository includes selected records.
 
-1. **Build guide.** Uses the idea and optional photos to draft a brief from the supported parts
+In order of weight in the proof:
+
+1. **OLED reader (vision).** Transcribes one cropped display frame at a time without the expected
+   label. Its reading is independent evidence, not confirmation. An unreadable frame stays unknown.
+2. **LED mapping analyst (reasoning).** After a confirmed LED mismatch, local code runs a fixed
+   pin probe on camera. Muse Spark receives the settled measurements, never the images or the
+   hidden answer, and proposes a one-to-one pin mapping with cited frames. Local code accepts the
+   proposal only if it matches the complete probe, and nothing is flashed until the operator
+   approves. A fresh camera pass is the only thing that counts as recovery.
+3. **Evidence analyst (vision and reasoning).** Reads the frozen expected steps, the measured
+   findings and up to three saved frames, then names a likely cause, cites frames, states what it
+   cannot determine and proposes one check. Citations outside the supplied frames are rejected.
+4. **Intent planner (text).** Turns the brief into a plan of up to eight steps, or one question.
+   It never sees the test oracle.
+5. **Build guide (text and photos).** Drafts the brief from the idea and the supported parts
    catalog, or asks for clarification.
-2. **Intent planner.** Converts the brief into a structured plan of up to eight steps that the
-   user reviews.
-3. **OLED reader.** Transcribes one cropped display frame at a time without the expected label.
-   An unreadable frame is recorded as unknown.
-4. **Frame checker.** Advises the operator when the camera view is blocked. Local checks decide
-   whether the view is usable.
-5. **Evidence analyst.** Reads the expected steps, measured findings and up to three saved frames.
-   It returns a likely cause, frame citations, uncertainty and one next check. Local validation
-   rejects citations outside the supplied frames.
+6. **Frame checker (vision).** When the camera check is blocked, says which parts are cut off and
+   how to move the phone. It cannot clear the check.
+7. **SAM 3.1 region proposer.** During camera setup, proposes the screen and lens regions from a
+   fresh capture. A separate capture validates the resulting reference with the frozen thresholds.
+   SAM never takes part in a verdict.
 
-The local runtime validates the plan, renders firmware, controls the bench and computes the test
-verdict. The model supplies planning, perception and interpretation.
+The local runtime validates every plan, renders the firmware, controls the bench and computes the
+verdict. The models plan, perceive, interpret and propose; they never grade their own work.
 
 ## Why are Meta's models important to your solution?
 
