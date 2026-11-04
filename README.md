@@ -130,7 +130,7 @@ Guides: [dashboard](docs/dashboard.md),
 [building a project](docs/build-guide.md), [intent planning](docs/intent-planning.md),
 [software pipeline and trust boundary](docs/software-pipeline.md), [live validation](docs/live-validation.md).
 
-Host tests (240, no hardware, no network):
+Host tests (241, no hardware, no network):
 
 ```bash
 .venv/bin/python -m unittest discover -s tests -v
@@ -151,8 +151,7 @@ quoted above are summarised in [docs/live-validation.md](docs/live-validation.md
 - Photo guidance is advisory. A photo cannot establish continuity, voltage or polarity.
 - The phone must stay still in its calibrated position. The agent checks this before flashing, and
   frames from any other position are rejected, never read or guessed.
-- The OLED reader sometimes declines lone round digits (8, 9, 6) at the current camera resolution.
-  That counts as unknown, so such a plan ends incomplete rather than pass. Words read reliably.
+- An OLED reading the model declines counts as unknown, so that plan ends incomplete rather than pass.
 
 ## Repository layout
 
@@ -161,7 +160,7 @@ quoted above are summarised in [docs/live-validation.md](docs/live-validation.md
 | `src/sparkbench/` | CLI, Meta clients (`meta.py`, `intent.py`, `guide.py`, `diagnosis.py`, `generation.py`), verifier, build and install, camera and servo tooling |
 | `src/sparkbench/dashboard/` | local server, project and job state, static UI |
 | `firmware/` | PlatformIO projects: the LED/OLED runtime and the bring-up diagnostics |
-| `tests/` | 240 host tests plus native C++ and Swift simulation tests |
+| `tests/` | 241 host tests plus native C++ and Swift simulation tests |
 | `tools/` | macOS camera, vision and tracker helpers, bootstrap and packaging scripts |
 | `hardware/` | board, camera and calibration records, wiring diagrams |
 | `docs/` | guides, contest audit, and the full [project history](docs/history.md) |

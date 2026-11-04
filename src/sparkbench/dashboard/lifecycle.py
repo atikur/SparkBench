@@ -7,7 +7,7 @@ def firmware_status(project, planner, execution):
         try:proposal=planner.get(current[-1]['proposal_id'])
         except (ValueError,KeyError,OSError):pass
     related=[j for j in jobs if proposal and j.get('proposal_id')==proposal['id'] and j.get('plan_sha256')==proposal.get('plan_sha256')]
-    build=next((j for j in related if j['action']=='compile' and j['status']=='compiled'),None)
+    build=next((j for j in related if j['action']=='compile' and j['status']=='compiled' and j.get('runtime_current',True)),None)
     installation=next((j for j in related if j['action']=='install' and j['status']=='installed' and build and j.get('firmware_sha256')==build.get('firmware_sha256')),None)
     test=next((j for j in related if j['action']=='test' and j.get('request',{}).get('build_id')==(build or {}).get('id')),None)
     try:

@@ -131,4 +131,4 @@ hours, so it is not in the plan.
   reasoning, with every input and output on disk. Judges can see what the model saw.
 - **Demo 25%.** Six beats, each one screen, the last one a payoff.
 - **Technical depth 20%.** A trust boundary that keeps the model out of the actuation path, a
-  deterministic verifier, integrity-checked evidence, 240 tests. Say it once, show it in the Limits.
+  deterministic verifier, integrity-checked evidence, 241 tests. Say it once, show it in the Limits.

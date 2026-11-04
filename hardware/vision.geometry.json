@@ -3,7 +3,7 @@
   "image_width": 1920,
   "image_height": 1080,
   "coordinate_origin": "top_left",
-  "reference_frame": "runs/live/led-oled-view-2026-11-04-v3/capture/camera/frame-000140.jpg",
+  "reference_frame": "runs/live/led-oled-view-2026-11-04-v4/capture/camera/frame-000140.jpg",
   "leds": {
     "red": {
       "center_x": 1660,
@@ -37,10 +37,10 @@
   "rectified_width": 1024,
   "rectified_height": 512,
   "label_crop": [
-    0,
-    140,
-    995,
-    110
+    16,
+    132,
+    992,
+    256
   ],
   "minimum_border_support": 0.85,
   "maximum_registration_shift_pixels": 80,

@@ -3,7 +3,7 @@ let executionPlan=null,executionJobs=[],activeExecution=null,executionPoll=0;
 const executionLabels={queued:'Preparing…',compiling:'Compiling the trusted LED/OLED runtime…',compiled:'Compiled · not installed',installing:'Installing and verifying application bytes…',identity:'Checking the installed idle runtime with ID only…',identity_confirmed:'Idle runtime identity confirmed over UART · physical outputs unverified',installed:'Installed and hash-verified · not camera-tested',preflight:'Checking device identity and frozen reader…',capture:'Capturing the physical sequence…',analysis:'Reading camera samples with Meta and comparing the reviewed plan…',finished:'Finished',cancelled:'Cancelled'};
 function executionError(message){$('execution-error').textContent=message;$('execution-error').hidden=false;}
 function matchingJobs(){return executionJobs.filter(j=>j.proposal_id===executionPlan?.id&&j.plan_sha256===executionPlan?.plan_sha256);}
-function buildJob(){return matchingJobs().find(j=>j.action==='compile'&&j.status==='compiled');}
+function buildJob(){return matchingJobs().find(j=>j.action==='compile'&&j.status==='compiled'&&j.runtime_current!==false);}
 const rowDefaults={'row-compile':"Meta's steps go into a trusted C++ table. No model-written code.",'row-devices':'Choose the ESP32 USB port and the iPhone camera.','row-install':'Writes the app only and keeps the previous image.'};
 function setRow(id,state,note){$(id).dataset.state=state;$(id+'-note').textContent=note||rowDefaults[id];}
 const optionName=id=>($(id).selectedOptions[0]?.textContent||'').split(' · ')[0];

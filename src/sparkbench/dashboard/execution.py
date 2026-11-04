@@ -14,7 +14,7 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ..artifacts import build_artifact, load_artifact
+from ..artifacts import build_artifact, load_artifact, runtime_current
 from ..camera import capture_frames, list_cameras
 from ..installation import install, verify_identity
 from ..intent import save
@@ -366,6 +366,7 @@ class ExecutionService:
         with self.lock:
             if job_id not in self.jobs:raise KeyError("Unknown job")
             result=copy.deepcopy(self.jobs[job_id])
+        if result.get("action")=="compile" and result.get("status")=="compiled":result["runtime_current"]=runtime_current(self._folder(job_id)/"artifact")
         result["evidence_available"] = (result.get("status") in ("pass","fail","incomplete")
             and (self._folder(job_id)/"workflow/analysis/verification.json").is_file())
         capture=self._folder(job_id)/"workflow/capture/camera/frames.jsonl"

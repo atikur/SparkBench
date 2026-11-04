@@ -58,6 +58,15 @@ def build_artifact(plan, output, compile_firmware=True):
     return report
 
 
+def runtime_current(path):
+    """False when a saved build holds an older trusted runtime, so it can no longer be installed."""
+    try:
+        record = json.loads((Path(path) / "artifact.json").read_text())["trusted_runtime_sha256"]
+        return all(record.get(n) == digest(ROOT / "firmware/runtime" / n) for n in TRUSTED_FILES)
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+
+
 def load_artifact(path, require_compiled=True):
     path = Path(path).resolve()
     record = json.loads((path / "artifact.json").read_text())

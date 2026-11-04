@@ -171,6 +171,10 @@ class ExecutionTests(unittest.TestCase):
         a,b=self.view_setup(row)
         with a,b:return self.wait(self.service.start_view({'request_id':__import__('uuid').uuid4().hex,'device_id':device}))
     GOOD={'status':'measured','oled_border_support':[1,1,1,1],'leds':{'red':{'mean_luma_srgb':70},'green':{'mean_luma_srgb':90}},'label_crop':'x.png','id':'x'}
+    def test_build_with_an_older_runtime_is_marked_so_it_is_rebuilt_not_installed(self):
+        build=self.compile();self.assertTrue(self.service.get(build['id'])['runtime_current'])
+        path=self.root/'runs/dashboard-execution'/build['id']/'artifact/artifact.json';record=json.loads(path.read_text());record['trusted_runtime_sha256']['src/main.cpp']='0'*64;path.write_text(json.dumps(record))
+        self.assertFalse(self.service.get(build['id'])['runtime_current'])
     def test_view_check_clear_reads_oled_once_and_never_asks_the_inspector(self):
         job=self.view_job(lambda n:self.GOOD)
         self.assertEqual((job['status'],job['oled_reading'],job['view_issues'],job['meta_requests'],job['serial_commands_sent']),('view_ok','STOPPED',[],1,[]))

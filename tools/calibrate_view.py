@@ -40,6 +40,7 @@ def main():
     parser.add_argument("--red", type=int, nargs=2, required=True, metavar=("X", "Y"))
     parser.add_argument("--green", type=int, nargs=2, required=True, metavar=("X", "Y"))
     parser.add_argument("--oled", type=int, nargs=8, required=True, help="Drawn OLED border: top-left, top-right, bottom-right, bottom-left")
+    parser.add_argument("--label-crop", type=int, nargs=4, metavar=("X", "Y", "W", "H"), help="OLED text area in the rectified image, when the firmware layout changed")
     parser.add_argument("--probe", type=int, nargs="+", required=True, help="Frame numbers to score")
     parser.add_argument("--labels", type=parse_label, nargs="*", default=[])
     parser.add_argument("--promote", action="store_true")
@@ -61,6 +62,8 @@ def main():
     geometry["leds"]["red"].update(center_x=args.red[0], center_y=args.red[1])
     geometry["leds"]["green"].update(center_x=args.green[0], center_y=args.green[1])
     geometry["oled_corners"] = [args.oled[i:i+2] for i in range(0, 8, 2)]
+    if args.label_crop:
+        geometry["label_crop"] = args.label_crop
     candidate_geometry = output / "geometry.candidate.json"
     save(candidate_geometry, geometry)
 

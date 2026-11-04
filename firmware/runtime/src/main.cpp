@@ -26,13 +26,17 @@ static void show(const char *text) {
   display.clearBuffer(); display.drawFrame(0, 0, 128, 64);
   display.setFont(u8g2_font_6x12_tr);
   display.drawStr(5, 13, "SparkBench");
-  // Short labels need enough physical pixels for independent camera reading.
-  // Preserve the label contents and fit long labels within the existing frame.
-  display.setFont(u8g2_font_helvB10_tr);
-  if (display.getStrWidth(text) <= 118) display.drawStr(5, 29, text);
-  else { display.setFont(u8g2_font_6x12_tr); display.drawStr(5, 28, text); }
+  // Labels need enough physical pixels for independent camera reading, so each uses the
+  // largest font that fits, centred in rows 17-47. Label contents are preserved.
+  static const struct { const uint8_t *font; int baseline; } kLabelFonts[] = {
+    {u8g2_font_helvB24_tr, 44}, {u8g2_font_helvB18_tr, 41}, {u8g2_font_helvB14_tr, 39},
+    {u8g2_font_helvB10_tr, 37}, {u8g2_font_6x12_tr, 36},
+  };
+  for (const auto &choice : kLabelFonts) {
+    display.setFont(choice.font);
+    if (display.getStrWidth(text) <= 118 || choice.font == u8g2_font_6x12_tr) { display.drawStr(5, choice.baseline, text); break; }
+  }
   display.setFont(u8g2_font_6x12_tr);
-  display.drawStr(5, 43, "LED/OLED runtime");
   display.drawStr(5, 58, "Servo unused"); display.sendBuffer();
 }
 
