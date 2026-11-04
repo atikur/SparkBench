@@ -20,9 +20,8 @@ development assistance from Codex and Claude Code. The dependencies are listed b
 [demo video guide](docs/demo.md) names the recording each part comes from.
 
 This git history begins on 3 November, when the project moved into this repository. The work before
-that is recorded in the dated [engineering log](docs/history.md) and the
-[handover notes](docs/archive/HANDOVER.txt), and the [evidence bundle](docs/evidence/README.md)
-dates each recorded run.
+that is recorded in the dated [engineering log](docs/history.md), and the
+[evidence bundle](docs/evidence/README.md) dates each recorded run.
 
 ## Recorded results
 

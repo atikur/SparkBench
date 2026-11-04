@@ -3,15 +3,14 @@
 **Historical checklist.** Current October 30 state: the LED/OLED diagnostic is
 superseded by the generated runtime, and all four scoped LED/OLED stages pass.
 Servo actuation remains deferred. Use [live-validation.md](live-validation.md)
-and archive/HANDOVER.txt for current commands; the original checklist below is retained
+for current commands; the original checklist below is retained
 as history, including its earlier combined-firmware instructions.
 
 Prepared October 29, 2026. Today's target is repeatable, manually observed
 hardware control. Camera discovery, visual verification, and generated firmware
 remain later milestones. At preparation time no camera or servo bracket was
 available. The October 30 handover selects the iPhone 15, which the user reports
-works natively as a camera on their MacBook Pro. Start with `archive/HANDOVER.txt` for the
-current resume steps; no SparkBench frames have been captured yet.
+works natively as a camera on their MacBook Pro. No SparkBench frames had been captured yet.
 
 October 30 progress: controller and carrier boot checks passed. The user confirmed
 red GPIO25 and green GPIO26 blink patterns, OLED text and a full border, and SG90

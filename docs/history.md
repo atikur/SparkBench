@@ -63,9 +63,9 @@ blind mappings and full Behavior A/B tests are still pending.
 Start the joint session with [the bench checklist](full-rig.md).
 
 
-Moving to the MacBook Pro? Start with [HANDOVER.txt](archive/HANDOVER.txt). It contains
-the current state and portable setup commands. The current software workflow is
-documented in [software-pipeline.md](software-pipeline.md).
+Moving to another Mac? Start with [commissioning.md](commissioning.md) for the setup
+commands. The current software workflow is documented in
+[software-pipeline.md](software-pipeline.md).
 
 Latest grid-corner reference: one fresh60-second static capture localizes
 260/261frames,1startupunknown,257preview-ready and no losses after readiness.
@@ -345,7 +345,7 @@ Meta Contributor generation, bounded plan repair,
 camera discovery logic and an integrated test command are now implemented; see
 [the workflow, trust boundary and qualification limits](software-pipeline.md).
 
-1. On a new Mac, follow `docs/archive/HANDOVER.txt`; local setup does not upload firmware.
+1. On a new Mac, follow `docs/commissioning.md`; local setup does not upload firmware.
 2. Run offline tests and use `hardware/board.json` for the active classic ESP32.
    The original S3 record is historical. Re-enumerate serial ports after transfer.
 3. On a new host authorize and enumerate the iPhone 15 before selecting it.
