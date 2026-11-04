@@ -35,9 +35,13 @@ and gives a sequence for a joint bench recording. The final demo video link is p
    firmware identity and records the test. Separate controls are available for individual jobs.
 3. Open the result to inspect the expected and observed LED states and OLED text. Each result
    is **pass**, **mismatch** or **incomplete**.
-4. On a non-pass result with usable evidence, Muse Spark can suggest a next check and cite the
-   frames it used. The operator can then act and re-test the same plan. A complete same-project
-   wiring fault, explanation, physical repair and passing re-test is pending on hardware.
+4. A confirmed LED mismatch can trigger one fixed GPIO25/26 probe. Muse Spark proposes a
+   mapping from the camera measurements, and local code checks it. Review the exact mapping
+   diff before approving compilation, installation and a retest against the unchanged behavior.
+   Other non-pass results retain the advisory explanation flow. The new repair workflow is
+   software-tested; its complete live fault-to-repair demonstration is still pending.
+
+[Bounded mapping repair, evidence rules and live validation status](docs/mapping-repair.md)
 
 ## Meta Model API
 
@@ -52,6 +56,7 @@ OLED requests, each for one eligible crop.
 | **OLED reader** | A single display crop produces a readable flag and text. The request omits the expected label. |
 | **Frame checker** | A blocked camera view can produce placement advice for the operator. The local check decides whether the view is usable. |
 | **Evidence analyst** | The approved steps, measurements and up to three saved frames produce an advisory explanation, cited frames and one next check. Local code validates the citations. |
+| **Mapping repair analyst** | The fixed probe's camera measurements and current firmware assumption produce a proposed GPIO25/26 mapping and cited evidence. Local inference must agree; installation requires approval. Live validation of this new role is pending. |
 
 The model proposes bounded data. Local code validates the pin and step limits, renders a C++
 data table for the trusted runtime and runs the bench. The verifier measures LED pixels and

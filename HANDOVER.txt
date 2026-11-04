@@ -1,3 +1,27 @@
+BOUNDED MAPPING REPAIR IMPLEMENTATION — 4 NOVEMBER 2026
+
+Implemented the agreed tight repair scope. A fresh confirmed LED camera mismatch
+can trigger the existing fixed DISCOVER probe. Muse Spark Contributor proposes
+the mapping from measured states; deterministic inference must agree exactly.
+The dashboard shows the old/new GPIO25/26 assignments and waits for explicit
+approval before compile/install/retest. The original logical behavior contract,
+reader policy and calibration remain fixed. One investigation per original plan;
+no repair of a repair, no automatic retry, no GPIO27 use.
+
+309 host tests pass, including20 synthetic integration tests and10 simulated UI
+scenarios. No real Meta requests, camera acquisition, serial commands or firmware
+installation during this implementation. This is software validation, not a live
+repair demonstration. The next joint task remains a stable camera view and an
+actual fault/probe/proposal/approval/retest session. Historical results below stay
+unchanged. Read docs/mapping-repair.md for the complete workflow and boundaries.
+
+New tests freeze contract.json at review (legacy reviewed plans lazily migrate
+before a new test). Old saved tests without the contract hash cannot initiate a
+repair. Unknown LEDs, changed geometry, OLED-only failures, stale/cross-bound
+evidence and unapproved candidates stop before any corrective installation.
+
+Earlier entries below are historical; the newest entry takes precedence.
+
 SUBMISSION PREPARATION — 4 NOVEMBER 2026
 
 Current dashboard: READY/BUSY/DONE has passed real camera verification on the

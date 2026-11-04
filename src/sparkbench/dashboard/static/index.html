@@ -17,6 +17,7 @@
 <script defer src="/projects.js"></script>
 <script defer src="/explain.js"></script>
 <script defer src="/autopilot.js"></script>
+<script defer src="/mapping-repair.js"></script>
 <script defer src="/flow.js"></script>
 </head>
 <body>
@@ -190,11 +191,28 @@
       </dl>
   </section>
 
+  <section id="mapping-repair" class="card mapping-repair" hidden aria-label="LED mapping repair">
+    <div class="stage-head"><h2>LED mapping repair</h2><span id="repair-status" class="pill" role="status"></span></div>
+    <p id="repair-message"></p>
+    <p class="help">The fixed probe measures which LED responds to each allowed pin. Muse Spark proposes a mapping; local code checks it against the measurements. Your approved colors, display text and timing stay fixed.</p>
+    <table id="repair-diff" hidden><caption>Proposed firmware configuration change</caption><thead><tr><th>Output</th><th>Current firmware</th><th>Proposed firmware</th></tr></thead><tbody id="repair-diff-rows"></tbody></table>
+    <p id="repair-explanation" class="repair-explanation" hidden></p>
+    <p id="repair-contract" class="help mono" hidden></p>
+    <p id="repair-error" class="error-line" role="alert" hidden></p>
+    <div class="actions wrap">
+      <button id="repair-start" class="button" type="button" hidden>Probe LED mapping</button>
+      <button id="repair-approve" class="primary-button" type="button" hidden>Approve mapping repair and retest</button>
+      <button id="repair-decline" class="button" type="button" hidden>Keep current firmware</button>
+      <button id="repair-source" class="link-button" type="button" hidden>Open original failure</button>
+      <button id="repair-log" class="link-button" type="button" hidden>Probe and proposal records</button>
+    </div>
+  </section>
+
   <details id="flow-details" class="card quiet" hidden>
     <summary><span class="summary-title">Details</span><span class="help">Run log, firmware, parts, and questions</span></summary>
   <section class="card stage-card" id="bench-stage" hidden>
     <div class="stage-head"><h2>Run log</h2><span id="autopilot-status" class="pill"></span></div>
-    <p class="help">The agent runs the same jobs a person would click and skips what the records already prove. When the board does something else, it explains why and waits for you, then tests again. It never touches wiring, the plan or the limits.</p>
+    <p class="help">The bench runs the same jobs a person would click. A confirmed LED mismatch can trigger one fixed mapping probe. Muse Spark may propose a mapping correction, which needs your approval before installation. The approved behavior and measurement limits stay fixed.</p>
     <ol id="timeline" class="timeline"></ol>
     <div class="actions wrap"><span id="execution-status" class="help" role="status"></span></div>
     <p id="execution-error" class="error-line" role="alert" hidden></p>

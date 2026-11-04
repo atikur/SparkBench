@@ -1,3 +1,18 @@
+BOUNDED MAPPING REPAIR — 4 NOVEMBER 2026
+
+Read the newest HANDOVER.txt entry and docs/mapping-repair.md first. The agreed
+fixed-probe / Meta mapping proposal / deterministic validation / explicit approval
+workflow is implemented. Only GPIO25/26 mapping may change; original behavior,
+measurement policy and calibration remain fixed. Old tests need a new frozen-
+contract capture before repair eligibility. One attempt per original proposal.
+309 host tests pass, including20 synthetic integration tests and10 simulated UI
+scenarios. No live Meta/hardware validation of this new repair flow yet. Servo
+supply remains off by prior report; no new movement authorized. Local dashboard
+has been restarted on8765 with the new code. Next joint task: stable framing and
+one real fault/probe/proposal/approval/retest session; preserve every outcome.
+
+Earlier entries below are historical; newest state takes precedence.
+
 SUBMISSION PREPARATION — 4 NOVEMBER 2026
 
 Current dashboard: READY/BUSY/DONE has passed real camera verification on the

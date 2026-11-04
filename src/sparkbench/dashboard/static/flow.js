@@ -43,7 +43,7 @@ function runPhases(){const job=activeExecution?.action==='test'?activeExecution:
  else if(testEnded)set('reading','done','Read without being told what to expect');
  else set('reading','pending');
  const explain=stageState('explain'),decide=stageState('decide');
- if(explain==='running'){set('verdict','running','Muse Spark is explaining the evidence');percent=97;}
+ if(explain==='running'){set('verdict','running',activeExecution?.action==='mapping_repair'?stageNote('explain'):'Muse Spark is explaining the evidence');percent=97;}
  else if(autopilot?.waiting&&testEnded)set('verdict','stopped',test==='bad'?'Mismatch. Waiting for your fix, then testing again':'Not verified. Waiting for you, then testing again');
  else if(stageFinished(decide)||(testEnded&&!autopilot))set('verdict','done');
  else if(testEnded){set('verdict','running','Comparing the readings with the plan');percent=96;}
@@ -51,9 +51,9 @@ function runPhases(){const job=activeExecution?.action==='test'?activeExecution:
  return {phases:out,percent:Math.round(percent)};}
 function showFlowFrame(img,label,url,text){if(url&&img.dataset.url!==url){img.dataset.url=url;img.src=url;}$(label).textContent=text;}
 let flowPeak=0;
-function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-check').hidden,fixing=!$('fix-check').hidden;let active=RUN_PHASES.find(([id])=>phases[id].state==='running')||RUN_PHASES.find(([id])=>phases[id].state==='stopped');
+function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-check').hidden,repairing=activeExecution?.action==='mapping_repair'||!!(typeof mappingRepair!=='undefined'&&mappingRepair.waiter),fixing=!$('fix-check').hidden;let active=RUN_PHASES.find(([id])=>phases[id].state==='running')||RUN_PHASES.find(([id])=>phases[id].state==='stopped');
  const attempt=autopilot?.attempt>1?' · attempt '+autopilot.attempt:'';
- $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':fixing?$('autopilot-status').textContent||'Waiting for you':(active?RUN_TITLES[active[0]]:'Starting')+attempt;
+ $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':fixing||repairing?$('autopilot-status').textContent||'Waiting for you':(active?RUN_TITLES[active[0]]:'Starting')+attempt;
  flowPeak=Math.max(flowPeak,percent);$('run-bar').style.width=Math.max(flowPeak,2)+'%';$('run-view').classList.toggle('blocked',blocked||fixing);$('run-view').classList.toggle('fixing',fixing&&!blocked);$('run-ended').hidden=!flowHold;
  $('run-phases').replaceChildren(...RUN_PHASES.map(([id,name])=>{const p=phases[id],li=node('li');li.dataset.state=p.state;li.append(node('span',undefined,'phase-dot'));const body=node('div');body.append(node('strong',name));if(p.note)body.append(node('span',p.note,'help'));li.append(body);return li;}));
  const job=activeExecution?.action==='test'?activeExecution:null,progress=job?.stage==='analysis'?job.reading_progress:null,steps=planSteps();
@@ -100,7 +100,7 @@ function renderExplanationBlock(run,saved,busy){const box=$('result-explain'),re
  box.hidden=true;$('result-explain-run').hidden=!plannerSession?.planning_available;}
 async function loadExplanationFor(run,version){try{const data=await api('/api/runs/'+encodeURIComponent(run.id)+'/explanations');if(version!==flowRunId)return;renderExplanationBlock(run,data.explanations.find(e=>e.status==='explained'));}catch(e){renderExplanationBlock(run);}}
 async function loadResult(job){if(flowRunId===job.id)return;flowRunId=job.id;flowRun=null;$('result-error').hidden=true;$('result-explain').hidden=true;$('result-explain-run').hidden=true;
- try{const run=await api('/api/runs/test-'+job.id);if(flowRunId!==job.id)return;flowRun=run;showTestResult(job);$('result-again').textContent=run.behavior_verdict==='fail'?'I fixed it, run again':'Run again';renderHistory(job.id);
+ try{const run=await api('/api/runs/test-'+job.id);if(flowRunId!==job.id)return;flowRun=run;showTestResult(job);window.showMappingRepairFor?.(job);$('result-again').textContent=run.behavior_verdict==='fail'?'I fixed it, run again':'Run again';renderHistory(job.id);
   const tests=testHistory(),prior=priorNonPass(tests,tests.findIndex(j=>j.id===job.id));$('result-retest').hidden=!prior;if(prior)$('result-retest').textContent=(prior==='fail'?'The previous test of this firmware found a mismatch.':'The previous test of this firmware was incomplete.')+' This test passed with the same plan.';const problem=run.steps.find(s=>stepResult(run,s.id)!=='ok');flowStep=(problem||run.steps[0])?.id;renderResultStep();loadExplanationFor(run,job.id);}
  catch(e){if(flowRunId===job.id){$('result-error').textContent='This test\'s evidence failed its checks: '+e.message;$('result-error').hidden=false;}}}
 function renderStatus(){const running=runIsHere(),[label,state]=running?['Running','busy']:projectStatus(lifecycleSnapshot,project?.draft);$('flow-status').textContent=project?label:'';if(state)$('flow-status').dataset.state=state;else delete $('flow-status').dataset.state;}
@@ -111,7 +111,7 @@ function renderFlowNow(){flowQueued=false;if(typeof lifecycleSnapshot==='undefin
  $('flow-back').hidden=!(state==='plan'&&flowOverride==='plan'&&currentTest());renderStatus();}
 // A timer, not requestAnimationFrame: the page must keep up while its tab is in the background.
 window.renderFlow=function(){if(flowQueued)return;flowQueued=true;setTimeout(renderFlowNow,0);};
-window.resetFlow=function(){flowPick=null;flowOverride=null;flowHold=null;flowRun=null;flowRunId=null;flowStep=null;flowLastState=null;window.renderFlow();};
+window.resetFlow=function(){flowPick=null;flowOverride=null;flowHold=null;flowRun=null;flowRunId=null;flowStep=null;flowLastState=null;window.resetMappingRepair?.();window.renderFlow();};
 window.flowRunStarted=function(){flowPick=null;window.flowFailedRun=null;flowPeak=0;$('autopilot-error').hidden=true;flowOverride=null;flowHold=null;flowRunId=null;window.renderFlow();};
 // A run that ends without a test result stays on the running screen, so the reason is not lost.
 window.flowRunEnded=function(text,hold){flowHold=hold?text:null;window.renderFlow();};

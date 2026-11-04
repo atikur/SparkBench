@@ -114,6 +114,16 @@ class ProjectTests(unittest.TestCase):
         with self.assertRaises(ValueError):self.service.update(self.id,body)
         body.update(revision=p['revision']+1,owned={'motor':1})
         with self.assertRaises(ValueError):self.service.update(self.id,body)
+    def test_approved_mapping_repair_keeps_the_accepted_brief_and_parent_link(self):
+        turn=self.ask();self.wait();accepted=self.service.accept(self.id,turn)['accepted']
+        parent=self.service.firmware(self.id,{'accepted_sha256':accepted['sha256'],'request_id':'e'*32})
+        candidate={'id':'f'*32,'parent_id':parent,'origin':'mapping_repair','review_status':'reviewed'}
+        self.service.link_repair(candidate);self.service.link_repair(candidate)
+        project=self.service.get(self.id)
+        self.assertEqual(project['accepted'],accepted)
+        self.assertEqual([l['proposal_id'] for l in project['firmware_links']],[parent,candidate['id']])
+        self.assertEqual(project['firmware_links'][-1]['accepted_sha256'],accepted['sha256'])
+        with self.assertRaises(ValueError):self.service.link_repair({**candidate,'review_status':'pending'})
     def test_historical_test_context_preserves_its_own_frozen_expectations(self):
         generator=Mock(wraps=self.generator);self.service.generator=generator
         self.service.ask(self.id,{'message':'Explain this older test','images':[],'request_id':'f'*32,'run_id':'fixture'});self.wait()

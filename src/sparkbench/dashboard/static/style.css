@@ -751,3 +751,12 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 @media (max-width: 900px) { .section-head .hero-stats { display: none; } }
 .hero-title { font-size: 40px; }
 .hero-grid { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); }
+.mapping-repair { border-left: 4px solid var(--accent); }
+.mapping-repair .stage-head { flex-wrap: wrap; gap: 10px; }
+.mapping-repair table { width: 100%; margin: 18px 0; }
+.mapping-repair caption { text-align: left; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+.mapping-repair th, .mapping-repair td { padding: 10px; text-align: left; border-bottom: 1px solid var(--line); }
+.mapping-repair tbody th { font-weight: 600; }
+.repair-explanation { padding: 12px 0; border-block: 1px solid var(--line); }
+.mapping-repair .mono { overflow-wrap: anywhere; }
+@media (max-width: 600px) { .mapping-repair th, .mapping-repair td { padding: 8px 4px; font-size: 13px; } .mapping-repair .primary-button { width: 100%; } }

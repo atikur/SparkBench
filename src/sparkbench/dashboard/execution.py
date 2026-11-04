@@ -26,6 +26,7 @@ from ..vision import digest, geometry_valid, led_state, read_images, windows
 from ..workflow import execute
 from .catalog import Run
 from .planning import BusyError, IDENTIFIER
+from .repair import MappingRepairMixin
 
 
 def devices():
@@ -48,12 +49,13 @@ def devices():
 class Cancelled(ValueError): pass
 
 
-class ExecutionService:
-    def __init__(self, root, planner, store, *, builder=build_artifact, installer=install, runner=execute, enumerate_devices=devices, identity_checker=verify_identity, view_reader=read_images, label_reader=read_label, frame_inspector=inspect_frame):
+class ExecutionService(MappingRepairMixin):
+    def __init__(self, root, planner, store, *, builder=build_artifact, installer=install, runner=execute, enumerate_devices=devices, identity_checker=verify_identity, view_reader=read_images, label_reader=read_label, frame_inspector=inspect_frame, probe_runner=None, probe_analyzer=None, mapping_proposer=None):
         self.root=Path(root).resolve();self.directory=self.root/"runs/dashboard-execution"
         self.planner,self.store=planner,store
         self.builder,self.installer,self.runner,self.enumerate_devices=builder,installer,runner,enumerate_devices
         self.identity_checker=identity_checker;self.view_reader=view_reader;self.label_reader=label_reader;self.frame_inspector=frame_inspector
+        self._init_repairs(probe_runner, probe_analyzer, mapping_proposer)
         self.lock=threading.RLock();self.active=None;self.cancel_event=None;self.thread=None;self.jobs={}
         if self.directory.is_dir():
             for folder in self.directory.iterdir():
@@ -82,6 +84,7 @@ class ExecutionService:
         result=self.planner.get(proposal_id)
         if result.get("status")!="ready" or result.get("review_status")!="reviewed" or result.get("plan_sha256")!=expected_hash:
             raise ValueError("The unchanged proposal must be reviewed before building or testing")
+        self._validate_repair_candidate(result)
         plan=json.loads((self.planner.directory/proposal_id/"plan.json").read_text())
         if plan_hash(plan)!=expected_hash:raise ValueError("Reviewed plan hash differs")
         return plan
@@ -300,6 +303,17 @@ class ExecutionService:
         try:
             if cancel.is_set():raise Cancelled("Cancelled before work started")
             plan=self._reviewed(body["proposal_id"],body["plan_sha256"])
+            proposal=self.planner.get(body["proposal_id"])
+            if proposal.get("origin")=="mapping_repair" and action!="compile":
+                repair=self.jobs[proposal['provenance']['repair_job_id']]
+                if body['port']!=repair['request']['port'] or (action=='test' and body['device_id']!=repair['request']['device_id']):
+                    raise ValueError('Use the board port and frozen camera from the mapping probe')
+                if action=='install':
+                    board,_=self._board()
+                    source=self._repair_source(repair['source_test_id'],current=False)
+                    _,candidate=self._build(body['build_id'],body['proposal_id'],body['plan_sha256'])
+                    if board['active_firmware']['firmware_sha256'] not in (source['artifact']['firmware_sha256'],candidate['firmware_sha256']):
+                        raise ValueError('The board firmware changed after the mapping probe')
             if action=="compile":
                 self._set(job_id,stage="compiling")
                 result=self.builder(plan,folder/"artifact")
@@ -331,12 +345,10 @@ class ExecutionService:
                     if calibration["camera_id"]!=body["device_id"]:raise ValueError("Selected camera differs from frozen measurement policy")
                     board,_=self._board()
                     if board["active_firmware"]["firmware_sha256"]!=artifact["firmware_sha256"]:raise ValueError("Install this compiled application before its camera test")
-                    spec={"schema_version":1,"servo_actuation":False,"nominal_step_duration_ms":3000,
-                          "scope":"Physical comparison against the operator-reviewed AI plan; not an independent test of natural-language intent",
-                          "expectation_provenance":"Reviewed proposal data; measurements and OLED reader remain independent of expected values",
-                          "steps":[{"step":i+1,"red":s["red"],"green":s["green"],"oled_text":s["text"]} for i,s in enumerate(plan["steps"])]}
+                    spec=self.planner.contract(body['proposal_id'])
+                    contract_hash=self.planner.get(body['proposal_id']).get('contract_sha256')
                     save(folder/"spec.json",spec)
-                    self._set(job_id,stage="preflight")
+                    self._set(job_id,stage="preflight",contract_sha256=contract_hash)
                     result=self.runner(body["port"],body["device_id"],folder/"workflow",policy_path,folder/"spec.json",artifact_path=artifact_path,
                         cancel=cancel,on_stage=lambda stage:self._set(job_id,stage=stage),analyzer=lambda *args:self._analyze(job_id,cancel,*args))
                     capture_path=folder/"workflow/capture/run.json"
@@ -345,9 +357,16 @@ class ExecutionService:
                     if cancel.is_set():
                         self._set(job_id,status="cancelled",stage="cancelled",shutdown=shutdown,error="Test cancelled; no behavior pass claimed")
                     else:
+                        self._validate_repair_candidate(self.planner.get(body['proposal_id']))
+                        if self.planner.contract(body['proposal_id'])!=spec:
+                            raise ValueError('Behavior contract changed during the camera test')
                         self._set(job_id,status=result["status"],stage="finished",shutdown=shutdown,physical_verification=result["status"],
                                   failures=result.get("failures"),unknowns=result.get("unknowns"),error=result.get("error"),
                                   expectation_scope="Matches reviewed plan; natural-language intent is not independently certified")
+                        if proposal.get('origin')=='mapping_repair':
+                            self._set(job_id,repair_job_id=proposal['provenance']['repair_job_id'],
+                                      source_test_id=proposal['provenance']['source_test_id'],
+                                      repair_verified=result['status']=='pass')
             self._set(job_id,ended_at_utc=datetime.now(timezone.utc).isoformat())
         except Exception as exc:
             shutdown={}
@@ -366,15 +385,17 @@ class ExecutionService:
         with self.lock:
             if job_id not in self.jobs:raise KeyError("Unknown job")
             result=copy.deepcopy(self.jobs[job_id])
+            if result.get('action')=='mapping_repair' and self.active==job_id:
+                result['status']='running'  # Publish the terminal result only after its evidence is sealed.
         if result.get("action")=="compile" and result.get("status")=="compiled":result["runtime_current"]=runtime_current(self._folder(job_id)/"artifact")
         result["evidence_available"] = (result.get("status") in ("pass","fail","incomplete")
             and (self._folder(job_id)/"workflow/analysis/verification.json").is_file())
-        capture=self._folder(job_id)/"workflow/capture/camera/frames.jsonl"
+        capture=self._folder(job_id)/('repair' if result.get('action')=='mapping_repair' else 'workflow')/"capture/camera/frames.jsonl"
         if capture.is_file():
             from ..led_oled import frame_rows
             rows=frame_rows(capture)
             if rows and re.fullmatch(r"frame-\d{6}\.jpg",rows[-1].get("file","")):
-                row=rows[-1];result["latest_frame"]={"file":row["file"],"url":f"/api/jobs/{job_id}/frames/{row['file']}","live":result.get("stage")=="capture" and result.get("status")=="running"}
+                row=rows[-1];result["latest_frame"]={"file":row["file"],"url":f"/api/jobs/{job_id}/frames/{row['file']}","live":result.get("stage") in ('capture','probe') and result.get("status")=="running"}
         if result.get("action")=="test" and result.get("status")=="running" and result.get("stage")=="capture":
             step=self._capture_step(job_id)
             if step:result["capture_step"]=step
@@ -434,9 +455,9 @@ class ExecutionService:
         return step
 
     def image(self, job_id, name):
-        self.get(job_id)
+        job=self.get(job_id)
         if not re.fullmatch(r"frame-\d{6}\.jpg",name):raise KeyError("Unknown frame")
-        file=self._folder(job_id)/"workflow/capture/camera"/name
+        file=self._folder(job_id)/('repair' if job.get('action')=='mapping_repair' else 'workflow')/"capture/camera"/name
         if file.is_symlink() or not file.is_file():raise KeyError("Frame unavailable")
         data=file.read_bytes()
         if not data.startswith(b'\xff\xd8\xff'):raise ValueError("Unsupported image")
@@ -445,7 +466,9 @@ class ExecutionService:
     def _diagnostic_files(self, job_id):
         folder=self._folder(job_id)
         names=['artifact/compile.log','installation/installation.json','identity/identity.json','identity/uart.jsonl',
-               'workflow/analysis.stdout.log','workflow/analysis.stderr.log','workflow/capture/uart.jsonl']
+               'workflow/analysis.stdout.log','workflow/analysis.stderr.log','workflow/capture/uart.jsonl',
+               'repair/capture/uart.jsonl','repair/discovery/discovery.json','repair/proposal/request.json',
+               'repair/proposal/result.json','repair/binding.json','approval.json']
         names += ['installation/'+p.name for p in sorted((folder/'installation').glob('*.log')) if re.fullmatch(r'\d{2}-[a-z-]+\.log',p.name)]
         return [name for name in names if (folder/name).is_file() and not (folder/name).is_symlink() and (folder/name).resolve().is_relative_to(folder.resolve())]
 

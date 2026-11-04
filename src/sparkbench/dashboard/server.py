@@ -24,6 +24,7 @@ ASSETS['/lifecycle.js']='lifecycle.js'
 ASSETS['/explain.js']='explain.js'
 ASSETS['/flow.js']='flow.js'
 ASSETS['/autopilot.js']='autopilot.js'
+ASSETS['/mapping-repair.js']='mapping-repair.js'
 
 
 class DashboardServer(ThreadingHTTPServer):
@@ -106,6 +107,8 @@ class Handler(BaseHTTPRequestHandler):
                 data,mime=self.server.projects.image(*match.groups());self.send_data(200,data,mime)
             elif path == "/api/jobs":
                 self.json(200, {"jobs":self.server.execution.list()})
+            elif match := re.fullmatch(r'/api/repairs/eligibility/([0-9a-f]{32})',path):
+                self.json(200,self.server.execution.repair_eligibility(match[1]))
             elif match := re.fullmatch(r"/api/jobs/([0-9a-f]{32})", path):
                 self.json(200, self.server.execution.get(match[1]))
             elif match := re.fullmatch(r'/api/jobs/([0-9a-f]{32})/diagnostics',path):
@@ -151,7 +154,8 @@ class Handler(BaseHTTPRequestHandler):
         cancellation = re.fullmatch(r"/api/jobs/([0-9a-f]{32})/cancel",path)
         project_action=re.fullmatch(r'/api/projects/([0-9a-f]{32})/(update|ask|accept|firmware)',path)
         explain=re.fullmatch(r"/api/runs/([a-z0-9-]+)/explain",path)
-        if path not in ("/api/plans",'/api/projects','/api/guide/photo','/api/camera/check') and not review and not operation and not cancellation and not project_action and not explain:
+        repair_approval=re.fullmatch(r'/api/repairs/([0-9a-f]{32})/approve',path)
+        if path not in ("/api/plans",'/api/projects','/api/guide/photo','/api/camera/check','/api/repairs') and not review and not operation and not cancellation and not project_action and not explain and not repair_approval:
             self.method_rejected();return
         if not self.local_request(mutation=True): return
         try:
@@ -166,6 +170,12 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(body, dict): raise ValueError("JSON object required")
             if path=='/api/projects':
                 self.json(201,self.server.projects.get(self.server.projects.create(body)))
+            elif path=='/api/repairs':
+                self.json(202,{'id':self.server.execution.start_repair(body)})
+            elif repair_approval:
+                proposal=self.server.execution.approve_repair(repair_approval[1],body)
+                self.server.projects.link_repair(proposal)
+                self.json(200,proposal)
             elif path=='/api/guide/photo':
                 self.json(202,{'id':self.server.execution.start_photo(body)})
             elif path=='/api/camera/check':

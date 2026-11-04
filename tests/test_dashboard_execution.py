@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import Mock,patch
 
 from sparkbench.artifacts import build_artifact
+from sparkbench.acceptance import logical_contract
 from sparkbench.dashboard.evidence import EvidenceStore
 from sparkbench.dashboard.execution import Cancelled,ExecutionService
 from sparkbench.dashboard.planning import BusyError
@@ -25,6 +26,7 @@ class ExecutionTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);folder=self.root/'plans'/PROPOSAL;folder.mkdir(parents=True);(folder/'plan.json').write_text(json.dumps(PLAN))
         self.planner=Mock(directory=self.root/'plans');self.planner.get.return_value={'status':'ready','review_status':'reviewed','plan_sha256':plan_hash(PLAN)}
+        self.planner.contract.return_value=logical_contract(PLAN)
         (self.root/'hardware').mkdir();(self.root/'old.bin').write_bytes(b'synthetic old app')
         (self.root/'hardware/board.json').write_text(json.dumps({'active_firmware':{'application_binary':'old.bin','firmware_sha256':digest(self.root/'old.bin')},'firmware_history':[]}))
         self.builder=Mock(side_effect=self.build);self.installer=Mock(side_effect=self.install);self.runner=Mock()
@@ -118,7 +120,7 @@ class ExecutionTests(unittest.TestCase):
         build=self.compile();self.wait(self.service.start('install',self.body(build_id=build['id'],port='/dev/synthetic')))
         entered=threading.Event()
         def runner(port,camera,out,policy,spec,**kwargs):
-            self.assertEqual(json.loads(spec.read_text())['expectation_provenance'],'Reviewed proposal data; measurements and OLED reader remain independent of expected values')
+            self.assertEqual(json.loads(spec.read_text()),logical_contract(PLAN))
             kwargs['on_stage']('capture');entered.set();self.assertTrue(kwargs['cancel'].wait(3))
             (out/'capture').mkdir(parents=True);(out/'capture/run.json').write_text(json.dumps({'sequence_started':True,'stop_acknowledged_uart_only':True}))
             return {'status':'incomplete'}

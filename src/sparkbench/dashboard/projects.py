@@ -185,6 +185,25 @@ class ProjectService:
                 p['firmware_links'].append({'proposal_id':proposal,'accepted_sha256':accepted['sha256'],'created_at_utc':now()});p.update(revision=p['revision']+1,updated_at_utc=now());self._write(p)
             return proposal
 
+    def link_repair(self, proposal):
+        """Keep an approved mapping-only child under the same accepted brief."""
+        if proposal.get('origin')!='mapping_repair' or proposal.get('review_status')!='reviewed':
+            raise ValueError('An approved mapping-repair proposal is required')
+        with self.lock:
+            if not self.directory.is_dir():return
+            for folder in self.directory.iterdir():
+                if not IDENTIFIER.fullmatch(folder.name) or not folder.is_dir():continue
+                p=self._read(folder.name);accepted=p.get('accepted')
+                links=p.get('firmware_links',[])
+                parent=next((l for l in reversed(links) if l['proposal_id']==proposal['parent_id']),None)
+                if not parent or not accepted or parent['accepted_sha256']!=accepted['sha256']:continue
+                if any(l['proposal_id']==proposal['id'] for l in links):continue
+                current=[l for l in links if l['accepted_sha256']==accepted['sha256']]
+                if current and current[-1]['proposal_id']!=proposal['parent_id']:continue
+                links.append({'proposal_id':proposal['id'],'parent_proposal_id':proposal['parent_id'],
+                    'accepted_sha256':accepted['sha256'],'created_at_utc':now(),'origin':'mapping_repair'})
+                p.update(revision=p['revision']+1,updated_at_utc=now());self._write(p)
+
     def image(self, project_id, turn_id, name):
         turn=self._checked_turn(project_id,turn_id)
         if not turn:raise KeyError('Image unavailable')
