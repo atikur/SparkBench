@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_FOLDERS = ("src", "tests", "firmware", "hardware", "tools", "docs", "specs", "examples")
-ROOT_FILES = ("README.md", "HANDOVER.txt", "CONTINUE_PROMPT.txt", "pyproject.toml",
+ROOT_FILES = ("README.md", "docs/archive/HANDOVER.txt", "docs/archive/CONTINUE_PROMPT.txt", "pyproject.toml",
               "requirements-dev.txt", ".gitignore")
 SKIP_PARTS = {".git", ".venv", ".platformio", ".pio", ".cache", "__pycache__"}
 SOURCE_SUFFIXES = {".py", ".cpp", ".h", ".hpp", ".ini", ".csv", ".json", ".txt",

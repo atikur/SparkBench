@@ -10,6 +10,19 @@ Built for **Push the Frontier** at the Meta Global AI Developer Hackathon, 26 Oc
 and Claude Code. [Event page](https://cerebralvalley.ai/e/meta-ai-developer-hackathon) ·
 [Engineering log](docs/history.md)
 
+## Built during the hackathon
+
+Everything in this repository was built during the event's building period, 27 October to
+4 November 2026: the dashboard and bench agent, the Muse Spark, SAM 3.1 and Muse Voice integrations,
+the ESP32 LED/OLED runtime, the camera verifier and the mapping repair workflow. It was built with
+development assistance from Codex and Claude Code. The dependencies are listed below under
+[License](#license).
+
+This git history begins on 3 November, when the project moved into this repository. The work before
+that is recorded in the dated [engineering log](docs/history.md) and the
+[handover notes](docs/archive/HANDOVER.txt), and the [evidence bundle](docs/evidence/README.md)
+dates each recorded run.
+
 ## Recorded results
 
 ![The READY step from the recorded 4 November camera pass](docs/evidence/hero-ready.jpg)
@@ -121,6 +134,12 @@ Run the suite from the repository root.
 ```bash
 PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
 ```
+
+## License
+
+SparkBench is released under the [MIT License](LICENSE). PlatformIO, the Espressif Arduino framework
+and U8g2 are fetched at build time, and the dashboard loads the Fraunces and Inter fonts from Google
+Fonts. These remain under their own licenses.
 
 ## Repository layout
 

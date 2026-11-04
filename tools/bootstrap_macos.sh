@@ -40,5 +40,5 @@ PYTHONPATH=src .venv/bin/python -m sparkbench doctor
 if ! xcrun --find swiftc >/dev/null 2>&1; then
   echo "Camera helper compilation needs Apple Command Line Tools: xcode-select --install"
 fi
-echo "Host setup complete. Follow HANDOVER.txt to authorize and select the iPhone."
+echo "Host setup complete. Follow docs/archive/HANDOVER.txt to authorize and select the iPhone."
 echo "No firmware was uploaded, no serial command was sent, and no camera was opened."
