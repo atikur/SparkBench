@@ -315,3 +315,15 @@ class RuntimeCancellationTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class DevicesWithoutPyserialTests(unittest.TestCase):
+    def test_devices_reports_missing_pyserial_instead_of_failing(self):
+        import sys
+        from sparkbench.dashboard import execution
+        with patch.dict(sys.modules, {"serial": None, "serial.tools": None}), \
+             patch.object(execution, "list_cameras", return_value={"camera_permission": "not_determined", "devices": []}):
+            result = execution.devices()
+        self.assertEqual(result["ports"], [])
+        self.assertIn("pyserial", result["port_error"])
+        self.assertEqual(result["cameras"], [])

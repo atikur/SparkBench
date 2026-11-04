@@ -129,7 +129,7 @@ tools, run host tests and print the readiness report. Then put `META_API_KEY` an
 bench, including a verified prior application and boot-layout records for installation and a
 frozen camera calibration for verification. [Commissioning details](docs/commissioning.md)
 
-The final 4 November update passed all 372 host tests.
+All 373 host tests pass.
 Run the suite from the repository root.
 
 ```bash

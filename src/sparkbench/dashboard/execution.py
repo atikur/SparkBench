@@ -32,9 +32,14 @@ from ..sam_regions import propose_regions
 
 
 def devices():
-    from serial.tools import list_ports
-    result = {"ports":[{"id":p.device,"name":p.description,"serial_number":p.serial_number}
-                        for p in list_ports.comports() if (p.vid,p.pid)==(0x10C4,0xEA60)], "cameras":[]}
+    try:
+        from serial.tools import list_ports
+        result = {"ports":[{"id":p.device,"name":p.description,"serial_number":p.serial_number}
+                            for p in list_ports.comports() if (p.vid,p.pid)==(0x10C4,0xEA60)], "cameras":[]}
+    except ImportError:
+        # The source-only preview runs without the dev requirements; only live bench work needs pyserial.
+        result = {"ports":[], "cameras":[],
+                  "port_error":"Serial port listing needs the pyserial package from requirements-dev.txt. The preview works without it; live bench work does not."}
     try:
         cameras=list_cameras()
         result["camera_permission"]=cameras.get("camera_permission")
