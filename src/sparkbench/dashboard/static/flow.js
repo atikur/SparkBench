@@ -238,6 +238,11 @@ function renderFlowNow(){flowQueued=false;if(typeof lifecycleSnapshot==='undefin
  $('flow-back').hidden=!(state==='plan'&&flowOverride==='plan'&&currentTest());renderProjectProgress(state);renderStatus();}
 // A timer, not requestAnimationFrame: the page must keep up while its tab is in the background.
 window.renderFlow=function(){if(flowQueued)return;flowQueued=true;setTimeout(renderFlowNow,0);};
+// The progress panel stays in view: the full panel at the top of the page, one compact row once the page scrolls past it,
+// so the overall picture and the current task are visible beside the plan, the run or the result.
+{const panel=$('progress-panel'),sentinel=document.createElement('div');sentinel.className='progress-sentinel';panel.parentNode.insertBefore(sentinel,panel);
+ let compact=false;const update=()=>{if(panel.hidden){if(compact){compact=false;panel.classList.remove('compact');}return;}const top=sentinel.getBoundingClientRect().top;const next=compact?top<0:top<-12;if(next!==compact){compact=next;panel.classList.toggle('compact',compact);}};
+ window.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);new MutationObserver(update).observe(panel,{attributes:true,attributeFilter:['hidden']});window.progressPanelUpdate=update;}
 window.resetFlow=function(){flowPick=null;flowOverride=null;flowHold=null;flowRun=null;flowRunId=null;flowStep=null;flowLastState=null;window.closeCameraRegions?.();window.resetMappingRepair?.();window.renderFlow();};
 window.flowRunStarted=function(){window.closeCameraRegions?.();flowPick=null;window.flowFailedRun=null;flowPeak=0;$('autopilot-error').hidden=true;flowOverride=null;flowHold=null;flowRunId=null;window.renderFlow();};
 // A run that ends without a test result stays on the running screen, so the reason is not lost.
