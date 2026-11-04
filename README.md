@@ -123,8 +123,9 @@ unavailable until their complete run records are present. Open the selected reco
 the [evidence bundle](docs/evidence/README.md).
 
 For live work on macOS, run `tools/bootstrap_macos.sh` to create the environment, install the
-tools, run host tests and print the readiness report. Then configure `META_API_KEY` in the local
-`.env` and start with `.venv/bin/python -m sparkbench dashboard`. Live testing needs a commissioned
+tools, run host tests and print the readiness report. Then put `META_API_KEY` and
+`META_MODEL=muse-spark-1.3-contributor` in the local `.env` and start with
+`.venv/bin/python -m sparkbench dashboard`. Every model role checks for that exact model. Live testing needs a commissioned
 bench, including a verified prior application and boot-layout records for installation and a
 frozen camera calibration for verification. [Commissioning details](docs/commissioning.md)
 
