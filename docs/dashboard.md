@@ -48,7 +48,9 @@ The firmware shows each step's text in the largest font that fits, so a lone dig
 
 ## Run on the bench
 
-On a reviewed plan, **Run on the bench** runs the same explicit jobs a person would click, in order: compile, install, identity check, camera test. It skips a step only when the saved records show it is done (a compiled build for this plan hash; the board record showing that firmware; a confirmed identity) and reinstalls when the board record shows a different application. It enumerates devices and picks a port or camera only when there is exactly one; otherwise it stops and asks. If the camera test does not pass it asks Muse Spark to explain the evidence, then decides: a camera view that no longer matches the frozen reference means "refresh the reference, wiring untouched"; a behaviour mismatch means "check the wiring, the plan is not changed to match a fault"; unknown readings mean "no pass and no fail". It never changes wiring, mappings or limits, and **Stop** cancels the current job through the existing owner. Every step is an ordinary saved job; the decision log is shown on the page.
+On a reviewed plan, **Run on the bench** runs the same explicit jobs a person would click, in order: camera check, compile, install, identity check, camera test. It skips a step only when the saved records show it is done (a compiled build for this plan with the current runtime, an install record for that exact firmware, a confirmed identity). It never changes wiring, mappings or limits.
+
+When the test does not pass, the agent asks Muse Spark to explain the evidence, shows the diagnosis, the next check and the frame that shows the problem, and waits. **I fixed it, test again** continues the same run: the agent checks the camera again and records a new test. A pass after a fix is reported as such. The agent never edits the plan to match a fault, and each attempt is a separate saved test. **Stop** ends the run at any wait.
 
 ## Explain a failed or incomplete run
 

@@ -76,8 +76,8 @@ the model explains it from the recorded evidence, and the explanation is advisor
   model or touches hardware. Each hardware action (compile, install, camera test) is a separate
   explicit button.
 - **Agent**: after one approval it runs those same jobs in order on a live timeline, skips what
-  the saved records already prove, confirms every part is in frame and the OLED is readable before running, waits for you to fix it if not, reads a non-pass
-  result with Muse Spark and decides the next step: check the wiring or stop on unknown readings. It never
+  the saved records already prove, confirms every part is in frame and the OLED is readable before running, reads a non-pass
+  result with Muse Spark, shows the fix and waits, then re-tests the same run once you have fixed the bench. It never
   changes wiring, mappings or limits, and it stops wherever a person is needed.
 - **Firmware**: a fixed runtime on a classic ESP32 reads a generated data table. Serial protocol
   is `ID`, `VISUAL`, `DISCOVER`, `PING`, `STOP` with lease timeouts, so a lost host connection

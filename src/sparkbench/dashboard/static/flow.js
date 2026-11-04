@@ -41,15 +41,17 @@ function runPhases(){const job=activeExecution?.action==='test'?activeExecution:
  else set('reading','pending');
  const explain=stageState('explain'),decide=stageState('decide');
  if(explain==='running'){set('verdict','running','Muse Spark is explaining the evidence');percent=97;}
+ else if(autopilot?.waiting&&testEnded)set('verdict','stopped',test==='bad'?'Mismatch. Waiting for your fix, then testing again':'Not verified. Waiting for you, then testing again');
  else if(stageFinished(decide)||(testEnded&&!autopilot))set('verdict','done');
  else if(testEnded){set('verdict','running','Comparing the readings with the plan');percent=96;}
  else set('verdict','pending');
  return {phases:out,percent:Math.round(percent)};}
 function showFlowFrame(img,label,url,text){if(url&&img.dataset.url!==url){img.dataset.url=url;img.src=url;}$(label).textContent=text;}
 let flowPeak=0;
-function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-check').hidden;let active=RUN_PHASES.find(([id])=>phases[id].state==='running')||RUN_PHASES.find(([id])=>phases[id].state==='stopped');
- $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':active?RUN_TITLES[active[0]]:'Starting';
- flowPeak=Math.max(flowPeak,percent);$('run-bar').style.width=Math.max(flowPeak,2)+'%';$('run-view').classList.toggle('blocked',blocked);$('run-ended').hidden=!flowHold;
+function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-check').hidden,fixing=!$('fix-check').hidden;let active=RUN_PHASES.find(([id])=>phases[id].state==='running')||RUN_PHASES.find(([id])=>phases[id].state==='stopped');
+ const attempt=autopilot?.attempt>1?' · attempt '+autopilot.attempt:'';
+ $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':fixing?$('autopilot-status').textContent||'Waiting for you':(active?RUN_TITLES[active[0]]:'Starting')+attempt;
+ flowPeak=Math.max(flowPeak,percent);$('run-bar').style.width=Math.max(flowPeak,2)+'%';$('run-view').classList.toggle('blocked',blocked||fixing);$('run-ended').hidden=!flowHold;
  $('run-phases').replaceChildren(...RUN_PHASES.map(([id,name])=>{const p=phases[id],li=node('li');li.dataset.state=p.state;li.append(node('span',undefined,'phase-dot'));const body=node('div');body.append(node('strong',name));if(p.note)body.append(node('span',p.note,'help'));li.append(body);return li;}));
  const job=activeExecution?.action==='test'?activeExecution:null,progress=job?.stage==='analysis'?job.reading_progress:null,steps=planSteps();
  if(job?.latest_frame){const said=progress?.last_text;showFlowFrame($('run-frame'),'run-frame-label',job.latest_frame.url,job.latest_frame.live?'Live camera':progress?(said?'Muse Spark read "'+said+'"':'Muse Spark found this frame unreadable'):'Recorded frame');}

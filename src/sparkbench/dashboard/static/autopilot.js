@@ -43,7 +43,7 @@ async function ensureDevices(){if(!($('execution-port').value&&$('execution-came
  autoLog(ok?'ok':'stop',ok?'Devices: '+optionName('execution-port')+' + '+optionName('execution-camera'):'I will not guess a device. Choose the ESP32 port and the iPhone camera, then run again.');if(!ok){$('flow-details').open=true;$('manual-controls').open=true;}return ok;}
 // Camera check: every part in frame and the OLED readable before the plan runs. When something is wrong the
 // agent says what, waits for the person to fix it, checks again and carries on with the same run.
-let viewWait=null;
+let humanWait=null;
 const VIEW_WORDS={fully_visible:'in frame',partly_visible:'cut off',not_visible:'not in frame'};
 function showViewCheck(text,liveUrl,job){$('view-check-text').textContent=text;$('view-reference').src='/api/camera/reference';if(liveUrl)$('view-live').src=liveUrl;
  const seen=job?.view_inspection;$('view-parts').replaceChildren(...(seen?[['OLED',seen.oled],['Red LED',seen.red_led],['Green LED',seen.green_led]].map(([name,state])=>{const li=node('li',name+': '+VIEW_WORDS[state]);li.dataset.ok=String(state==='fully_visible');return li;}):[]));
@@ -56,11 +56,18 @@ async function checkView(){$('view-check').hidden=true;setStage('view','running'
  if(job.status==='view_blocked'){const text=job.view_issues.map(i=>i.problem).join(' ');setStage('view','stopped',text);autoLog('stop','Camera check: '+text);showViewCheck(text+' Fix it to match the left picture, keep the phone still, then check again.',job.latest_frame?.url,job);return false;}
  const text=job.error||'The camera check did not finish.';setStage('view','stopped',text);autoLog('stop',text);showViewCheck(text+' Fix it, then check again.',null,null);return false;}
 // Waits here for as long as it takes. Stop ends the run.
-async function checkViewUntilClear(){for(;;){if(await checkView())return;if(autopilot?.cancelled)throw new Error('Stopped');setAutoState('Waiting for you: fix the camera view','warn');const again=await new Promise(resolve=>{viewWait=resolve;});if(!again)throw new Error('Stopped');setAutoState('Checking the camera…','busy');}}
-$('view-again').addEventListener('click',async()=>{if(viewWait){const resolve=viewWait;viewWait=null;resolve(true);return;}if(autopilot||activeExecution)return;$('view-again').disabled=true;try{if(await checkView())setAutoState('Camera clear. Run on the bench when ready.','done');}catch(e){$('autopilot-error').textContent=e.message;$('autopilot-error').hidden=false;}finally{$('view-again').disabled=false;}});
+async function waitForPerson(text){if(autopilot?.cancelled)return false;autopilot.waiting=true;setAutoState(text,'warn');window.renderFlow?.();const again=await new Promise(resolve=>{humanWait=resolve;});if(autopilot)autopilot.waiting=false;$('fix-check').hidden=true;window.renderFlow?.();return again;}
+async function checkViewUntilClear(){for(;;){if(await checkView())return;if(!await waitForPerson('Waiting for you: fix the camera view'))throw new Error('Stopped');setAutoState('Checking the camera…','busy');}}
+// The fix panel: what Muse Spark saw, the frame that shows it, and one button to carry on.
+function showFixPanel(run,x,mismatch){$('fix-text').textContent=x.diagnosis;$('fix-next').textContent='Next check: '+x.next_check;
+ const f=run.frames.find(o=>o.id===keyFrame(run))||run.frames.find(o=>o.evaluated);
+ if(f){$('fix-frame').src=f.image_url;const e=f.expected||{},o=f.observed||{};$('fix-frame-label').textContent='Step '+f.step+' · plan: '+ledWords(e.red,e.green)+', "'+e.oled_text+'" · camera: '+(f.geometry_supported===false?'not measured':ledWords(o.red,o.green)+(run.oled_evaluated?', '+(o.oled_text?'"'+o.oled_text+'"':'unreadable'):''));}
+ $('fix-again').textContent=mismatch?'I fixed it, test again':'I checked it, test again';$('fix-check').hidden=false;window.renderFlow?.();}
+$('fix-again').addEventListener('click',()=>{if(humanWait){const resolve=humanWait;humanWait=null;resolve(true);}});
+$('view-again').addEventListener('click',async()=>{if(humanWait){const resolve=humanWait;humanWait=null;resolve(true);return;}if(autopilot||activeExecution)return;$('view-again').disabled=true;try{if(await checkView())setAutoState('Camera clear. Run on the bench when ready.','done');}catch(e){$('autopilot-error').textContent=e.message;$('autopilot-error').hidden=false;}finally{$('view-again').disabled=false;}});
 async function explainRun(run){const started=await planningPost('/api/runs/'+encodeURIComponent(run.id)+'/explain',{request_id:newId()});let r;for(;;){await wait(800);r=await api('/api/explanations/'+started.id);if(r.status!=='generating')return r;}}
 async function runBench(){if(autopilot||!executionPlan||executionPlan.review_status!=='reviewed'||activeExecution)return;
- autopilot={cancelled:false,plan:executionPlan.id,testDone:false};window.flowRunStarted?.();$('autopilot-log').replaceChildren();$('autopilot-error').hidden=true;$('view-check').hidden=true;testResultVersion++;$('test-result').hidden=true;$('stop-bench').hidden=false;resetTimeline();window.updateProjectActions?.();
+ autopilot={cancelled:false,plan:executionPlan.id,testDone:false,attempt:0,waiting:false};$('fix-check').hidden=true;window.flowRunStarted?.();$('autopilot-log').replaceChildren();$('autopilot-error').hidden=true;$('view-check').hidden=true;testResultVersion++;$('test-result').hidden=true;$('stop-bench').hidden=false;resetTimeline();window.updateProjectActions?.();
  const finish=(state,text)=>{setAutoState(text,state);const hold=!autopilot?.testDone&&!autopilot?.cancelled&&state!=='done';autopilot=null;window.flowRunEnded?.(text,hold);$('stop-bench').hidden=true;window.updateProjectActions?.();};
  const decide=(state,text)=>{setStage('decide',state,text);autoLog('decide',text);};
  const stopped=()=>{if(autopilot?.cancelled)throw new Error('Stopped');};
@@ -79,20 +86,29 @@ async function runBench(){if(autopilot||!executionPlan||executionPlan.review_sta
   else{stopped();setAutoState('Checking identity…','busy');setStage('identity','running','asking the board once with ID');const job=await runJob('identity','identity');if(job.status!=='identity_confirmed'){setStage('identity','stopped','the board does not report this plan');return finish('stopped','The board does not report the installed plan. Check the USB connection, then run again.');}setStage('identity','done','confirmed over USB');autoLog('ok','Identity confirmed');}
   // Flashing takes a while and restarts the board, so look again right before the plan runs.
   if(flashed){stopped();setAutoState('Checking the camera…','busy');await checkViewUntilClear();}
-  stopped();setAutoState('Running the camera test…','busy');setStage('test','running','recording the board while the plan runs');autoLog('do','Camera test: recording the board while the plan runs');
-  const test=await runJob('test','test');autopilot.testDone=!!test.evidence_available&&test.status!=='cancelled';
-  if(test.status==='cancelled'){setStage('test','stopped','cancelled');return finish('stopped','Test cancelled; no pass claimed.');}
-  if(test.status==='pass'){setStage('test','done','verified on camera');setStage('explain','skipped','not needed');showTestResult(test);autoLog('ok','Verified on camera');decide('done','Verified on camera: the board did what the plan said.');return finish('done','Verified on camera');}
-  setStage('test',test.status==='fail'?'bad':'warn',(test.status==='fail'?'behavior mismatch':'incomplete')+(test.error?' · '+test.error:''));autoLog(test.status==='fail'?'bad':'warn','Camera test: '+test.status);
-  if(!test.evidence_available){const link=/PTS|timestamp|frame gap/i.test(test.error||'');setStage('test','stopped',test.error||'no evidence saved');setStage('explain','pending','');$('autopilot-error').textContent=link?'The phone\'s video arrived late or out of order, so this recording cannot be trusted and nothing was measured. This says nothing against the board. Connect the phone to the Mac by USB or move it closer to the Wi-Fi router, keep it still, then try again.':'No evidence was saved'+(test.error?': '+test.error:'')+'. Open the run log under Details.';$('autopilot-error').hidden=false;return finish('stopped','The recording could not be used');}
-  const run=await api('/api/runs/test-'+test.id);showTestResult(test);
-  // Nothing was measured, and the records already say why, so there is no evidence to spend a Meta request on.
-  if(run.evaluated_sample_count&&run.geometry_rejected_sample_count===run.evaluated_sample_count){setStage('explain','skipped','nothing was measured');decide('warn','The camera left its calibrated position, so nothing was measured and the board is not blamed. Put the phone back to match the left picture, keep it still for the whole run, then run again.');showViewCheck('The camera moved during the test. No frame matched the calibrated view.',test.latest_frame?.url);return finish('warn','Needs you: put the phone back');}
-  stopped();setAutoState('Reading the evidence…','busy');setStage('explain','running','Muse Spark is reading the expected steps, the findings and the key frames');
-  const r=await explainRun(run);showTestResult(test);
-  if(r.status!=='explained'){setStage('explain','stopped',r.error||r.status);return finish('stopped','No explanation came back. Open the evidence and look yourself.');}
-  setStage('explain','done',r.explanation.diagnosis);autoLog('meta','Muse Spark ('+r.explanation.confidence+'): '+r.explanation.diagnosis);
-  if(run.behavior_verdict==='fail'){decide('bad','The board did something other than the plan. I will not change the plan to match a fault. Next check: '+r.explanation.next_check+' Then run again.');return finish('bad','Needs you: check the wiring');}
-  decide('warn','The readings are unknown, not wrong, so no pass and no fail. Next check: '+r.explanation.next_check);return finish('warn','Needs you: see the next check');
+  // The test loop: record, judge, and when the board did something else, explain it and wait for the
+  // person to fix the bench. The same run then checks the camera again and re-tests. It never edits the plan.
+  for(;;){
+   autopilot.attempt++;
+   if(autopilot.attempt>1){stopped();for(const id of ['test','explain','decide'])setStage(id,'pending','');autoLog('do','Attempt '+autopilot.attempt+': checking the camera, then testing again');setAutoState('Checking the camera…','busy');await checkViewUntilClear();}
+   stopped();setAutoState('Running the camera test…','busy');setStage('test','running','recording the board while the plan runs');autoLog('do','Camera test: recording the board while the plan runs');
+   const test=await runJob('test','test');autopilot.testDone=!!test.evidence_available&&test.status!=='cancelled';
+   if(test.status==='cancelled'){setStage('test','stopped','cancelled');return finish('stopped','Test cancelled; no pass claimed.');}
+   if(test.status==='pass'){setStage('test','done','verified on camera');setStage('explain','skipped','not needed');showTestResult(test);const after=autopilot.attempt>1?' after your fix':'';autoLog('ok','Verified on camera'+after);decide('done','Verified on camera'+after+': the board did what the plan said.');return finish('done','Verified on camera'+after);}
+   setStage('test',test.status==='fail'?'bad':'warn',(test.status==='fail'?'behavior mismatch':'incomplete')+(test.error?' · '+test.error:''));autoLog(test.status==='fail'?'bad':'warn','Camera test: '+test.status);
+   if(!test.evidence_available){const link=/PTS|timestamp|frame gap/i.test(test.error||'');setStage('test','stopped',test.error||'no evidence saved');setStage('explain','pending','');$('autopilot-error').textContent=link?'The phone\'s video arrived late or out of order, so this recording cannot be trusted and nothing was measured. This says nothing against the board. Connect the phone to the Mac by USB or move it closer to the Wi-Fi router, keep it still, then try again.':'No evidence was saved'+(test.error?': '+test.error:'')+'. Open the run log under Details.';$('autopilot-error').hidden=false;return finish('stopped','The recording could not be used');}
+   const run=await api('/api/runs/test-'+test.id);showTestResult(test);
+   // Nothing was measured, and the records already say why, so there is no evidence to spend a Meta request on.
+   if(run.evaluated_sample_count&&run.geometry_rejected_sample_count===run.evaluated_sample_count){setStage('explain','skipped','nothing was measured');decide('warn','The camera left its calibrated position, so nothing was measured and the board is not blamed. Put the phone back to match the left picture and keep it still; I will check the camera and test again.');showViewCheck('The camera moved during the test. No frame matched the calibrated view. Put the phone back to match the left picture, keep it still, then check again.',test.latest_frame?.url,null);
+    if(!await waitForPerson('Waiting for you: put the phone back'))throw new Error('Stopped');continue;}
+   stopped();setAutoState('Reading the evidence…','busy');setStage('explain','running','Muse Spark is reading the expected steps, the findings and the key frames');
+   const r=await explainRun(run);showTestResult(test);
+   if(r.status!=='explained'){setStage('explain','stopped',r.error||r.status);return finish('stopped','No explanation came back. Open the evidence and look yourself.');}
+   setStage('explain','done',r.explanation.diagnosis);autoLog('meta','Muse Spark ('+r.explanation.confidence+'): '+r.explanation.diagnosis);
+   const mismatch=run.behavior_verdict==='fail';
+   decide(mismatch?'bad':'warn',(mismatch?'The board did something other than the plan. I will not change the plan to match a fault.':'The readings are unknown, not wrong, so no pass and no fail.')+' Next check: '+r.explanation.next_check+' When it is fixed, I will check the camera and test again.');
+   showFixPanel(run,r.explanation,mismatch);
+   if(!await waitForPerson(mismatch?'Waiting for you: fix the board':'Waiting for you: see the next check'))throw new Error('Stopped');
+  }
  }catch(e){if(e.message==='Stopped'||autopilot?.cancelled){autoLog('stop','Stopped by you.');return finish('stopped','Stopped.');}$('autopilot-error').textContent=e.message;$('autopilot-error').hidden=false;autoLog('bad',e.message);finish('bad','Stopped on an error.');}}
-$('stop-bench').addEventListener('click',async()=>{if(!autopilot)return;autopilot.cancelled=true;if(viewWait){const resolve=viewWait;viewWait=null;resolve(false);}setAutoState('Stopping after the current step…','busy');if(activeExecution?.id){try{await planningPost('/api/jobs/'+activeExecution.id+'/cancel',{});}catch(e){}}});
+$('stop-bench').addEventListener('click',async()=>{if(!autopilot)return;autopilot.cancelled=true;if(humanWait){const resolve=humanWait;humanWait=null;resolve(false);}setAutoState('Stopping after the current step…','busy');if(activeExecution?.id){try{await planningPost('/api/jobs/'+activeExecution.id+'/cancel',{});}catch(e){}}});

@@ -86,7 +86,8 @@ and 4 November, so say it once at the start, keep it on screen, and label record
 4. 1:10 The phone watches the board. Verdict: verified on camera, with the numbers and the frame.
 5. 1:40 Swap the two LED wires. Press "Run again". The result screen shows mismatch, with the failing steps marked.
 6. 2:05 The agent asks Muse Spark to explain; its explanation names the swap and gives one next check,
-   and the plan stays unchanged.
+   and the plan stays unchanged. Swap the wires back, press "I fixed it, test again", and the
+   same run re-tests and passes.
 7. 2:30 Evidence tab: pass, caught fault and an honest incomplete side by side. Limits dialog for
    two seconds.
 8. 2:45 Closing card: what Meta does (plans, reads the display, explains) and what it never does
