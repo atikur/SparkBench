@@ -157,6 +157,14 @@ class StaticPageTests(unittest.TestCase):
         ids=set(self.ids())
         missing={m for s in self.scripts().values() for m in re.findall(r"\$\('([\w-]+)'\)",s)}-ids
         self.assertEqual(sorted(missing),[])
+    def test_every_button_on_the_page_has_a_handler(self):
+        import re
+        html=(self.STATIC/"index.html").read_text();scripts="".join(self.scripts().values())
+        buttons=re.findall(r'<button[^>]*\bid="([^"]+)"[^>]*type="button"',html)
+        unhandled=[b for b in buttons if "'"+b+"'" not in scripts]
+        self.assertEqual(unhandled,[])
+    def test_page_loads_runs_on_startup(self):
+        self.assertIn("loadRuns();",self.scripts()["app.js"].splitlines()[-1])
     def test_every_script_parses(self):
         import shutil,subprocess
         node=shutil.which("node")
