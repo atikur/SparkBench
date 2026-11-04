@@ -24,7 +24,7 @@ function runPhases(){const job=activeExecution?.action==='test'?activeExecution:
  if(stageFailed(stageState('connect')))set('ready','stopped',stageNote('connect'));
  else if(past||secondCheck||(stageState('connect')==='done'&&stageFinished(stageState('view'))))set('ready','done',stageNote('view')||'Board, phone, and camera view checked');
  else if(stageFailed(stageState('view')))set('ready','stopped','The camera view needs a fix');
- else if(stageState('connect')==='running'||stageState('view')==='running'){set('ready','running',stageState('view')==='running'?'Checking every part is in frame and the OLED is readable':'Looking for the board and the phone');percent=3;}
+ else if(stageState('connect')==='running'||stageState('view')==='running'){set('ready','running',stageState('view')==='running'?stageNote('view')||'Checking every part is in frame and the OLED is readable':'Looking for the board and the phone');percent=3;}
  else set('ready','pending');
  if(secondCheck&&stageState('view')==='stopped')set('installed','stopped','The camera view needs a fix');
  else if(secondCheck){set('installed','running','Checking the camera again');percent=18;}
@@ -55,10 +55,27 @@ function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-che
  const attempt=autopilot?.attempt>1?' · attempt '+autopilot.attempt:'';
  $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':fixing||repairing?$('autopilot-status').textContent||'Waiting for you':(active?RUN_TITLES[active[0]]:'Starting')+attempt;
  flowPeak=Math.max(flowPeak,percent);$('run-bar').style.width=Math.max(flowPeak,2)+'%';$('run-view').classList.toggle('blocked',blocked||fixing);$('run-view').classList.toggle('fixing',fixing&&!blocked);$('run-ended').hidden=!flowHold;
- $('run-phases').replaceChildren(...RUN_PHASES.map(([id,name])=>{const p=phases[id],li=node('li');li.dataset.state=p.state;li.append(node('span',undefined,'phase-dot'));const body=node('div');body.append(node('strong',name));if(p.note)body.append(node('span',p.note,'help'));li.append(body);return li;}));
+ if (!$('run-phases').children.length) $('run-phases').replaceChildren(...RUN_PHASES.map(([id,name])=>{
+  const li=node('li');li.dataset.phase=id;li.append(node('span',undefined,'phase-dot'));
+  const body=node('div');body.append(node('strong',name),node('span','','help'));li.append(body);return li;
+ }));
+ for (const li of $('run-phases').children) {
+  const p=phases[li.dataset.phase];li.dataset.state=p.state;
+  const note=li.querySelector('.help');note.textContent=p.note;note.hidden=!p.note;
+ }
  const job=activeExecution?.action==='test'?activeExecution:null,progress=job?.stage==='analysis'?job.reading_progress:null,steps=planSteps();
- if(job?.latest_frame){const said=progress?.last_text;showFlowFrame($('run-frame'),'run-frame-label',job.latest_frame.url,job.latest_frame.live?'Live camera':progress?(said?'Muse Spark read "'+said+'"':'Muse Spark found this frame unreadable'):'Recorded frame');}
- else showFlowFrame($('run-frame'),'run-frame-label','/api/camera/reference','Calibrated camera view');
+ const checking=!!autopilot&&!flowHold&&stageState('view')==='running';
+ const checkFrame=checking&&lastViewCheck?.status==='running'&&lastViewCheck.proposal_id===executionPlan.id?lastViewCheck.latest_frame:null;
+ const frame=job?.latest_frame||checkFrame;
+ const preview=$('run-camera-preview'),img=$('run-frame');
+ preview.hidden=blocked||fixing||(!checking&&!job);
+ img.hidden=preview.hidden||!frame;
+ if(img.hidden){img.removeAttribute('src');delete img.dataset.url;}
+ const said=progress?.last_text;
+ const caption=frame
+  ? frame.live?'Live camera':checkFrame?'Frame from this camera check':progress?(said?'Muse Spark read "'+said+'"':'Muse Spark found this frame unreadable'):'Recorded frame'
+  : checking?'Checking live camera view…':'Waiting for camera frames…';
+ showFlowFrame(img,'run-frame-label',img.hidden?null:frame.url,preview.hidden?'':caption);
  const failed=autopilot?.waiting&&window.flowFailedRun?window.flowFailedRun:null;
  const per=Object.fromEntries((progress?.steps||[]).map(s=>[s.step,s]));
  if(!steps.length)return;
@@ -104,15 +121,125 @@ async function loadResult(job){if(flowRunId===job.id)return;flowRunId=job.id;flo
   const tests=testHistory(),prior=priorNonPass(tests,tests.findIndex(j=>j.id===job.id));$('result-retest').hidden=!prior;if(prior)$('result-retest').textContent=(prior==='fail'?'The previous test of this firmware found a mismatch.':'The previous test of this firmware was incomplete.')+' This test passed with the same plan.';const problem=run.steps.find(s=>stepResult(run,s.id)!=='ok');flowStep=(problem||run.steps[0])?.id;renderResultStep();loadExplanationFor(run,job.id);}
  catch(e){if(flowRunId===job.id){$('result-error').textContent='This test\'s evidence failed its checks: '+e.message;$('result-error').hidden=false;}}}
 function renderStatus(){const running=runIsHere(),[label,state]=running?['Running','busy']:projectStatus(lifecycleSnapshot,project?.draft);$('flow-status').textContent=project?label:'';if(state)$('flow-status').dataset.state=state;else delete $('flow-status').dataset.state;}
+// Presentation only. Activity comes from current jobs and requests, never a simulated timer.
+function projectActivity(state) {
+ const activity = (step, tone, title, note, owner, detail = '') => ({step, tone, title, note, owner, detail});
+ if (window.cameraSetupActive) {
+  const setup = window.cameraSetupActivity;
+  return activity(2, setup?.busy ? 'working' : 'waiting',
+   setup?.busy ? 'Finding a clear view of your build' : 'The camera needs your help',
+   setup?.note || 'Choose the iPhone camera to continue.', setup?.owner || 'Camera setup');
+ }
+ if (state === 'running') {
+  const job = activeExecution?.proposal_id === executionPlan?.id ? activeExecution : null;
+  const stage = STAGES.find(([id]) => stageState(id) === 'running')?.[0];
+  const step = stageFinished(stageState('view')) || ['compile','install','identity','test','mapping_repair'].includes(job?.action) ? 3 : 2;
+  if (autopilot?.cancelled || job?.cancel_requested) return activity(step, 'working', 'Stopping the bench run', 'Waiting for the current operation to finish cleanup.', 'Local runtime');
+  if (flowHold) return activity(step, 'waiting', 'The run needs attention', flowHold, 'Your turn');
+  if (autopilot?.waiting || !$('view-check').hidden || !$('fix-check').hidden) return activity(
+   !$('view-check').hidden ? 2 : step, 'waiting', 'Ready for your next move',
+   $('autopilot-status').textContent || 'Follow the check below to continue this run.', 'Your turn');
+  if (job?.action === 'test' && job.stage === 'analysis') {
+   const result = activity(3, 'working', 'Muse Spark is reading the OLED',
+    'Each camera sample is read without the expected text, then compared with your plan.', 'Muse Spark', readingNote(job.reading_progress));
+   result.reading = job.reading_progress;
+   return result;
+  }
+  if (job?.action === 'mapping_repair') {
+   const proposing = job.stage === 'proposing';
+   return activity(3, 'working', proposing ? 'Muse Spark is proposing a repair' : 'Measuring the LED mapping',
+    proposing ? 'Proposing a pin mapping from the camera measurements for local validation.' : 'Checking the fixed GPIO25/26 probe against the recorded LED states.',
+    proposing ? 'Muse Spark' : 'Camera + local runtime');
+  }
+  const task = job?.action || stage;
+  const tasks = {
+   connect: ['Connecting to your bench', 'Looking for the ESP32 and iPhone camera.', 'Local runtime'],
+   view: ['Checking the live camera view', 'Checking that both LEDs and the OLED can be measured.', 'Camera + Muse Spark'],
+   compile: ['Building your firmware', 'Turning the approved plan into the trusted LED/OLED runtime.', 'Local compiler'],
+   install: ['Installing on the ESP32', 'Writing the application and verifying the installed bytes.', 'Local runtime'],
+   identity: ['Checking the board’s identity', 'Confirming that the ESP32 reports the expected firmware.', 'Local runtime'],
+   test: ['Watching your build in action', 'Recording the LEDs and OLED while the approved sequence runs.', 'iPhone camera'],
+   explain: ['Investigating the evidence', 'Reviewing the recorded findings to work out the next step.', 'Muse Spark'],
+   decide: ['Checking the result', 'Comparing the measured behavior with your approved plan.', 'Local verifier']
+  };
+  const [title, note, owner] = tasks[task] || ['Preparing the next step', 'The bench agent is continuing the approved run.', 'Bench agent'];
+  return activity(step, 'working', title, stageNote(stage) || note, owner,
+   job?.capture_step ? 'Step '+job.capture_step+' of '+planSteps().length+' on camera' : '');
+ }
+ if (state === 'result') {
+  const job = (flowPick && testHistory().find(j => j.id === flowPick)) || currentTest();
+  const messages = {
+   pass: ['done', 'Your build matched the plan', 'The sampled LED states and OLED readings passed the camera comparison.'],
+   fail: ['bad', 'The camera found a mismatch', 'Review the measured difference and the next check below.'],
+   incomplete: ['waiting', 'More evidence is needed', 'Some required readings or checks were missing. Review the details below.'],
+   cancelled: ['idle', 'This test was cancelled', 'The retained evidence is available below. No completed verdict was reached.'],
+   interrupted: ['waiting', 'This test was interrupted', 'Review the retained evidence before starting another run.']
+  };
+  const [tone, title, note] = messages[job?.status] || ['waiting', 'Review the test result', 'Open the evidence for the recorded outcome.'];
+  const count = flowRunId === job?.id ? flowRun?.evaluated_sample_count : null;
+  return activity(4, tone, title, note, 'Local verifier', Number.isFinite(count) ? count+' samples checked' : 'Saved result');
+ }
+ if (plannerBusy || planUpdating || project?.busy) return activity(0, 'working',
+  plannerBusy ? 'Muse Spark is planning the steps' : 'Muse Spark is working on your idea',
+  plannerBusy ? 'Defining the LED states, OLED text and timing for your review.' : 'Working through the behavior, parts and wiring for this build.', 'Muse Spark');
+ if (planApproving) return activity(1, 'working', 'Saving your approval', 'Preparing to run the plan you reviewed.', 'Bench agent');
+ if (!$('approve-run').hidden) return activity(1, 'waiting',
+  proposalResult?.review_status === 'reviewed' ? 'Your plan is ready to run' : 'Your plan is ready for review',
+  'Check the steps below, then start the bench run when you’re ready.', 'Your turn');
+ if (!$('project-error').hidden || !$('planner-error').hidden) return activity(0, 'waiting', 'Planning needs attention',
+  !$('project-error').hidden ? $('project-error').textContent : $('planner-error').textContent, 'Your turn');
+ return activity(0, 'waiting', project?.draft?.decision === 'clarify' ? 'Muse Spark has a question' : 'Let’s shape your build',
+  $('lifecycle-next').textContent || 'Describe the behavior you want, and Muse Spark will help plan it.', 'Your turn');
+}
+function renderProjectProgress(state) {
+ const panel = $('progress-panel'), progress = $('project-progress');
+ panel.hidden = !project && !planUpdating;
+ if (panel.hidden) return;
+ const a = projectActivity(state), working = a.tone === 'working';
+ panel.dataset.state = a.tone;
+ $('guide-workspace').dataset.agentState = a.tone;
+ $('run-view').dataset.activity = a.tone;
+ $('progress-position').textContent = 'Stage '+(a.step+1)+' of 5';
+ for (const [index, item] of Array.from(progress.children).entries()) {
+  item.dataset.state = index < a.step ? 'done' : index === a.step ? 'current' : 'pending';
+  if (index === a.step) item.setAttribute('aria-current', 'step');
+  else item.removeAttribute('aria-current');
+  item.querySelector('small').textContent = index < a.step ? 'Complete' : index === a.step
+   ? {working:'In progress',waiting:'Needs your attention',done:'Verified on camera',bad:'Mismatch found',idle:'Stopped'}[a.tone]
+   : ['Muse Spark','Your review','SAM + camera','Build + test','Camera evidence'][index];
+  if (state === 'result' && index === 3) item.querySelector('small').textContent = a.tone === 'idle' ? 'Stopped' : 'Finished';
+ }
+ $('agent-activity').dataset.state = a.tone;
+ const label = {working:'Agent working',waiting:'Your turn',done:'Run complete',bad:'Review needed',idle:'Run stopped'}[a.tone];
+ $('activity-state').textContent = label;
+ // Avoid repeatedly announcing the same title on each job poll.
+ if ($('activity-title').textContent !== a.title) $('activity-title').textContent = a.title;
+ $('activity-note').textContent = a.note;
+ $('activity-owner').textContent = a.owner;
+ $('activity-detail').textContent = a.detail;
+ $('activity-detail').hidden = !a.detail;
+ const meter = $('activity-meter');
+ meter.hidden = !(working && a.reading?.total > 0);
+ if (!meter.hidden) { meter.max = a.reading.total; meter.value = a.reading.done; }
+ const events = state === 'running' && autopilot
+  ? Array.from($('autopilot-log').children).filter(li => !li.classList.contains('auto-plan')).slice(-3) : [];
+ $('activity-recent').hidden = !events.length;
+ // Keep existing DOM while a job is polled, so animation does not restart at every refresh.
+ const eventKey = events.map(li => li.textContent).join('\n');
+ if ($('activity-events').dataset.key !== eventKey) {
+  $('activity-events').dataset.key = eventKey;
+  $('activity-events').replaceChildren(...events.map(li => li.cloneNode(true)));
+ }
+}
 function renderFlowNow(){flowQueued=false;if(typeof lifecycleSnapshot==='undefined'||typeof autopilot==='undefined')return;const state=flowState(),page=$('guide-workspace');page.dataset.flow=state;$('run-view').hidden=state!=='running';$('result-view').hidden=state!=='result';$('flow-details').hidden=!project;
  if(state!==flowLastState){flowLastState=state;if(!page.hidden)window.scrollTo({top:0});}
  if(state==='running')renderRunView();
  if(state==='result'){const job=(flowPick&&testHistory().find(j=>j.id===flowPick))||currentTest();if(job)loadResult(job);}else flowRunId=state==='running'?null:flowRunId;
- $('flow-back').hidden=!(state==='plan'&&flowOverride==='plan'&&currentTest());renderStatus();}
+ $('flow-back').hidden=!(state==='plan'&&flowOverride==='plan'&&currentTest());renderProjectProgress(state);renderStatus();}
 // A timer, not requestAnimationFrame: the page must keep up while its tab is in the background.
 window.renderFlow=function(){if(flowQueued)return;flowQueued=true;setTimeout(renderFlowNow,0);};
-window.resetFlow=function(){flowPick=null;flowOverride=null;flowHold=null;flowRun=null;flowRunId=null;flowStep=null;flowLastState=null;window.resetMappingRepair?.();window.renderFlow();};
-window.flowRunStarted=function(){flowPick=null;window.flowFailedRun=null;flowPeak=0;$('autopilot-error').hidden=true;flowOverride=null;flowHold=null;flowRunId=null;window.renderFlow();};
+window.resetFlow=function(){flowPick=null;flowOverride=null;flowHold=null;flowRun=null;flowRunId=null;flowStep=null;flowLastState=null;window.closeCameraRegions?.();window.resetMappingRepair?.();window.renderFlow();};
+window.flowRunStarted=function(){window.closeCameraRegions?.();flowPick=null;window.flowFailedRun=null;flowPeak=0;$('autopilot-error').hidden=true;flowOverride=null;flowHold=null;flowRunId=null;window.renderFlow();};
 // A run that ends without a test result stays on the running screen, so the reason is not lost.
 window.flowRunEnded=function(text,hold){flowHold=hold?text:null;window.renderFlow();};
 function startAgain(){flowHold=null;runBench();}

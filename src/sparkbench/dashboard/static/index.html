@@ -19,6 +19,7 @@
 <script defer src="/autopilot.js"></script>
 <script defer src="/mapping-repair.js"></script>
 <script defer src="/flow.js"></script>
+<script defer src="/camera-regions.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -84,6 +85,26 @@
 <section id="guide-workspace" class="view" hidden aria-label="Project">
   <button class="back-link" type="button" data-view="projects">← Projects</button>
   <div class="page-head"><div><p class="eyebrow">Project</p><h1 id="project-title">New project</h1></div><span id="flow-status" class="pill"></span></div>
+  <section id="progress-panel" class="progress-panel" aria-label="Project progress" hidden>
+    <div class="progress-heading"><p class="eyebrow">Project progress</p><span id="progress-position" class="help"></span></div>
+    <ol id="project-progress" aria-label="Project stages">
+      <li><span class="progress-node" aria-hidden="true">1</span><div><strong>Plan</strong><small>Muse Spark</small></div></li>
+      <li><span class="progress-node" aria-hidden="true">2</span><div><strong>Approval</strong><small>Your review</small></div></li>
+      <li><span class="progress-node" aria-hidden="true">3</span><div><strong>Camera setup</strong><small>SAM + camera</small></div></li>
+      <li><span class="progress-node" aria-hidden="true">4</span><div><strong>Bench run</strong><small>Build + test</small></div></li>
+      <li><span class="progress-node" aria-hidden="true">5</span><div><strong>Result</strong><small>Camera evidence</small></div></li>
+    </ol>
+    <div id="agent-activity" class="agent-activity" data-state="idle">
+      <div class="agent-emblem" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M18 3 8 18h8l-2 11 10-15h-8z" fill="currentColor"/></svg><span></span></div>
+      <div class="activity-copy">
+        <div class="activity-kicker"><span id="activity-state">Ready when you are</span><span class="activity-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></div>
+        <h2 id="activity-title" aria-live="polite" aria-atomic="true">Start with an idea</h2>
+        <p id="activity-note"></p>
+      </div>
+      <div class="activity-context"><span id="activity-owner" class="activity-owner"></span><span id="activity-detail"></span><meter id="activity-meter" min="0" max="1" value="0" aria-label="OLED frames read" hidden></meter></div>
+    </div>
+    <div id="activity-recent" class="activity-recent" hidden><span class="activity-log-label">Latest activity</span><ol id="activity-events"></ol></div>
+  </section>
   <p id="project-error" class="error-line" role="alert" hidden></p>
 
   <section class="card stage-card" id="project-form-card">
@@ -130,18 +151,52 @@
       <div class="actions wrap"><button class="primary-button" type="submit">Update the plan</button><button id="plan-edit-cancel" class="button" type="button">Cancel</button></div>
     </form>
     <div class="actions wrap">
+      <button id="plan-camera-regions" type="button" hidden>Set up camera regions</button>
       <button id="approve-run" class="primary-button" type="button" hidden>Approve plan and run on the bench →</button>
       <button id="plan-edit-open" class="button" type="button" hidden>Change something</button>
       <button id="accept-brief" class="primary-button" type="button" hidden>Accept and plan the steps →</button>
       <button id="project-firmware" class="button" type="button" hidden>Plan the steps →</button>
                       </div>
+    <p id="plan-camera-status" class="help" hidden>Camera reference saved for this plan. The agent will check the current view before testing.</p>
           </section>
+
+<section id="regions-panel" class="card" aria-labelledby="regions-title" hidden>
+  <div class="dialog-header">
+    <h2 id="regions-title" tabindex="-1">Review camera regions</h2>
+    <button id="regions-close" type="button">Cancel</button>
+  </div>
+  <p id="regions-help" class="help">Use SAM 3.1 to outline the display and LED lenses in this photo. Each SAM action sends this photo to Meta. Review the boxes before saving them as setup notes.</p>
+  <div id="regions-source" class="actions wrap" hidden>
+    <label id="regions-upload">Choose a bench photo <input id="regions-file" type="file" accept="image/jpeg,image/png"></label>
+    <button id="regions-find-camera" type="button">Find iPhone camera</button>
+    <select id="regions-camera" aria-label="iPhone camera for region review" hidden></select>
+    <button id="regions-capture" type="button" hidden disabled>Capture review photo</button>
+  </div>
+  <p id="regions-status" role="status"></p>
+  <div id="regions-editor" hidden>
+  <label id="regions-zoom-label" class="help" hidden>Photo zoom
+    <select id="regions-zoom" aria-label="Photo zoom"><option value="fit">Fit</option><option value="100">100%</option><option value="200">200%</option></select>
+  </label>
+  <div class="regions-viewport"><canvas id="regions-photo" aria-label="Bench photo with proposed component boxes"></canvas></div>
+  <div class="actions wrap">
+    <button id="regions-suggest" type="button">Suggest OLED region</button>
+    <button id="regions-oled" type="button">Draw OLED box</button>
+    <button id="regions-red" type="button">Select red LED</button>
+    <button id="regions-green" type="button">Select green LED</button>
+    <button id="regions-outline" type="button" disabled>Outline both LEDs</button>
+    <button id="regions-circles" type="button" hidden disabled>Use selected lens circles</button>
+    <button id="regions-corners" type="button" hidden disabled>Mark 4 lit border corners</button>
+  </div>
+  <p id="regions-review-help" class="help"></p>
+  <button id="regions-save" class="primary-button" type="button" disabled>Save confirmed regions</button>
+  </div>
+</section>
 
   <section class="card run-view" id="run-view" hidden aria-label="Bench run">
     <div class="run-head"><h2 id="flow-title" aria-live="polite">Starting</h2><button id="stop-bench" class="button danger" type="button" hidden>Stop</button></div>
     <div class="run-bar"><i id="run-bar"></i></div>
     <div class="run-cols">
-      <figure class="run-frame"><img id="run-frame" alt="What the camera sees"><figcaption id="run-frame-label" class="help"></figcaption></figure>
+      <figure id="run-camera-preview" class="run-frame" hidden><img id="run-frame" alt="Frame from the current bench run" hidden><figcaption id="run-frame-label" class="help"></figcaption></figure>
       <ol id="run-phases" class="phases"></ol>
     </div>
     <div id="run-strip" class="step-strip" aria-label="Plan steps"></div>
@@ -149,8 +204,8 @@
       <p id="view-check-text" class="next-step"></p>
       <ul id="view-parts" class="view-parts"></ul>
       <p id="view-fix" class="help" hidden></p>
-      <div class="view-compare"><figure><img id="view-reference" alt="The calibrated camera view"><figcaption class="help">Calibrated view</figcaption></figure><figure><img id="view-live" alt="What the camera sees now"><figcaption class="help">Camera now</figcaption></figure></div>
-      <div class="actions wrap"><button id="view-again" class="primary-button" type="button">I fixed it, check again</button></div>
+      <div id="view-compare" class="view-compare" hidden><figure><img id="view-reference" alt="The calibrated camera view"><figcaption class="help">Calibrated view</figcaption></figure><figure><img id="view-live" alt="Camera frame from the check that stopped the run"><figcaption class="help">Latest captured frame</figcaption></figure></div>
+      <div class="actions wrap"><button id="view-regions" type="button" hidden>Review camera regions</button><button id="view-again" class="primary-button" type="button">I fixed it, check again</button></div>
     </div>
     <p id="autopilot-error" class="error-line" role="alert" hidden></p>
     <div id="fix-check" class="view-check" hidden>
@@ -366,32 +421,6 @@
   <span></span>
   <button id="open-limits" class="link-button" type="button">Limits</button>
 </footer>
-
-<dialog id="plan-dialog" aria-label="Plan">
-  <div class="dialog-header"><div><p class="eyebrow">Plan</p><strong id="dlg-title">Planning your build</strong></div><button id="dlg-close" class="button" type="button">Close</button></div>
-  <div id="dlg-busy" class="dlg-busy" hidden><span class="spinner" aria-hidden="true"></span><span id="dlg-busy-text">Muse Spark is planning…</span></div>
-  <p id="dlg-state" class="dlg-state"></p>
-  <p id="dlg-error" class="error-line" role="alert" hidden></p>
-  <p id="dlg-summary" class="copy"></p>
-  <ul id="dlg-goals" class="goals"></ul>
-  <div id="dlg-question" class="question-box" hidden></div>
-  <form id="dlg-reply-form" hidden>
-    <label for="dlg-reply">Your answer</label>
-    <textarea id="dlg-reply" rows="2" maxlength="3000" required placeholder="Type your answer and Muse Spark will update the plan."></textarea>
-    <div class="actions wrap"><button class="primary-button" type="submit">Reply to Muse Spark</button><button id="dlg-defaults" class="button" type="button">Go with the defaults</button></div>
-  </form>
-  <table id="dlg-table" class="plan-table" hidden><thead><tr><th>Step</th><th>Red</th><th>Green</th><th>OLED</th><th>Time</th></tr></thead><tbody id="dlg-steps"></tbody></table>
-  <p id="dlg-usage" class="help"></p>
-  <form id="dlg-edit-form" hidden>
-    <label for="dlg-edit">What should change?</label>
-    <textarea id="dlg-edit" rows="2" maxlength="3000" required placeholder="For example: say GO instead of START, or use green while counting and red at the end."></textarea>
-    <div class="actions wrap"><button class="primary-button" type="submit">Update the plan</button><button id="dlg-edit-cancel" class="button" type="button">Cancel</button></div>
-  </form>
-  <div class="actions wrap">
-    <button id="dlg-approve" class="primary-button" type="button" hidden>Approve plan and run on the bench →</button>
-    <button id="dlg-edit-open" class="button" type="button" hidden>Change something</button>
-  </div>
-</dialog>
 
 <dialog id="limits-dialog" aria-label="Limits">
   <div class="dialog-header"><strong>What SparkBench does and does not claim</strong><button id="close-limits" class="button" type="button">Close</button></div>

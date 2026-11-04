@@ -15,7 +15,19 @@ Start from the project folder using the existing local environment:
 
 Open **http://127.0.0.1:8765**. To use another local port, add `--port 8766`. Stop the server with Ctrl-C. The command binds only to the Mac's loopback address and needs local network-listening permission if launched from a sandbox.
 
-Type the idea into the box on the Projects page and press **Plan it with Muse Spark**: a panel shows Muse Spark's brief, its question if it has one, and then the step table with two moves: **Approve plan and run on the bench**, which opens the project on the agent's timeline, or **Change something**, a box for the change in plain words; Muse Spark revises the brief, the revision is accepted and re-planned automatically, and the new table comes back in the same panel. The plan stage on the project page offers the same two moves. The project page is one flow in three stages: **Describe** (the idea; **Plan it with Muse Spark** asks for a brief, accepts it and asks for the step plan in one go, or shows Muse Spark's question with a reply box), **Plan** (the step table; **Approve plan and run on the bench** marks it reviewed and starts the agent), and **On the bench** (a timeline of compile, connect, install, identity, camera test, explain and decision, with the verdict, the key frame and the decision at the end). Manual controls, devices, logs, Ask Meta with photos and the parts checklist fold away below. Caveats that used to sit under every control now live behind the **Limits** link in the footer.
+Type an idea on the Projects page and press **Plan it with Muse Spark** to open
+the project page. Its progress row follows planning, approval, camera setup,
+the bench run and the result. Review the steps and choose **Approve plan and
+run on the bench**. **Change something** requests a revision in the same
+project. If the camera needs help, the region editor appears on the project
+page and the run resumes after validation. Manual controls, logs and project
+details remain available below.
+
+The progress panel names the current task and its worker (Muse Spark, SAM,
+the camera or local code). Active jobs have animated indicators, while approval,
+blocked and completed states remain still. OLED reading progress uses the job's
+actual frame counts, and recent activity comes from the same session log
+shown under Details. Motion respects the browser's reduced-motion preference.
 
 The Projects page opens with the one-line pitch, the four-step loop and three proof cards drawn from real recorded runs: a pass, the caught wiring fault and an incomplete run. Each card opens its evidence. Every place a Meta model contributes carries a blue Muse Spark mark. A run page opens on the frame that tells its story: the first mismatch for a fault, the first unknown reading for an incomplete run. See [the build-guide walkthrough](build-guide.md). Guidance and photo capture are explicit actions; browsing saved projects makes no model calls. Compiled proposals also offer source/binary downloads and a source viewer.
 
@@ -40,6 +52,14 @@ A project page shows one state at a time, with one status at the top.
 A project's status comes from the latest test of its current firmware. **Details** holds the run log, manual controls, firmware source, optional project details, the Muse Spark chat, and parts and wiring.
 
 ## Camera position
+
+The agent now includes [guided camera setup](camera-setup.md). Before a plan's
+first test, an unsupported view triggers automatic landmark alignment, SAM
+region checks and independent camera validation. The operator only edits the
+regions when automatic setup cannot qualify the reference. A successful
+check saves a reference for the plan and resumes the agent. The existing LED
+thresholds stay fixed. Once testing starts, restore the saved view or use a new
+plan for a new reference; repair never changes the original measurement setup.
 
 A camera test is measured only on frames that match the calibrated camera position, so the phone has to stay still for the whole run. The agent checks this before anything is flashed, and again right before the test if it flashed. It records a few seconds and confirms three things: the view matches the calibrated one, both idle LEDs read off, and the frozen OLED reader can read the screen without being told what to expect.
 

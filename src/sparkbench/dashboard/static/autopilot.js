@@ -6,8 +6,8 @@
 let autopilot=null;
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const newId=()=>crypto.randomUUID().replaceAll('-','');
-const STAGES=[['connect','Connect'],['view','Camera view'],['compile','Compile'],['install','Install'],['identity','Identity'],['test','Camera test'],['explain','Explain'],['decide','Decision']];
-function autoLog(kind,text){const li=node('li',undefined,'auto-'+kind);li.append(node('time',new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})),node('span',text));$('autopilot-log').append(li);$('autopilot-log').scrollTop=$('autopilot-log').scrollHeight;}
+const STAGES=[['connect','Connect'],['view','Camera setup'],['compile','Compile'],['install','Install'],['identity','Identity'],['test','Camera test'],['explain','Explain'],['decide','Decision']];
+function autoLog(kind,text){const li=node('li',undefined,'auto-'+kind);li.append(node('time',new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})),node('span',text));$('autopilot-log').append(li);$('autopilot-log').scrollTop=$('autopilot-log').scrollHeight;window.renderFlow?.();}
 function setAutoState(text,state){$('autopilot-status').textContent=text;$('autopilot-status').dataset.state=state||'';}
 // Timeline: one row per stage with a state (pending, running, done, skipped, warn, bad, stopped) and a note.
 function setStage(id,state,note){let li=document.querySelector('#timeline li[data-stage="'+id+'"]');if(!li){li=node('li');li.dataset.stage=id;const body=node('div',undefined,'tl-body');body.append(node('strong',STAGES.find(s=>s[0]===id)[1]),node('span',undefined,'help tl-note'));li.append(node('span',undefined,'tl-dot'),body);$('timeline').append(li);}li.dataset.state=state;li.querySelector('.tl-note').textContent=note||'';window.renderFlow?.();}
@@ -18,14 +18,29 @@ window.syncStages=function(){if(autopilot)return;if(!executionPlan||executionPla
  const build=buildJob(),jobs=matchingJobs(),port=$('execution-port').value,camera=$('execution-camera').value;
  setStage('compile',build?'done':'pending',build?'firmware '+build.firmware_sha256.slice(0,12)+'…':'');
  setStage('connect',port&&camera?'done':'pending',port&&camera?optionName('execution-port')+' + '+optionName('execution-camera'):'');
- setStage('view','pending','');
  const inst=build&&jobs.find(j=>j.action==='install'&&j.status==='installed'&&j.firmware_sha256===build.firmware_sha256);
  setStage('install',inst?'done':'pending',inst?'flash verified':'');
  const identity=inst&&(inst.runtime_identity?.status==='pass'||jobs.some(j=>j.action==='identity'&&j.status==='identity_confirmed'));
  setStage('identity',identity?'done':'pending',identity?'confirmed over USB':'');
- const last=jobs.find(j=>j.action==='test'&&j.status!=='running');
- setStage('test',last?(last.status==='pass'?'done':last.status==='fail'?'bad':last.status==='cancelled'?'stopped':'warn'):'pending',last?(last.status==='pass'?'verified on camera':last.status==='fail'?'behavior mismatch':last.status):'');
- setStage('explain',!last?'pending':last.status==='pass'?'skipped':'pending',last&&last.status==='pass'?'not needed':'');setStage('decide','pending','');};
+ const last=build&&jobs.find(j=>j.action==='test'&&j.status!=='running'&&j.request?.build_id===build.id);
+ const view=executionJobs.find(job=>job.proposal_id===executionPlan.id&&job.status!=='running'&&
+  (job.action==='view'||job.action==='camera_setup')&&
+  (!job.plan_sha256||job.plan_sha256===executionPlan.plan_sha256)&&
+  (!last||(job.request?.device_id===last.request.device_id&&job.ended_at_utc<=last.started_at_utc)));
+ if(view?.status==='view_ok')setStage('view','done','camera view checked');
+ else if(view?.status==='setup_ready')setStage('view','done','camera reference validated');
+ else if(view)setStage('view','warn','camera setup did not finish successfully');
+ else setStage('view','pending','');
+ const outcome={
+  pass:['done','verified on camera','Verified on camera. The sampled readings matched the plan.'],
+  fail:['bad','behavior mismatch','Mismatch. The camera readings differed from the plan.'],
+  incomplete:['warn','incomplete','Not verified. The test ended without a conclusive result.'],
+  cancelled:['stopped','cancelled','Test cancelled. No verdict was reached.'],
+  interrupted:['stopped','interrupted','Test interrupted. No verdict was reached.']
+ }[last?.status];
+ setStage('test',outcome?.[0]||'pending',outcome?.[1]||'');
+ setStage('explain',last?.status==='pass'?'skipped':'pending',last?.status==='pass'?'not needed':'');
+ setStage('decide',outcome?.[0]||'pending',outcome?.[2]||'');};
 async function refreshJobs(){const data=await api('/api/jobs');executionJobs=data.jobs;updateExecutionButtons();}
 // One explicit bench job, polled to completion; the timeline and manual controls stay in sync while it runs.
 async function runJob(action,stage){const body={proposal_id:executionPlan.id,plan_sha256:executionPlan.plan_sha256,request_id:newId()};
@@ -43,21 +58,39 @@ async function ensureDevices(){if(!($('execution-port').value&&$('execution-came
  autoLog(ok?'ok':'stop',ok?'Devices: '+optionName('execution-port')+' + '+optionName('execution-camera'):'I will not guess a device. Choose the ESP32 port and the iPhone camera, then run again.');if(!ok){$('flow-details').open=true;$('manual-controls').open=true;}return ok;}
 // Camera check: every part in frame and the OLED readable before the plan runs. When something is wrong the
 // agent says what, waits for the person to fix it, checks again and carries on with the same run.
-let humanWait=null;
+let humanWait=null,lastViewCheck=null;
 const VIEW_WORDS={fully_visible:'in frame',partly_visible:'cut off',not_visible:'not in frame'};
-function showViewCheck(text,liveUrl,job){$('view-check-text').textContent=text;$('view-reference').src='/api/camera/reference';if(liveUrl)$('view-live').src=liveUrl;
+function showViewCheck(text,liveUrl,job){$('view-check-text').textContent=text;$('view-compare').hidden=!liveUrl;
+ if(liveUrl){$('view-reference').src=job?.reference_url||'/api/camera/reference/'+executionPlan.id;$('view-live').src=liveUrl;}
+ else{$('view-reference').removeAttribute('src');$('view-live').removeAttribute('src');}
+ $('view-regions').hidden=!liveUrl;
  const seen=job?.view_inspection;$('view-parts').replaceChildren(...(seen?[['OLED',seen.oled],['Red LED',seen.red_led],['Green LED',seen.green_led]].map(([name,state])=>{const li=node('li',name+': '+VIEW_WORDS[state]);li.dataset.ok=String(state==='fully_visible');return li;}):[]));
  if(seen&&seen.oled==='fully_visible'&&!seen.oled_legible){const li=node('li','OLED text: not legible');li.dataset.ok='false';$('view-parts').append(li);}
  $('view-fix').hidden=!seen;$('view-fix').textContent=seen?'Muse Spark suggests: '+seen.fix:'';$('view-check').hidden=false;}
-async function checkView(){$('view-check').hidden=true;setStage('view','running','checking that every part is in frame and the OLED is readable');
- const started=await planningPost('/api/camera/check',{device_id:$('execution-camera').value,request_id:newId()});let job;
- for(;;){await wait(700);job=await api('/api/jobs/'+started.id);if(job.status!=='running')break;if(autopilot?.cancelled&&!job.cancel_requested){try{await planningPost('/api/jobs/'+job.id+'/cancel',{});}catch(e){}}}
+async function checkView(){$('view-check').hidden=true;lastViewCheck=null;setStage('view','running','Checking live camera view…');
+ const started=await planningPost('/api/camera/check',{proposal_id:executionPlan.id,device_id:$('execution-camera').value,request_id:newId()});let job;
+ for(;;){
+  await wait(700);job=await api('/api/jobs/'+started.id);lastViewCheck=job;
+  if(job.status!=='running')break;
+  if(job.latest_frame)window.renderFlow?.();
+  if(autopilot?.cancelled&&!job.cancel_requested){try{await planningPost('/api/jobs/'+job.id+'/cancel',{});}catch(e){}}
+ }
  if(job.status==='view_ok'){const note='OLED and both LEDs where they should be · OLED reads "'+job.oled_reading+'"';setStage('view','done',note);autoLog('ok','Camera check: '+note);return true;}
- if(job.status==='view_blocked'){const text=job.view_issues.map(i=>i.problem).join(' ');setStage('view','stopped',text);autoLog('stop','Camera check: '+text);showViewCheck(text+' Fix it to match the left picture, keep the phone still, then check again.',job.latest_frame?.url,job);return false;}
- const text=job.error||'The camera check did not finish.';setStage('view','stopped',text);autoLog('stop',text);showViewCheck(text+' Fix it, then check again.',null,null);return false;}
+ if(job.status==='view_blocked'){const text=job.view_issues.map(i=>i.problem).join(' '),frame=job.latest_frame?.url;setStage('view','stopped',text);autoLog('stop','Camera check: '+text);showViewCheck(text+(frame?' Match the calibrated view, keep the phone still, then check again.':' Adjust the camera, then check again.'),frame,job);return false;}
+ const text=job.error||'The camera check did not finish.';setStage('view','stopped',text);autoLog('stop',text);showViewCheck(text+' Fix it, then check again.',null,job);return false;}
 // Waits here for as long as it takes. Stop ends the run.
 async function waitForPerson(text){if(autopilot?.cancelled)return false;autopilot.waiting=true;window.renderFlow?.();setAutoState(text,'warn');window.renderFlow?.();const again=await new Promise(resolve=>{humanWait=resolve;});if(autopilot)autopilot.waiting=false;window.flowFailedRun=null;$('fix-check').hidden=true;window.renderFlow?.();return again;}
-async function checkViewUntilClear(){for(;;){if(await checkView())return;if(!await waitForPerson('Waiting for you: fix the camera view'))throw new Error('Stopped');setAutoState('Checking the camera…','busy');}}
+async function checkViewUntilClear(){for(;;){if(await checkView())return;
+  const canSetup=lastViewCheck?.setup_available===true&&autopilot&&!autopilot.setupAttempted&&!autopilot.testStarted&&executionPlan.origin!=='mapping_repair'&&window.setupCameraForAgent;
+  if(canSetup){
+   autopilot.setupAttempted=true;autopilot.waiting=true;$('view-check').hidden=true;
+   setStage('view','running','Locating the LEDs and OLED, then checking a fresh capture');
+   setAutoState('Setting up the camera…','busy');autoLog('do','Camera setup: trying automatic region alignment and an independent camera check.');window.renderFlow?.();
+   let ready;try{ready=await window.setupCameraForAgent(executionPlan.id,$('execution-camera').value);}finally{if(autopilot)autopilot.waiting=false;window.renderFlow?.();}
+   if(!ready||autopilot?.cancelled)throw new Error('Stopped');
+   autoLog('ok','Camera reference checked on a separate capture and saved for this plan.');setAutoState('Checking the saved camera reference…','busy');continue;
+  }
+  if(!await waitForPerson('Waiting for you: fix the camera view'))throw new Error('Stopped');setAutoState('Checking the camera…','busy');}}
 // The fix panel: what Muse Spark saw, the frame that shows it, and one button to carry on.
 function showFixPanel(run,x,mismatch){window.flowFailedRun=run;$('fix-text').textContent=x.diagnosis;$('fix-next').textContent='Next check: '+x.next_check;
  const f=run.frames.find(o=>o.id===keyFrame(run))||run.frames.find(o=>o.evaluated);
@@ -81,7 +114,7 @@ async function prepareBenchApplication(){
   if(flashed){stopped();setAutoState('Checking the camera…','busy');await checkViewUntilClear();}
 }
 async function runBench(){if(autopilot||!executionPlan||executionPlan.review_status!=='reviewed'||activeExecution)return;
- autopilot={cancelled:false,plan:executionPlan.id,testDone:false,attempt:0,waiting:false,repairAttempted:false};$('fix-check').hidden=true;window.flowRunStarted?.();$('autopilot-log').replaceChildren();$('autopilot-error').hidden=true;$('view-check').hidden=true;testResultVersion++;$('test-result').hidden=true;$('stop-bench').hidden=false;resetTimeline();window.updateProjectActions?.();
+ autopilot={cancelled:false,plan:executionPlan.id,testDone:false,testStarted:false,setupAttempted:false,attempt:0,waiting:false,repairAttempted:false};$('fix-check').hidden=true;window.flowRunStarted?.();$('autopilot-log').replaceChildren();$('autopilot-error').hidden=true;$('view-check').hidden=true;testResultVersion++;$('test-result').hidden=true;$('stop-bench').hidden=false;resetTimeline();window.updateProjectActions?.();
  const finish=(state,text)=>{setAutoState(text,state);const hold=!autopilot?.testDone&&!autopilot?.cancelled&&state!=='done';autopilot=null;window.flowRunEnded?.(text,hold);$('stop-bench').hidden=true;updateExecutionButtons();window.updateProjectActions?.();};
  const decide=(state,text)=>{setStage('decide',state,text);autoLog('decide',text);};
  const stopped=()=>{if(autopilot?.cancelled)throw new Error('Stopped');};
@@ -96,7 +129,7 @@ async function runBench(){if(autopilot||!executionPlan||executionPlan.review_sta
    autopilot.attempt++;
    if(autopilot.attempt>1){stopped();for(const id of ['test','explain','decide'])setStage(id,'pending','');autoLog('do','Attempt '+autopilot.attempt+': checking the camera, then testing again');setAutoState('Checking the camera…','busy');await checkViewUntilClear();}
    stopped();setAutoState('Running the camera test…','busy');setStage('test','running','recording the board while the plan runs');autoLog('do','Camera test: recording the board while the plan runs');
-   const test=await runJob('test','test');autopilot.testDone=!!test.evidence_available&&test.status!=='cancelled';
+   autopilot.testStarted=true;const test=await runJob('test','test');autopilot.testDone=!!test.evidence_available&&test.status!=='cancelled';
    if(test.status==='cancelled'){setStage('test','stopped','cancelled');return finish('stopped','Test cancelled; no pass claimed.');}
    if(test.status==='pass'){setStage('test','done','verified on camera');setStage('explain','skipped','not needed');showTestResult(test);const verdict=autopilot.attempt>1?'Passed on retest':'Verified on camera';autoLog('ok',verdict);decide('done',verdict+': the sampled readings matched the plan.');return finish('done',verdict);}
    setStage('test',test.status==='fail'?'bad':'warn',(test.status==='fail'?'behavior mismatch':'incomplete')+(test.error?' · '+test.error:''));autoLog(test.status==='fail'?'bad':'warn','Camera test: '+test.status);
@@ -122,4 +155,4 @@ async function runBench(){if(autopilot||!executionPlan||executionPlan.review_sta
    if(!await waitForPerson(mismatch?'Waiting for you: fix the board':'Waiting for you: see the next check'))throw new Error('Stopped');
   }
  }catch(e){if(e.message==='Stopped'||autopilot?.cancelled){autoLog('stop','Stopped by you.');return finish('stopped','Stopped.');}$('autopilot-error').textContent=e.message;$('autopilot-error').hidden=false;autoLog('bad',e.message);finish('bad','Stopped on an error.');}}
-$('stop-bench').addEventListener('click',async()=>{if(!autopilot)return;autopilot.cancelled=true;window.cancelMappingRepair?.();if(humanWait){const resolve=humanWait;humanWait=null;resolve(false);}setAutoState('Stopping after the current step…','busy');if(activeExecution?.id){try{await planningPost('/api/jobs/'+activeExecution.id+'/cancel',{});}catch(e){}}});
+$('stop-bench').addEventListener('click',async()=>{if(!autopilot)return;autopilot.cancelled=true;window.cancelMappingRepair?.();window.cancelCameraSetup?.();if(humanWait){const resolve=humanWait;humanWait=null;resolve(false);}setAutoState('Stopping after the current step…','busy');if(activeExecution?.id){try{await planningPost('/api/jobs/'+activeExecution.id+'/cancel',{});}catch(e){}}});

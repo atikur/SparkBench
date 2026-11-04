@@ -1,7 +1,7 @@
 'use strict';
 let lastGuideRender='',project=null,projectCatalog=[],assemblySteps=[],projectVersion=0,projectPhotos=[],guideCapture=false,sourceFiles={};
 const uid=()=>crypto.randomUUID().replaceAll('-','');
-function projectError(message){$('project-error').textContent=message;$('project-error').hidden=false;if($('plan-dialog').open){$('dlg-error').textContent=message;$('dlg-error').hidden=false;}}
+function projectError(message){$('project-error').textContent=message;$('project-error').hidden=false;}
 function showGuide(){selectionVersion++;clearImage();current=null;showView('project');}
 // Each card shows where the project stands, from the same records the project page uses.
 // The one status a project has, everywhere it appears. It comes from the latest test of its current firmware.
@@ -11,7 +11,7 @@ async function projectOutcome(p){try{const s=await api('/api/projects/'+p.id+'/f
 let showAllProjects=false;
 async function refreshProjects(){const data=await api('/api/projects');projectCatalog=data.catalog;assemblySteps=data.assembly;const shown=showAllProjects?data.projects:data.projects.slice(0,6),outcomes=await Promise.all(shown.map(projectOutcome));$('project-more').hidden=data.projects.length<=6;$('project-more').textContent=showAllProjects?'Show fewer':'Show all '+data.projects.length+' projects';$('project-list').replaceChildren(...(shown.length?shown.map((p,i)=>{const b=node('button',undefined,'saved-plan-button');b.type='button';const text=node('span');text.append(node('strong',p.title),node('small',p.busy?'Muse Spark is working…':date(p.updated_at_utc)));b.append(text);const [label,state]=outcomes[i];if(label){const pill=node('span',label,'pill');if(state)pill.dataset.state=state;b.append(pill);}b.addEventListener('click',()=>openProject(p.id));return b;}):[node('p','Your saved builds appear here.','small muted')]));}
 function fillProfile(){const profile=project?.profile;$('project-idea').value=project?.idea||'';$('project-idea').disabled=!!project;$('project-experience').value=profile?.experience||'beginner';$('project-budget').value=profile?.budget||'';$('project-parts-notes').value=profile?.parts_notes||'';const has=!!project;$('project-idea').hidden=has;$('project-idea-view').hidden=!has;$('project-idea-view').textContent=project?.idea||'';$('project-form-title').textContent=has?'The idea':'What should it do?';}
-async function openProject(id){if(typeof autopilot!=='undefined'&&autopilot&&project?.id!==id){showView('project');return;}window.resetFlow?.();autoPlanNext=false;planUpdating=false;showGuide();window.resetPlanStage?.();const version=++projectVersion;try{const p=await api('/api/projects/'+id);if(version!==projectVersion)return;project=p;fillProfile();clearProjectPhotos();renderProject();if(window.pollProjectFirmware)window.pollProjectFirmware(id,version);if(p.busy)pollProject(id,version);}catch(e){projectError(e.message);}}
+async function openProject(id){if(autopilot||window.cameraSetupActive||planApproving||planUpdating||plannerBusy){showGuide();return;}window.resetFlow?.();autoPlanNext=false;planUpdating=false;showGuide();window.resetPlanStage?.();const version=++projectVersion;try{const p=await api('/api/projects/'+id);if(version!==projectVersion)return;project=p;fillProfile();clearProjectPhotos();renderProject();if(window.pollProjectFirmware)window.pollProjectFirmware(id,version);if(p.busy)pollProject(id,version);}catch(e){projectError(e.message);}}
 function listText(title,values,parent){if(!values?.length)return;const block=node('div',undefined,'guide-response-list');block.append(node('strong',title));const ul=node('ul');values.forEach(t=>ul.append(node('li',t)));block.append(ul);parent.append(block);}
 function renderProject(){
  if(window.renderProjectFirmware)window.renderProjectFirmware(project?.firmware_status);
@@ -50,69 +50,178 @@ let saveChain=Promise.resolve();
 // Ticks can arrive faster than saves; run every save in order against the latest revision.
 function queueSave(changes){saveChain=saveChain.then(()=>project?saveProject(changes()):undefined);return saveChain;}
 const briefChanged=p=>!!(p?.accepted&&p.draft&&['title','summary','goals','components','firmware_instruction'].some(k=>JSON.stringify(p.draft[k])!==JSON.stringify(p.accepted.brief[k])));
-let autoPlanNext=false,planUpdating=false,planRevising=false;
+let autoPlanNext=false,planUpdating=false,planApproving=false;
 function planRequestEnded(){autoPlanNext=false;planUpdating=false;updateProjectActions();}
 async function pollProject(id,version){try{const p=await api('/api/projects/'+id);if(version!==projectVersion)return;project=p;renderProject();if(p.busy){setTimeout(()=>pollProject(id,version),900);return;}await refreshProjects();if(autoPlanNext){autoPlanNext=false;const turn=p.turns.at(-1),changed=briefChanged(p);if(turn?.status!=='complete')projectError(turn?.error||'Muse Spark did not finish, so the plan is unchanged. Nothing was retried.');else if(p.draft?.decision==='planned'&&(!p.accepted||changed))await acceptAndPlan();else if(p.draft?.decision==='planned')projectError('Muse Spark kept the plan as it was. Try describing the change differently.');}planRequestEnded();}catch(e){if(version===projectVersion){planRequestEnded();projectError(e.message);}}}
-async function sendGuide(message){if(!project||project.busy||guideCapture){autoPlanNext=false;return false;}$('project-error').hidden=true;$('dlg-error').hidden=true;planUpdating=autoPlanNext;planRevising=typeof proposalResult!=='undefined'&&proposalResult?.status==='ready';updateProjectActions();const id=project.id;try{if(!await queueSave(()=>({}))){planRequestEnded();return false;}await planningPost('/api/projects/'+id+'/ask',{message,images:projectPhotos.map(p=>({name:p.name,data:p.data})),request_id:uid(),run_id:$('guide-run').value||null});$('guide-question').value='';clearProjectPhotos();project.busy=true;renderProject();await pollProject(id,++projectVersion);return true;}catch(e){planRequestEnded();projectError(e.message);return false;}}
+async function sendGuide(message){if(!project||project.busy||guideCapture){autoPlanNext=false;return false;}$('project-error').hidden=true;planUpdating=autoPlanNext;updateProjectActions();const id=project.id;try{if(!await queueSave(()=>({}))){planRequestEnded();return false;}await planningPost('/api/projects/'+id+'/ask',{message,images:projectPhotos.map(p=>({name:p.name,data:p.data})),request_id:uid(),run_id:$('guide-run').value||null});$('guide-question').value='';clearProjectPhotos();project.busy=true;renderProject();await pollProject(id,++projectVersion);return true;}catch(e){planRequestEnded();projectError(e.message);return false;}}
 $('project-form').addEventListener('submit',async e=>{e.preventDefault();$('create-project').disabled=true;$('project-error').hidden=true;autoPlanNext=true;planUpdating=true;updateProjectActions();try{if(!plannerSession?.planning_available)throw new Error('Configure the existing Meta Contributor API locally before asking for a project.');project=await planningPost('/api/projects',{idea:$('project-idea').value,...profileValues(),request_id:uid()});fillProfile();renderProject();await refreshProjects();await sendGuide('Help me plan this idea. Clarify material missing details, suggest the required parts from the supported catalog, and give me one next step.');}catch(e){planRequestEnded();projectError(e.message);}finally{$('create-project').disabled=false;}});
 $('guide-question-form').addEventListener('submit',e=>{e.preventDefault();sendGuide($('guide-question').value.trim());});
 // One next action at a time: accept-and-plan, open the existing plan, or reply to Muse Spark.
-function updateProjectActionsCore(){const draft=project?.draft,accepted=project?.accepted,busy=!!project?.busy||planUpdating,snap=typeof lifecycleSnapshot!=='undefined'?lifecycleSnapshot:null;
+function updateProjectActionsCore(){const draft=project?.draft,accepted=project?.accepted,busy=!!project?.busy||planUpdating||plannerBusy||!!window.cameraSetupActive,snap=typeof lifecycleSnapshot!=='undefined'?lifecycleSnapshot:null;
  const changed=briefChanged(project);
- const canAccept=draft?.decision==='planned'&&(!accepted||changed),hasPlan=!!snap?.proposal,unresolved=!!draft&&!accepted&&draft.decision!=='planned';
+ const canAccept=draft?.decision==='planned'&&(!accepted||changed),hasPlan=!!snap?.proposal,unresolved=!!draft&&draft.decision!=='planned';
  $('accept-brief').hidden=!canAccept;$('accept-brief').disabled=busy;$('accept-brief').textContent=accepted?'Accept the revised brief and plan →':'Accept and plan firmware →';
- $('plan-stage').hidden=!project;
- const planReady=typeof proposalResult!=='undefined'&&proposalResult?.status==='ready'&&proposalResult.id===snap?.proposal?.id;
+ $('plan-stage').hidden=!project&&!planUpdating;
+ const planReady=proposalResult?.status==='ready'&&proposalResult.id===snap?.proposal?.id&&!changed&&(!draft||draft.decision==='planned');
+ const cameraSaved=planReady&&(window.cameraSetupSavedPlans?.has(proposalResult.id)||(typeof executionJobs!=='undefined'&&executionJobs.some(j=>j.proposal_id===proposalResult.id&&j.action==='camera_setup'&&j.status==='setup_ready')));
+ $('plan-camera-status').hidden=!cameraSaved;
+ const setupLocked=planReady&&(proposalResult.origin==='mapping_repair'||(typeof executionJobs!=='undefined'&&executionJobs.some(j=>j.proposal_id===proposalResult.id&&j.action==='test')));
  $('plan-edit-open').hidden=!planReady||busy||!$('plan-edit-form').hidden||!!(typeof autopilot!=='undefined'&&autopilot);if(busy)$('plan-edit-form').hidden=true;
+ $('plan-camera-regions').hidden=!planReady||busy||setupLocked||!!(typeof autopilot!=='undefined'&&autopilot)||!!(typeof activeExecution!=='undefined'&&activeExecution);
  $('approve-run').hidden=!planReady||busy||!!(typeof activeExecution!=='undefined'&&activeExecution)||!!(typeof autopilot!=='undefined'&&autopilot);$('approve-run').textContent=planReady&&proposalResult.review_status==='reviewed'?'Run on the bench →':'Approve plan and run on the bench →';
  $('project-firmware').hidden=canAccept||!accepted||planReady;$('project-firmware').disabled=busy;$('project-firmware').textContent=hasPlan?'Replan the steps':'Plan the steps →';$('project-firmware').className=hasPlan?'link-button':'primary-button';
- $('brief-reply-form').hidden=!unresolved||busy;$('brief-reply-label').textContent=draft?.decision==='clarify'?'Your answer':'What should change?';
- if(busy)$('lifecycle-next').textContent='Muse Spark is working on the brief…';
+ $('brief-reply-form').hidden=!unresolved||busy;$('brief-defaults').hidden=draft?.decision!=='clarify';$('brief-reply-label').textContent=draft?.decision==='clarify'?'Your answer':'What should change?';
+ if(plannerBusy)$('lifecycle-next').textContent='Muse Spark is writing the plan…';
+ else if(project?.busy||planUpdating)$('lifecycle-next').textContent='Muse Spark is working on the brief…';
+ else if(planReady)$('lifecycle-next').textContent='';
  else if(!draft)$('lifecycle-next').textContent='';
  else if(unresolved)$('lifecycle-next').textContent=draft.decision==='clarify'?'Next: answer the question so Muse Spark can finish the brief.':'Next: change the idea so it fits the bench, then ask again below.';
  else if(canAccept)$('lifecycle-next').textContent='Next: accept the '+(changed?'revised ':'')+'brief and plan the firmware.';
  else if(!snap)$('lifecycle-next').textContent='';}
-function updateProjectActions(){updateProjectActionsCore();window.updatePlanDialog?.();window.renderFlow?.();}
+function updateProjectActions(){updateProjectActionsCore();window.renderFlow?.();}
 window.updateProjectActions=updateProjectActions;
 async function prepareFirmware(){if(!project?.accepted||project.busy)return;try{if(!await queueSave(()=>({})))return;const job=await planningPost('/api/projects/'+project.id+'/firmware',{accepted_sha256:project.accepted.sha256,request_id:uid()});plannerBusy=true;showPlanner();pollProposal(job.id,++pollVersion);const id=project.id,fresh=await api('/api/projects/'+id);if(project?.id===id){project=fresh;renderProject();}}catch(e){projectError(e.message);}}
 async function acceptAndPlan(){if(!project||project.busy)return;const latest=project.turns.findLast(t=>t.status==='complete');if(!latest)return;$('accept-brief').disabled=true;try{project=await planningPost('/api/projects/'+project.id+'/accept',{turn_id:latest.id});renderProject();await prepareFirmware();}catch(e){projectError(e.message);updateProjectActions();}}
 $('accept-brief').addEventListener('click',acceptAndPlan);$('project-firmware').addEventListener('click',prepareFirmware);
 $('brief-reply-form').addEventListener('submit',e=>{e.preventDefault();const text=$('brief-reply').value.trim();if(!text)return;$('brief-reply').value='';autoPlanNext=true;sendGuide(text);});
-async function approveAndRun(){if(!proposalResult||proposalResult.status!=='ready')return;$('approve-run').disabled=true;$('dlg-approve').disabled=true;try{if(proposalResult.review_status!=='reviewed'){const r=await planningPost('/api/plans/'+proposalId+'/review',{plan_sha256:proposalResult.plan_sha256});renderProposal(r);}if($('plan-dialog').open)$('plan-dialog').close();if($('guide-workspace').hidden){showView('project');window.pollProjectFirmware?.(project?.id,projectVersion);}$('bench-stage').hidden=false;await runBench();}catch(e){projectError(e.message);}finally{$('approve-run').disabled=false;$('dlg-approve').disabled=false;updateProjectActions();}}
-$('approve-run').addEventListener('click',approveAndRun);$('dlg-approve').addEventListener('click',approveAndRun);
-// The plan modal mirrors the project's planning state so the home page can go idea → plan → bench.
-window.updatePlanDialog=function(){const d=$('plan-dialog');if(!d.open)return;const draft=project?.draft,accepted=project?.accepted,busy=!!project?.busy||planUpdating||(typeof plannerBusy!=='undefined'&&plannerBusy),plan=typeof proposalResult!=='undefined'?proposalResult:null;
- const pending=!!draft&&draft.decision!=='planned',current=!briefChanged(project)&&!pending&&(project?.firmware_links||[]).some(l=>l.proposal_id===plan?.id&&l.accepted_sha256===accepted?.sha256);
- const ready=current&&plan?.status==='ready',failed=current&&!!plan&&!ready&&!['queued','generating'].includes(plan.status);
- $('dlg-title').textContent=accepted?.brief?.title||draft?.title||(project?'Planning your build':'New build');
- const state=ready?(plan.review_status==='reviewed'?'Plan reviewed. Ready for the bench.':'Plan ready. Approve it to hand it to the agent.'):failed?'No usable plan came back. Nothing was retried.':draft?.decision==='clarify'?'Muse Spark has a question for you':draft?.decision==='unsupported'?'That idea is outside the supported bench':draft?'Brief ready':'';
- $('dlg-busy').hidden=!busy;$('dlg-busy-text').textContent=planRevising?'Muse Spark is updating the plan…':'Muse Spark is planning…';$('dlg-state').textContent=busy?'':state;
- $('dlg-summary').textContent=busy?'':ready?(plan.proposal?.summary||''):failed?(plan.proposal?.question||plan.proposal?.summary||plan.error||''):(draft?.summary||'');
- $('dlg-goals').replaceChildren(...((busy||ready||failed?[]:(draft?.goals||[])).map(t=>node('li',t))));
- const asking=pending&&!busy;$('dlg-question').hidden=!asking;$('dlg-question').replaceChildren(...((draft?.questions||[]).map(t=>node('p',t))));$('dlg-reply-form').hidden=!asking;$('dlg-defaults').hidden=draft?.decision!=='clarify';
- $('dlg-steps').replaceChildren(...(ready?[...$('proposal-steps').children].map(tr=>tr.cloneNode(true)):[]));$('dlg-table').hidden=!ready||busy;$('dlg-usage').textContent=ready&&!busy?$('proposal-usage').textContent:'';
- if(busy)$('dlg-edit-form').hidden=true;$('dlg-approve').hidden=!ready||busy;$('dlg-edit-open').hidden=!draft||pending||busy||!$('dlg-edit-form').hidden;$('dlg-approve').textContent=plan?.review_status==='reviewed'?'Run on the bench →':'Approve plan and run on the bench →';};
+async function approveAndRun() {
+ const button = $('approve-run');
+ if (button.hidden || proposalResult?.status !== 'ready' || planApproving || window.cameraSetupActive) return;
+ planApproving = true;
+ button.disabled = true;
+ window.renderFlow?.();
+ try {
+  if (proposalResult.review_status !== 'reviewed') {
+   const reviewed = await planningPost('/api/plans/'+proposalId+'/review',{plan_sha256:proposalResult.plan_sha256});
+   renderProposal(reviewed);
+  }
+  $('bench-stage').hidden = false;
+  await runBench();
+ } catch (error) {
+  projectError(error.message);
+ } finally {
+  planApproving = false;
+  button.disabled = false;
+  updateProjectActions();
+ }
+}
+$('approve-run').addEventListener('click',approveAndRun);
 document.querySelectorAll('.idea-chip').forEach(b=>b.addEventListener('click',()=>{$('home-idea').value=b.dataset.idea;$('home-idea').focus();}));
 $('project-more').addEventListener('click',()=>{showAllProjects=!showAllProjects;refreshProjects().catch(()=>{});});
-$('home-plan-form').addEventListener('submit',e=>{e.preventDefault();const idea=$('home-idea').value.trim();if(!idea)return;if(typeof autopilot!=='undefined'&&autopilot){showView('project');return;}window.resetFlow?.();if(!plannerSession?.planning_available){projectError('Configure the Meta key first; see Limits.');return;}projectVersion++;project=null;window.resetPlanStage?.();fillProfile();clearProjectPhotos();planUpdating=true;planRevising=false;$('project-idea').value=idea;$('project-experience').value='beginner';$('project-budget').value='';$('project-parts-notes').value='';$('project-error').hidden=true;$('dlg-error').hidden=true;renderProject();$('plan-dialog').showModal();window.updatePlanDialog();$('home-idea').value='';$('project-form').requestSubmit();});
+$('home-plan-form').addEventListener('submit',e=>{e.preventDefault();const idea=$('home-idea').value.trim();if(!idea)return;if(autopilot||window.cameraSetupActive||planApproving||planUpdating||plannerBusy){showGuide();return;}window.resetFlow?.();projectVersion++;project=null;window.resetPlanStage?.();fillProfile();clearProjectPhotos();planUpdating=true;$('project-idea').value=idea;$('project-experience').value='beginner';$('project-budget').value='';$('project-parts-notes').value='';$('project-error').hidden=true;showGuide();renderProject();$('home-idea').value='';$('project-form').requestSubmit();});
 // One click answers a question with the bench's standing facts and lets Muse Spark pick the defaults.
 const DEFAULT_REPLY='Yes, I have every listed part, assembled and wired as the known kit reference. For anything I did not specify, use the simplest reasonable default you suggested, state it in the goals, and go ahead with the plan.';
-for(const id of ['dlg-defaults','brief-defaults'])$(id).addEventListener('click',()=>{if(!project||project.busy)return;autoPlanNext=true;sendGuide(DEFAULT_REPLY);});
+$('brief-defaults').addEventListener('click',()=>{if(!project||project.busy)return;autoPlanNext=true;sendGuide(DEFAULT_REPLY);});
 // "Change something": the change goes to Muse Spark as a brief revision, which is accepted and re-planned automatically.
 function requestPlanChange(text){if(!project||project.busy||!text)return Promise.resolve(false);autoPlanNext=true;return sendGuide('Please change the plan: '+text+' Keep everything else as it is, update the brief and the firmware intent, and return planned.');}
-for(const [open,form,box,cancel] of [['dlg-edit-open','dlg-edit-form','dlg-edit','dlg-edit-cancel'],['plan-edit-open','plan-edit-form','plan-edit','plan-edit-cancel']]){
- $(open).addEventListener('click',()=>{$(form).hidden=false;$(open).hidden=true;$(box).focus();});
- $(cancel).addEventListener('click',()=>{$(form).hidden=true;updateProjectActions();});
- $(form).addEventListener('submit',async e=>{e.preventDefault();const text=$(box).value.trim();if(!text)return;$(box).value='';$(form).hidden=true;if(!await requestPlanChange(text)){$(box).value=text;$(form).hidden=false;updateProjectActions();}});}
-$('dlg-reply-form').addEventListener('submit',e=>{e.preventDefault();const text=$('dlg-reply').value.trim();if(!text)return;$('dlg-reply').value='';autoPlanNext=true;sendGuide(text);});
-$('dlg-close').addEventListener('click',()=>$('plan-dialog').close());
+$('plan-edit-open').addEventListener('click',()=>{
+ $('plan-edit-form').hidden=false;
+ $('plan-edit-open').hidden=true;
+ $('plan-edit').focus();
+});
+$('plan-edit-cancel').addEventListener('click',()=>{
+ $('plan-edit-form').hidden=true;
+ updateProjectActions();
+});
+$('plan-edit-form').addEventListener('submit',async event=>{
+ event.preventDefault();
+ const field=$('plan-edit'), text=field.value.trim();
+ if(!text)return;
+ field.value='';
+ $('plan-edit-form').hidden=true;
+ if(!await requestPlanChange(text)){
+  field.value=text;
+  $('plan-edit-form').hidden=false;
+  updateProjectActions();
+ }
+});
 function clearProjectPhotos(){for(const p of projectPhotos)URL.revokeObjectURL(p.url);projectPhotos=[];$('guide-photos').value='';renderAttachments();}
-function renderAttachments(){$('guide-attachments').replaceChildren(...projectPhotos.map((p,i)=>{const figure=node('figure');const img=node('img');img.src=p.url;img.alt=p.name;const b=node('button','Remove','button');b.type='button';b.addEventListener('click',()=>{URL.revokeObjectURL(p.url);projectPhotos.splice(i,1);renderAttachments();});figure.append(img,node('figcaption',p.name,'small muted'),b);return figure;}));}
-async function attachFile(file){if(projectPhotos.length>=3)throw new Error('Attach up to three photos per question.');if(!['image/jpeg','image/png'].includes(file.type))throw new Error('Use JPEG or PNG photos; export HEIC as JPEG first.');if(file.size>20_000_000)throw new Error('Choose a photo smaller than 20 MB.');const bitmap=await createImageBitmap(file);if(bitmap.width*bitmap.height>50_000_000){bitmap.close();throw new Error('Please resize this very large image.');}const scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();const encoded=canvas.toDataURL('image/jpeg',.88);const blob=new Blob([Uint8Array.from(atob(encoded.split(',')[1]),c=>c.charCodeAt(0))],{type:'image/jpeg'});projectPhotos.push({name:(file.name.replace(/\.[^.]+$/,'')+'.jpg').slice(0,120),data:encoded.split(',')[1],url:URL.createObjectURL(blob)});renderAttachments();}
+function renderAttachments() {
+ const figures = projectPhotos.map((photo, index) => {
+  const figure = node('figure');
+  const img = node('img');
+  img.src = photo.url;
+  img.alt = photo.name;
+  const regions = node('button', 'Review camera regions', 'button');
+  regions.type = 'button';
+  regions.addEventListener('click', () => window.openCameraRegions(photo.url, photo.name, photo.data));
+  const remove = node('button', 'Remove', 'button');
+  remove.type = 'button';
+  remove.addEventListener('click', () => {
+   URL.revokeObjectURL(photo.url);
+   projectPhotos.splice(index, 1);
+   renderAttachments();
+  });
+  figure.append(img, node('figcaption', photo.name, 'small muted'), regions, remove);
+  return figure;
+ });
+ $('guide-attachments').replaceChildren(...figures);
+}
+async function prepareProjectPhoto(file) {
+ if (!['image/jpeg', 'image/png'].includes(file.type)) throw new Error('Use JPEG or PNG photos; export HEIC as JPEG first.');
+ if (file.size > 20_000_000) throw new Error('Choose a photo smaller than 20 MB.');
+ const bitmap = await createImageBitmap(file);
+ try {
+  if (bitmap.width * bitmap.height > 50_000_000) throw new Error('Please resize this very large image.');
+  const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  return {
+   name: (file.name.replace(/\.[^.]+$/, '') + '.jpg').slice(0, 120),
+   data: canvas.toDataURL('image/jpeg', .88).split(',')[1]
+  };
+ } finally {
+  bitmap.close();
+ }
+}
+
+async function attachFile(file) {
+ if (projectPhotos.length >= 3) throw new Error('Attach up to three photos per question.');
+ const photo = await prepareProjectPhoto(file);
+ const blob = new Blob([Uint8Array.from(atob(photo.data), char => char.charCodeAt(0))], {type: 'image/jpeg'});
+ projectPhotos.push({...photo, url: URL.createObjectURL(blob)});
+ renderAttachments();
+}
+
+async function captureProjectPhoto(deviceId) {
+ const job = await planningPost('/api/guide/photo', {device_id: deviceId, request_id: uid()});
+ for (;;) {
+  await new Promise(resolve => setTimeout(resolve, 900));
+  const result = await api('/api/jobs/' + job.id);
+  if (result.status === 'running') continue;
+  if (result.status !== 'captured' || !result.latest_frame) {
+   throw new Error(result.error || 'No camera frame was captured.');
+  }
+  return result.latest_frame.url;
+ }
+}
 $('guide-photos').addEventListener('change',async()=>{try{for(const file of $('guide-photos').files)await attachFile(file);}catch(e){projectError(e.message);}});
 $('guide-show-camera').addEventListener('click',async()=>{try{$('guide-camera-controls').hidden=false;const devices=await api('/api/devices');$('guide-camera').replaceChildren(node('option','Select the iPhone'));$('guide-camera').firstChild.value='';for(const d of devices.cameras){const option=node('option',d.name+' · '+d.id);option.value=d.id;$('guide-camera').append(option);}if(devices.camera_error)projectError(devices.camera_error);}catch(e){projectError(e.message);}});
 $('guide-camera').addEventListener('change',()=>{$('guide-take-photo').disabled=!$('guide-camera').value||guideCapture;});
-$('guide-take-photo').addEventListener('click',async()=>{if(guideCapture||!$('guide-camera').value)return;if(projectPhotos.length>=3){projectError('Remove a photo before capturing another.');return;}const captureProject=project?.id;guideCapture=true;$('guide-take-photo').disabled=true;renderProject();try{const job=await planningPost('/api/guide/photo',{device_id:$('guide-camera').value,request_id:uid()});const poll=async()=>{try{const result=await api('/api/jobs/'+job.id);if(result.status==='running'){$('guide-request-status').textContent='Taking local iPhone photo…';setTimeout(poll,900);return;}if(result.status!=='captured'||!result.latest_frame)throw new Error(result.error||'No camera frame was captured.');if(project?.id!==captureProject)throw new Error('Photo saved locally; return to the original project to attach a new photo.');const response=await fetch(result.latest_frame.url);if(!response.ok)throw new Error('Captured photo unavailable');await attachFile(new File([await response.blob()],'iPhone-progress.jpg',{type:'image/jpeg'}));guideCapture=false;$('guide-take-photo').disabled=false;renderProject();}catch(e){guideCapture=false;$('guide-take-photo').disabled=false;projectError(e.message);renderProject();}};await poll();}catch(e){guideCapture=false;$('guide-take-photo').disabled=false;projectError(e.message);renderProject();}});
+$('guide-take-photo').addEventListener('click', async () => {
+ if (guideCapture || !$('guide-camera').value) return;
+ if (projectPhotos.length >= 3) { projectError('Remove a photo before capturing another.'); return; }
+ const captureProject = project?.id;
+ guideCapture = true;
+ $('guide-take-photo').disabled = true;
+ renderProject();
+ $('guide-request-status').textContent = 'Taking local iPhone photo…';
+ try {
+  const url = await captureProjectPhoto($('guide-camera').value);
+  if (project?.id !== captureProject) throw new Error('Photo saved locally; return to the original project to attach a new photo.');
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Captured photo unavailable');
+  await attachFile(new File([await response.blob()], 'iPhone-progress.jpg', {type: 'image/jpeg'}));
+ } catch (error) {
+  projectError(error.message);
+ } finally {
+  guideCapture = false;
+  $('guide-take-photo').disabled = !$('guide-camera').value;
+  renderProject();
+ }
+});
 window.loadFirmwareSource=async result=>{$('firmware-source-panel').hidden=true;if(result?.review_status!=='reviewed')return;try{const data=await api('/api/jobs');const build=data.jobs.find(j=>j.action==='compile'&&j.status==='compiled'&&j.runtime_current!==false&&j.proposal_id===result.id&&j.plan_sha256===result.plan_sha256);if(!build)return;const source=await api('/api/jobs/'+build.id+'/source');if(proposalId!==result.id)return;sourceFiles=source.files;$('firmware-source-panel').hidden=false;$('firmware-authorship').textContent=source.authorship;$('firmware-build-hash').textContent='Firmware SHA-256: '+source.firmware_sha256;$('firmware-source-file').replaceChildren(...Object.keys(sourceFiles).map(name=>{const o=node('option',name);o.value=name;return o;}));$('firmware-source-file').value='include/plan_data.h';$('firmware-source-code').textContent=sourceFiles['include/plan_data.h'];for(const [id,name] of [['firmware-source-download','source.zip'],['firmware-binary-download','firmware.bin'],['firmware-log-download','compile.log']])$(id).href='/api/jobs/'+build.id+'/'+name;}catch(e){$('firmware-source-panel').hidden=true;}};
 $('firmware-source-file').addEventListener('change',()=>{$('firmware-source-code').textContent=sourceFiles[$('firmware-source-file').value]||'';});
 (async()=>{try{await refreshProjects();const runs=await api('/api/runs');for(const r of runs.runs.filter(r=>r.available)){const o=node('option',r.title+' · '+r.evaluated_sample_count+' samples · '+r.behavior_verdict);o.value=r.id;$('guide-run').append(o);}}catch(e){$('project-list').replaceChildren(node('p','Projects unavailable','small muted'));}})();

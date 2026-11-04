@@ -28,6 +28,7 @@ class ExecutionTests(unittest.TestCase):
         self.planner=Mock(directory=self.root/'plans');self.planner.get.return_value={'status':'ready','review_status':'reviewed','plan_sha256':plan_hash(PLAN)}
         self.planner.contract.return_value=logical_contract(PLAN)
         (self.root/'hardware').mkdir();(self.root/'old.bin').write_bytes(b'synthetic old app')
+        (self.root/'hardware/oled-reader.policy.json').write_text(json.dumps({'calibration':'cal.json','fixture':'synthetic frozen policy'}))
         (self.root/'hardware/board.json').write_text(json.dumps({'active_firmware':{'application_binary':'old.bin','firmware_sha256':digest(self.root/'old.bin')},'firmware_history':[]}))
         self.builder=Mock(side_effect=self.build);self.installer=Mock(side_effect=self.install);self.runner=Mock()
         self.identity_checker=Mock(return_value={'status':'pass','scope':'Synthetic UART identity only'})

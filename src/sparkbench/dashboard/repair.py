@@ -40,8 +40,8 @@ class MappingRepairMixin:
         self.probe_analyzer = probe_analyzer or analyze_probes
         self.mapping_proposer = mapping_proposer or propose_mapping
 
-    def _repair_policy(self):
-        path = self.root / "hardware/oled-reader.policy.json"
+    def _repair_policy(self, proposal_id=None):
+        path = self._camera_policy_path(proposal_id)
         policy, calibration = check_policy(path)
         return {"policy_sha256": digest(path), "calibration_sha256": digest(calibration)}, policy, calibration
 
@@ -73,7 +73,7 @@ class MappingRepairMixin:
             raise ValueError("The failed test lacks complete integrity-bound measurements")
         if json.loads((folder / "spec.snapshot.json").read_text()) != contract:
             raise ValueError("The failed test used a different behavior contract")
-        policy_state, policy, calibration = self._repair_policy()
+        policy_state, policy, calibration = self._repair_policy(job['proposal_id'])
         if (json.loads((folder / "reader-policy.snapshot.json").read_text()) != policy
                 or json.loads((folder / "analysis/calibration.snapshot.json").read_text()) != json.loads(calibration.read_text())):
             raise ValueError("Camera policy or calibration changed since the failed test")
@@ -153,7 +153,7 @@ class MappingRepairMixin:
     def _repair_preflight(self, job, cancel):
         """Fresh idle geometry/off-state check, without an OLED/Meta request."""
         camera = job["request"]["device_id"]
-        calibration = self._frozen_calibration()
+        calibration = self._frozen_calibration(job['proposal_id'])
         if calibration["camera_id"] != camera:
             raise ValueError("The camera differs from the frozen measurement policy")
         run = self._folder(job["id"]) / "repair/preflight"
@@ -190,7 +190,7 @@ class MappingRepairMixin:
             if cancel.is_set(): raise ValueError("Repair cancelled after bounded probe")
             self._bound_capture(capture,'DISCOVER',context['artifact'],job['request'])
             self._set(job_id, stage="analysis")
-            discovery = self.probe_analyzer(folder / "capture", self.root / "hardware/oled-reader.policy.json", folder / "discovery")
+            discovery = self.probe_analyzer(folder / "capture", self._camera_policy_path(job['proposal_id']), folder / "discovery")
             mapping = verified_mapping(discovery)
             if discovery.get('source_run')!=str((folder/'capture').resolve()) or discovery.get('calibration_sha256')!=context['calibration_sha256']:
                 raise ValueError('Probe analysis does not match this capture and frozen calibration')

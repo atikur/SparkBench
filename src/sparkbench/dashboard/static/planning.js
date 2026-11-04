@@ -8,7 +8,7 @@ const unresolvedNotes = {
   invalid_response: 'No usable plan came back and nothing was retried. Prepare the plan again from the project.',
   error: 'The request failed and nothing was retried. Prepare the plan again from the project.',
 };
-function showPlanner(scroll=true){if($('plan-dialog').open){$('plan-stage').hidden=false;return;}if($('guide-workspace').hidden)showView('project');$('plan-stage').hidden=false;if(scroll)$('plan-stage').scrollIntoView({behavior:'smooth',block:'start'});}
+function showPlanner(scroll=true){if($('guide-workspace').hidden)showView('project');$('plan-stage').hidden=false;if(scroll)$('plan-stage').scrollIntoView({behavior:'smooth',block:'start'});}
 window.resetPlanStage=function(){pollVersion++;proposalId=null;proposalResult=null;plannerBusy=false;$('planner-result').hidden=true;$('planner-error').hidden=true;$('bench-stage').hidden=true;if(window.executionProposal)window.executionProposal(null);};
 function plannerError(message){$('planner-error').hidden=false;$('planner-error').textContent=message;}
 async function planningPost(path, data){if(!plannerSession)throw new Error('Local session unavailable. Reload the page.');const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-SparkBench-Session':plannerSession.session_token},body:JSON.stringify(data)});const result=await response.json();if(!response.ok)throw new Error(result.error||'Planning request failed');return result;}

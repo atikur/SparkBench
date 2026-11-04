@@ -15,6 +15,7 @@ from .execution import ExecutionService
 from .projects import ProjectService
 from ..guide import CATALOG, ASSEMBLY
 from ..meta import configuration
+from ..sam_regions import propose_regions
 
 STATIC = Path(__file__).with_name("static")
 ASSETS = {"/": "index.html", "/app.js": "app.js", "/planning.js": "planning.js", "/execution.js":"execution.js", "/style.css": "style.css", "/favicon.svg": "favicon.svg"}
@@ -25,6 +26,7 @@ ASSETS['/explain.js']='explain.js'
 ASSETS['/flow.js']='flow.js'
 ASSETS['/autopilot.js']='autopilot.js'
 ASSETS['/mapping-repair.js']='mapping-repair.js'
+ASSETS['/camera-regions.js']='camera-regions.js'
 
 
 class DashboardServer(ThreadingHTTPServer):
@@ -95,6 +97,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200, self.server.execution.enumerate_devices())
             elif path == "/api/camera/reference":
                 self.send_data(200, self.server.execution.reference_image(), "image/jpeg")
+            elif match := re.fullmatch(r'/api/camera/reference/([0-9a-f]{32})',path):
+                self.send_data(200,self.server.execution.reference_image(match[1]),'image/jpeg')
             elif path == "/api/board":
                 self.json(200, self.server.execution.board_summary())
             elif path == '/api/projects':
@@ -155,12 +159,18 @@ class Handler(BaseHTTPRequestHandler):
         project_action=re.fullmatch(r'/api/projects/([0-9a-f]{32})/(update|ask|accept|firmware)',path)
         explain=re.fullmatch(r"/api/runs/([a-z0-9-]+)/explain",path)
         repair_approval=re.fullmatch(r'/api/repairs/([0-9a-f]{32})/approve',path)
-        if path not in ("/api/plans",'/api/projects','/api/guide/photo','/api/camera/check','/api/repairs') and not review and not operation and not cancellation and not project_action and not explain and not repair_approval:
+        camera_confirmation=re.fullmatch(r'/api/camera/setup/([0-9a-f]{32})/confirm',path)
+        camera_suggestion=re.fullmatch(r'/api/camera/setup/([0-9a-f]{32})/regions',path)
+        if path not in ("/api/plans",'/api/projects','/api/guide/photo','/api/camera/check','/api/camera/regions','/api/camera/setup','/api/repairs') and not review and not operation and not cancellation and not project_action and not explain and not repair_approval and not camera_confirmation and not camera_suggestion:
             self.method_rejected();return
         if not self.local_request(mutation=True): return
         try:
             length = int(self.headers.get("Content-Length", "0"))
-            maximum=25_000_000 if project_action and project_action[2]=='ask' else 16384
+            maximum = 16384
+            if project_action and project_action[2] == 'ask':
+                maximum = 25_000_000
+            elif path == '/api/camera/regions':
+                maximum = 8_500_000
             if not 1 <= length <= maximum:
                 self.json(413, {"error": "Request body exceeds the supported size"});return
             if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
@@ -178,8 +188,16 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,proposal)
             elif path=='/api/guide/photo':
                 self.json(202,{'id':self.server.execution.start_photo(body)})
+            elif path == '/api/camera/regions':
+                self.json(200, propose_regions(body))
             elif path=='/api/camera/check':
                 self.json(202,{'id':self.server.execution.start_view(body)})
+            elif path=='/api/camera/setup':
+                self.json(202,{'id':self.server.execution.start_camera_setup(body)})
+            elif camera_confirmation:
+                self.json(202,{'id':self.server.execution.confirm_camera_setup(camera_confirmation[1],body)})
+            elif camera_suggestion:
+                self.json(200,self.server.execution.suggest_camera_setup(camera_suggestion[1],body))
             elif project_action:
                 project_id,action=project_action.groups()
                 if action=='update':self.json(200,self.server.projects.update(project_id,body))

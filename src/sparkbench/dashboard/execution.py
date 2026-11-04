@@ -27,6 +27,8 @@ from ..workflow import execute
 from .catalog import Run
 from .planning import BusyError, IDENTIFIER
 from .repair import MappingRepairMixin
+from .camera_flow import CameraSetupMixin
+from ..sam_regions import propose_regions
 
 
 def devices():
@@ -49,12 +51,13 @@ def devices():
 class Cancelled(ValueError): pass
 
 
-class ExecutionService(MappingRepairMixin):
-    def __init__(self, root, planner, store, *, builder=build_artifact, installer=install, runner=execute, enumerate_devices=devices, identity_checker=verify_identity, view_reader=read_images, label_reader=read_label, frame_inspector=inspect_frame, probe_runner=None, probe_analyzer=None, mapping_proposer=None):
+class ExecutionService(CameraSetupMixin, MappingRepairMixin):
+    def __init__(self, root, planner, store, *, builder=build_artifact, installer=install, runner=execute, enumerate_devices=devices, identity_checker=verify_identity, view_reader=read_images, label_reader=read_label, frame_inspector=inspect_frame, probe_runner=None, probe_analyzer=None, mapping_proposer=None, region_proposer=propose_regions):
         self.root=Path(root).resolve();self.directory=self.root/"runs/dashboard-execution"
         self.planner,self.store=planner,store
         self.builder,self.installer,self.runner,self.enumerate_devices=builder,installer,runner,enumerate_devices
         self.identity_checker=identity_checker;self.view_reader=view_reader;self.label_reader=label_reader;self.frame_inspector=frame_inspector
+        self.region_proposer=region_proposer
         self._init_repairs(probe_runner, probe_analyzer, mapping_proposer)
         self.lock=threading.RLock();self.active=None;self.cancel_event=None;self.thread=None;self.jobs={}
         if self.directory.is_dir():
@@ -120,6 +123,10 @@ class ExecutionService(MappingRepairMixin):
             job={"id":job_id,"action":action,"proposal_id":body["proposal_id"],"plan_sha256":body["plan_sha256"],
                  "request_id":body["request_id"],"request":body,"status":"running","stage":"queued",
                  "servo_actuation":False,"physical_verification":"not_performed","started_at_utc":datetime.now(timezone.utc).isoformat()}
+            if action=='test':
+                policy_path=self._camera_policy_path(body['proposal_id'])
+                check_policy(policy_path)
+                job.update(camera_policy_path=str(policy_path),camera_policy_sha256=digest(policy_path))
             self.jobs[job_id]=job;save(folder/"job.json",job)
             self.active=job_id;self.cancel_event=threading.Event()
             self.thread=threading.Thread(target=self._work,args=(job_id,action,dict(body),self.cancel_event),daemon=False)
@@ -170,12 +177,12 @@ class ExecutionService(MappingRepairMixin):
 
     # Camera check: a short capture compared with the frozen view, before the plan runs. It sends no serial commands
     # and only says whether a test could be measured from here. The board is idle, so both LEDs must read off.
-    def _frozen_calibration(self):
-        _,calibration=check_policy(self.root/"hardware/oled-reader.policy.json")
+    def _frozen_calibration(self, proposal_id=None):
+        _,calibration=check_policy(self._camera_policy_path(proposal_id))
         return json.loads(Path(calibration).read_text())
 
-    def reference_image(self):
-        file=self.root/self._frozen_calibration()["geometry"]["reference_frame"]
+    def reference_image(self, proposal_id=None):
+        file=self.root/self._frozen_calibration(proposal_id)["geometry"]["reference_frame"]
         if file.is_symlink() or not file.is_file():raise KeyError("Reference frame unavailable")
         return file.read_bytes()
 
@@ -190,8 +197,11 @@ class ExecutionService(MappingRepairMixin):
         return issues
 
     def start_view(self, body):
-        if set(body)!={'request_id','device_id'} or not isinstance(body['request_id'],str) or not IDENTIFIER.fullmatch(body['request_id']):raise ValueError('Explicit camera and request ID required')
+        if set(body) not in ({'request_id','device_id'}, {'request_id','device_id','proposal_id'}) or not isinstance(body['request_id'],str) or not IDENTIFIER.fullmatch(body['request_id']):raise ValueError('Explicit camera and request ID required')
         if not isinstance(body['device_id'],str) or not body['device_id']:raise ValueError('Select the iPhone camera')
+        if 'proposal_id' in body:
+            if not isinstance(body['proposal_id'],str) or not IDENTIFIER.fullmatch(body['proposal_id']):raise ValueError('Valid proposal ID required')
+            self.planner.get(body['proposal_id'])
         with self.lock:
             for job in self.jobs.values():
                 if job.get('request_id')==body['request_id']:
@@ -199,13 +209,16 @@ class ExecutionService(MappingRepairMixin):
                     return job['id']
             if self.active:raise BusyError('Another job owns the bench; wait before checking the camera')
             job_id=uuid.uuid4().hex;folder=self._folder(job_id);folder.mkdir(parents=True)
-            self.jobs[job_id]={'id':job_id,'action':'view','proposal_id':None,'plan_sha256':None,'request_id':body['request_id'],'request':body,'status':'running','stage':'capture','physical_verification':'not_performed','servo_actuation':False,'started_at_utc':datetime.now(timezone.utc).isoformat(),'updated_at_utc':datetime.now(timezone.utc).isoformat(),'shutdown':False,'failures':0,'unknowns':0,'error':None}
+            self.jobs[job_id]={'id':job_id,'action':'view','proposal_id':body.get('proposal_id'),'plan_sha256':None,'request_id':body['request_id'],'request':body,'status':'running','stage':'capture','physical_verification':'not_performed','servo_actuation':False,'started_at_utc':datetime.now(timezone.utc).isoformat(),'updated_at_utc':datetime.now(timezone.utc).isoformat(),'shutdown':False,'failures':0,'unknowns':0,'error':None}
+            self.jobs[job_id].update(setup_available=False,
+                reference_url='/api/camera/reference'+('/'+body['proposal_id'] if body.get('proposal_id') else ''))
             save(folder/'job.json',self.jobs[job_id]);self.active=job_id;self.cancel_event=threading.Event()
             self.thread=threading.Thread(target=self._view,args=(job_id,body['device_id'],self.cancel_event),daemon=False);self.thread.start();return job_id
 
     def _view(self, job_id, device_id, cancel):
         try:
-            calibration=self._frozen_calibration();geometry=calibration["geometry"]
+            proposal_id=self.jobs[job_id].get('proposal_id')
+            calibration=self._frozen_calibration(proposal_id);geometry=calibration["geometry"]
             if calibration["camera_id"]!=device_id:raise ValueError("Selected camera differs from the frozen measurement policy")
             if device_id not in [d['id'] for d in self.enumerate_devices()['cameras']]:raise ValueError('Selected iPhone absent in this process context; no fallback camera')
             if cancel.is_set():raise Cancelled('Cancelled before camera access')
@@ -213,7 +226,7 @@ class ExecutionService(MappingRepairMixin):
             capture_frames(device_id,seconds=5,fps=2,output=output)
             from ..led_oled import frame_rows
             chosen=frame_rows(output/'frames.jsonl')[-3:]
-            if not chosen:raise ValueError('No camera frames')
+            if len(chosen)!=3:raise ValueError('Three fresh camera frames required')
             analysis=run.parent/'view';analysis.mkdir();self._set(job_id,stage='analysis')
             native=self.view_reader(run,geometry,chosen,analysis,read_labels=False)
             rows=[native[row['file']] for row in chosen]
@@ -228,10 +241,12 @@ class ExecutionService(MappingRepairMixin):
             # Only to tell the person what to fix. It can never clear an issue.
             if issues and not cancel.is_set():
                 try:
-                    requests+=1;looked=self.frame_inspector((output/chosen[-1]['file']).read_bytes(),self.reference_image(),analysis/'inspection')
+                    requests+=1;looked=self.frame_inspector((output/chosen[-1]['file']).read_bytes(),self.reference_image(proposal_id),analysis/'inspection')
                     inspection=looked.get('inspection')
                 except Exception:inspection=None
-            self._set(job_id,status='view_blocked' if issues else 'view_ok',stage='finished',frames_checked=len(chosen),frames_matched=matched,view_issues=issues,view_inspection=inspection,oled_reading=reading,ended_at_utc=datetime.now(timezone.utc).isoformat(),serial_commands_sent=[],meta_requests=requests)
+            if cancel.is_set():raise Cancelled('Cancelled before publishing camera readiness')
+            setup_available=any(i['part']=='camera' for i in issues) and self.camera_setup_available(proposal_id)
+            self._set(job_id,status='view_blocked' if issues else 'view_ok',stage='finished',frames_checked=len(chosen),frames_matched=matched,view_issues=issues,view_inspection=inspection,oled_reading=reading,ended_at_utc=datetime.now(timezone.utc).isoformat(),serial_commands_sent=[],meta_requests=requests,setup_available=setup_available)
         except Cancelled:
             self._set(job_id,status='cancelled',stage='finished',error='Cancelled before camera access. No serial commands sent.')
         except Exception as exc:
@@ -340,8 +355,12 @@ class ExecutionService(MappingRepairMixin):
                     self._set(job_id,status='identity_confirmed' if result['status']=='pass' else 'incomplete',stage='finished',firmware_sha256=artifact['firmware_sha256'])
                 else:
                     if body["device_id"] not in [d["id"] for d in current["cameras"]]:raise ValueError("Selected iPhone absent in this host context; no fallback camera")
-                    policy_path=self.root/"hardware/oled-reader.policy.json";policy,_=check_policy(policy_path)
-                    calibration=json.loads((self.root/policy["calibration"]).read_text())
+                    policy_path=self._camera_policy_path(body['proposal_id'])
+                    if (str(policy_path)!=self.jobs[job_id]['camera_policy_path']
+                            or digest(policy_path)!=self.jobs[job_id]['camera_policy_sha256']):
+                        raise ValueError('Camera reference changed after the test was queued')
+                    policy,calibration_path=check_policy(policy_path)
+                    calibration=json.loads(calibration_path.read_text())
                     if calibration["camera_id"]!=body["device_id"]:raise ValueError("Selected camera differs from frozen measurement policy")
                     board,_=self._board()
                     if board["active_firmware"]["firmware_sha256"]!=artifact["firmware_sha256"]:raise ValueError("Install this compiled application before its camera test")
@@ -385,7 +404,7 @@ class ExecutionService(MappingRepairMixin):
         with self.lock:
             if job_id not in self.jobs:raise KeyError("Unknown job")
             result=copy.deepcopy(self.jobs[job_id])
-            if result.get('action')=='mapping_repair' and self.active==job_id:
+            if result.get('action') in ('mapping_repair','camera_setup') and self.active==job_id:
                 result['status']='running'  # Publish the terminal result only after its evidence is sealed.
         if result.get("action")=="compile" and result.get("status")=="compiled":result["runtime_current"]=runtime_current(self._folder(job_id)/"artifact")
         result["evidence_available"] = (result.get("status") in ("pass","fail","incomplete")
@@ -519,6 +538,8 @@ class ExecutionService(MappingRepairMixin):
             if job_id not in self.jobs:raise KeyError("Unknown job")
             if self.active==job_id:
                 self.cancel_event.set();self._set(job_id,cancel_requested=True)
+            elif self.jobs[job_id].get('action')=='camera_setup' and self.jobs[job_id].get('status')=='setup_review':
+                self._set(job_id,status='cancelled',stage='finished',cancel_requested=True)
         return self.get(job_id)
 
     def shutdown(self):

@@ -1,3 +1,73 @@
+CAMERA SETUP AND PROJECT PROGRESS CHECKPOINT — 4 NOVEMBER 2026
+
+Planning, approval and camera help now appear inline in project progress.
+The activity panel shows the current worker, actual OLED frame-reading counts,
+and recent session events. Motion stops while waiting or finished and respects
+reduced-motion settings. Saved camera setup and Decision states are restored
+from records, including the current build's test outcome.
+
+Recorded automatic setup 9afed681d61f4bf894b4c679555f0d1d completed for proposal
+82a30d2c71634f02ae5bf6e9df0026ca. Subsequent installed-runtime camera test
+f31f0f755bd44adc8a51372dd7d028bb passed 27 sampled settled observations with
+zero mismatches and zero unknowns. These are existing local evidence records,
+not a new test during this checkpoint. The setup itself remains readiness only;
+the separate behavior test establishes the scoped LED/OLED result. Read
+docs/camera-setup.md. Servo/full-rig acceptance and live mapping repair remain
+outside this result.
+
+All 343 host tests pass: 331 in the sandbox and 12 HTTP tests rerun successfully
+with host loopback permission. Dashboard progress was browser-checked using
+the saved result and nine simulated activity states, including mobile layout.
+No new model request, capture, serial command or firmware operation during
+the progress redesign or commit checks. Voice and Wonder are suggestions only.
+
+Earlier entries below are historical; the newest entry takes precedence.
+
+AUTONOMOUS CAMERA REFERENCE REFRESH — 4 NOVEMBER 2026
+
+Before first test, the agent tries to transfer commissioned OLED corners and
+identified LED centers to the new frame using macOS Vision image alignment.
+It checks the appearance around both LED lenses and asks Meta SAM to bound the
+screen and lenses. The existing reader and Muse Spark validate a separate idle
+capture. Success saves the reference and continues with no operator region
+clicks. If it cannot qualify the candidate, the editor offers manual fallback.
+Automatic and manual attempts retain separate evidence. Existing thresholds and
+the post-test reference lock remain in force.
+
+342 host tests passed, including 13 simulated setup UI scenarios. The native
+alignment helper matched all six landmarks on a translated copy of the
+commissioned image. Two real SAM requests returned boxes that passed the
+candidate geometry guards, and the existing native reader found all four OLED
+borders on that offline image. The offline image is not live acceptance
+evidence. No camera capture, serial commands or firmware changes in this turn.
+
+AGENTIC CAMERA SETUP — 4 NOVEMBER 2026
+
+Guided SAM camera setup is integrated into the pre-test bench agent. Before a
+plan's first test, an unsupported camera view can trigger a dedicated fresh
+capture, SAM OLED suggestion, user-confirmed LED lenses and four lit OLED border
+corners, then a separate camera-only readiness capture. Successful validation
+saves a proposal-scoped reference; the agent continues its approved flow. Plan
+setup entry also supports this. Guided SAM calls are source-bound and recorded.
+
+Existing camera ID/resolution, LED radii/thresholds, OLED crop, reader and limits
+are inherited unchanged. This establishes a new geometry reference, not new
+LED on/off calibration or a behavior pass. All camera setup operations send
+zero serial commands. No reference replacement after any test starts for a plan;
+repair children use the original proposal's frozen reference. Failed-test frames
+and uploaded photos cannot serve as guided setup captures. Global defaults and
+historical results remain untouched. Read docs/camera-setup.md.
+
+339 software tests pass, including 18 setup flow/HTTP tests, 11 persisted-reference
+tests and 12 simulated setup UI scenarios (inside one host test). Local browser
+checked the Plan entry, explicit iPhone picker and guided modal with no console
+errors. Host enumeration found the iPhone. No camera capture, Meta request,
+firmware operation or serial command during this implementation. The integrated
+live setup-to-test demonstration remains pending. Dashboard restarted on
+http://127.0.0.1:8765 with the new code. Changes remain uncommitted.
+
+Earlier entries below are historical; the newest entry takes precedence.
+
 BOUNDED MAPPING REPAIR IMPLEMENTATION — 4 NOVEMBER 2026
 
 Implemented the agreed tight repair scope. A fresh confirmed LED camera mismatch

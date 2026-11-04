@@ -43,9 +43,18 @@ and gives a sequence for a joint bench recording. The final demo video link is p
 
 [Bounded mapping repair, evidence rules and live validation status](docs/mapping-repair.md)
 
+The agent also supports [guided camera setup](docs/camera-setup.md) before a new
+plan's first test. The agent aligns the commissioned landmarks, checks them
+with SAM and validates the reference on a separate capture. It asks for edits
+only if it cannot qualify the reference.
+Existing measurement thresholds remain frozen. One local automatic setup-to-test
+session on 4 November passed 27 sampled observations, with zero mismatches and
+zero unknowns. See the [setup records](docs/camera-setup.md#recorded-live-session).
+
 ## Meta Model API
 
-The runtime calls `muse-spark-1.3-contributor` and validates structured responses. Planning,
+The runtime calls `muse-spark-1.3-contributor` and validates structured responses. Guided
+camera setup also uses `sam-3.1` through the Meta API for region proposals. Planning,
 framing advice and diagnosis use separate bounded requests. A camera test can make multiple
 OLED requests, each for one eligible crop.
 
@@ -55,6 +64,7 @@ OLED requests, each for one eligible crop.
 | **Intent planner** | The instruction and capability contract produce a structured plan for review. The planner matched the independently written expectations in eight benchmark cases. |
 | **OLED reader** | A single display crop produces a readable flag and text. The request omits the expected label. |
 | **Frame checker** | A blocked camera view can produce placement advice for the operator. The local check decides whether the view is usable. |
+| **SAM region proposer** | A fresh setup photo and selected lens points produce component regions for confirmation. A separate capture checks the resulting reference; SAM does not decide behavior pass/fail. |
 | **Evidence analyst** | The approved steps, measurements and up to three saved frames produce an advisory explanation, cited frames and one next check. Local code validates the citations. |
 | **Mapping repair analyst** | The fixed probe's camera measurements and current firmware assumption produce a proposed GPIO25/26 mapping and cited evidence. Local inference must agree; installation requires approval. Live validation of this new role is pending. |
 
@@ -99,7 +109,9 @@ tools, run host tests and print the readiness report. Then configure `META_API_K
 bench, including a verified prior application and boot-layout records for installation and a
 frozen camera calibration for verification. [Commissioning details](docs/commissioning.md)
 
-The 4 November review passed 252 host tests. Run the suite from the repository root.
+The 4 November camera and dashboard update passed all 343 host tests, including
+12 HTTP tests rerun with host loopback permission after the sandbox blocked them.
+Run the suite from the repository root.
 
 ```bash
 PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
