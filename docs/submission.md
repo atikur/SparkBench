@@ -36,7 +36,9 @@ while the plan runs. A deterministic verifier measures the LEDs from pixels, Mus
 OLED text from each frame without being told what to expect, and the verdict comes from comparing
 those measurements with the frozen plan. When the board does something else, such as two LED wires
 swapped, the camera catches it and Muse Spark explains the likely cause from the recorded frames.
-When the display cannot be read, the result stays incomplete rather than becoming a pass.
+The agent then waits for you to fix the bench and re-tests the same run, so the pass after the fix
+is on record next to the fault. When the display cannot be read, the result stays incomplete rather
+than becoming a pass.
 
 Everything was built during the hackathon, from the first board bring-up on 27 October. The
 repository has a dated engineering log, 250 host tests, and every Meta request saved on disk.
@@ -61,7 +63,8 @@ Muse Spark plays five distinct roles:
    cannot clear the check.
 5. Evidence analyst (vision and reasoning): on a failed or incomplete run, receives the frozen
    expected steps, the measured findings and up to three recorded frames, then names the likely
-   cause, cites the frames and proposes one safe next check. It cannot change the verdict.
+   cause, cites the frames and proposes one safe next check. It cannot change the verdict. The
+   agent then waits for the person to fix the bench and re-tests the same run.
 
 The model proposes data, never code, and never grades itself. Trusted local code renders the
 firmware, enforces a pin allowlist and step limits, and an independent verifier decides the result.

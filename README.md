@@ -39,6 +39,7 @@ Failures and unknowns are kept, not hidden.
 | Verify | The iPhone records the board while the firmware runs. LED colours are measured from pixels; OLED text is read by Meta without being told the expected label. | 45 sampled observations, 0 mismatches, 0 unknowns |
 | Catch a fault | With the two LED wires deliberately swapped, the verifier reports the wrong channel. | 36 wrong-channel findings in 47 samples |
 | Explain | On a failed run, Muse Spark reads the expected steps, the measured findings and the key frames, names the likely cause, cites the frames it used and proposes one check. It cannot change the verdict. | Strict JSON reply; citations must be among the supplied frames or the reply is rejected |
+| Fix and re-prove | The agent shows the diagnosis and the frame, then waits. Swap the wires back and press "I fixed it, test again": the same run checks the camera again, re-tests and reports the pass after the fix. The plan is never edited to match a fault. | Each attempt is a separate saved test |
 | Stay honest | A badly framed capture is reported as *incomplete*, never as a pass. | 45 of 48 OLED readings unknown, result kept as incomplete |
 
 ![Recorded wiring-swap test where the verifier flagged the fault](docs/images/dashboard-wiring-fault.jpg)

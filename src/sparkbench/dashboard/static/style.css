@@ -559,3 +559,8 @@ button.step-chip[aria-pressed="true"] { outline: 2px solid var(--accent); outlin
 .fix-next { font-weight: 600; margin: 0; }
 .fix-frame { max-width: 640px; }
 #fix-check .actions { margin-top: 4px; }
+.loop { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.loop li { padding: 14px; }
+.loop li strong { font-size: 15px; }
+@media (max-width: 980px) { .loop { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .loop { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

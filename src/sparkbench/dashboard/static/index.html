@@ -35,7 +35,7 @@
   <div class="hero">
     <p class="eyebrow">Proof beyond the build</p>
     <h1 class="hero-title">Describe it. Meta plans it.<br>The camera proves it.</h1>
-    <p class="lead">You describe it. Muse Spark plans it. The agent builds, installs and tests it. The camera proves what the board actually did, and when it fails, Muse Spark explains why.</p>
+    <p class="lead">You describe it. Muse Spark plans it. The agent builds, installs and tests it. The camera proves what the board actually did. When it fails, Muse Spark explains why, you fix the bench, and the same run proves the fix.</p>
     <form id="home-plan-form" class="home-plan">
       <label for="home-idea" class="sr-only">What should the board do?</label>
       <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
@@ -55,6 +55,7 @@
     <li><span class="loop-n">3</span><strong>Run</strong><span>The agent builds, installs and tests, skipping what is already proven</span></li>
     <li class="meta"><span class="loop-n">4</span><strong>Prove</strong><span>The camera watches the board; Muse Spark reads the display without knowing the answer</span><em class="meta-chip">Muse Spark</em></li>
     <li class="meta"><span class="loop-n">5</span><strong>Explain</strong><span>When it fails, Muse Spark says why from the frames and proposes one check</span><em class="meta-chip">Muse Spark</em></li>
+    <li><span class="loop-n">6</span><strong>Fix</strong><span>You fix the bench. The same run checks the camera again, re-tests, and proves the fix</span></li>
   </ol>
 
   <section class="home-section" aria-labelledby="proof-heading">
@@ -177,7 +178,7 @@
     <summary><span class="summary-title">Details</span><span class="help">Run log, firmware, parts, and questions</span></summary>
   <section class="card stage-card" id="bench-stage" hidden>
     <div class="stage-head"><h2>Run log</h2><span id="autopilot-status" class="pill"></span></div>
-    <p class="help">The agent runs the same jobs a person would click, skips what the records already prove, and stops wherever a person is needed. It never touches wiring or limits.</p>
+    <p class="help">The agent runs the same jobs a person would click and skips what the records already prove. When the board does something else, it explains why and waits for you, then tests again. It never touches wiring, the plan or the limits.</p>
     <ol id="timeline" class="timeline"></ol>
     <div class="actions wrap"><span id="execution-status" class="help" role="status"></span></div>
     <p id="execution-error" class="error-line" role="alert" hidden></p>
@@ -369,6 +370,7 @@
     <li>Muse Spark's advice and photo descriptions are guidance, not a pass. A photo cannot establish continuity, voltage or polarity.</li>
     <li>The servo on the rig is never driven by this runtime and its angles are unmeasured.</li>
     <li>The phone must stay still in its calibrated position. Frames from anywhere else are rejected, never read or guessed.</li>
+    <li>The agent never repairs anything. Muse Spark explains, you fix the bench, and the same run re-tests. The plan is never edited to match a fault.</li>
     <li>Browsing saved work makes no model call and touches no hardware. A run starts only when you press the button, and every request and job it makes is saved.</li>
     <li>Evidence lives locally under <code>runs/</code> with integrity hashes. Changed or missing evidence is shown as unavailable.</li>
   </ul>

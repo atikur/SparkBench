@@ -9,8 +9,8 @@ AI can write firmware in seconds and say "done". Nobody checks whether the board
 SparkBench makes the AI prove it. You describe what the board should do. Muse Spark turns it into a
 plan. Trusted code builds and installs it. An iPhone watches the board while it runs. Muse Spark
 reads the display without being told what to expect, and an independent verifier compares what
-happened with what was planned. When it fails, Muse Spark explains why from the evidence. Unknowns
-stay unknown. **Proof beyond the build.**
+happened with what was planned. When it fails, Muse Spark explains why from the evidence, you fix
+the bench, and the same run proves the fix. Unknowns stay unknown. **Proof beyond the build.**
 
 ## Who it is for
 
@@ -29,9 +29,11 @@ with nothing more than a board, a phone and a Meta key.
 | 4. Verify | The camera test passes: 45 samples, 0 mismatches, 0 unknown | Muse Spark reads each OLED frame blind |
 | 5. Catch | Two LED wires swapped on purpose; the verifier flags 36 mismatches | None. The verifier is deterministic |
 | 6. Explain | "Why?" Muse Spark reads the evidence and names the swap, with the frames it used | Muse Spark reasons over expected steps, measurements and images |
+| 7. Fix | The wires go back; "I fixed it, test again"; the same run checks the camera and passes | None. The agent waits for a person and never edits the plan |
 
-Four distinct Meta roles in one loop, and two deliberate places where Meta is kept out. That contrast
-is the point: the model plans and perceives, trusted code acts, and nothing grades its own work.
+Five distinct Meta roles in one loop, and three deliberate places where Meta is kept out. That contrast
+is the point: the model plans and perceives, trusted code acts, a person repairs, and nothing grades
+its own work.
 
 ## What we claim
 
@@ -47,7 +49,8 @@ is the point: the model plans and perceives, trusted code acts, and nothing grad
 - No arbitrary firmware generation. Meta proposes data; a trusted renderer writes the C++.
 - No servo, no sensors, no other boards. One kit: ESP32, two LEDs, one OLED.
 - No continuous verification. Verdicts cover sampled settled windows in the recorded view.
-- No autonomous repair. The explanation proposes; a person acts and the camera re-checks.
+- No autonomous repair. The explanation proposes; a person acts and the same run re-checks. The
+  plan is never edited to match a fault.
 
 ## Scope for the submission
 
