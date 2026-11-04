@@ -69,7 +69,7 @@ function paintStageBoxes(job){const wrap=$('stage-boxes'),ns='http://www.w3.org/
  svg.setAttribute('viewBox','0 0 '+width+' '+height);
  for(const old of Array.from(svg.children))if(!regions[old.dataset.part])old.remove();
  for(const [part,box] of Object.entries(regions)){if(!Array.isArray(box)||box.length!==4)continue;
-  const key=box.join(','),local=job.sources?.[part]==='local-vision';let g=Array.from(svg.children).find(x=>x.dataset.part===part);
+  const key=box.join(','),local=!!job.sources&&job.sources[part]!=='sam-3.1';let g=Array.from(svg.children).find(x=>x.dataset.part===part);
   if(g?.dataset.box!==key){g?.remove();g=document.createElementNS(ns,'g');g.dataset.part=part;g.dataset.box=key;g.style.color=STAGE_PART_COLORS[part]||'#fff';
    const rect=document.createElementNS(ns,'rect'),label=document.createElementNS(ns,'text'),[x0,y0,x1,y1]=box;
    for(const [k,v] of Object.entries({x:x0,y:y0,width:x1-x0,height:y1-y0,pathLength:1,rx:4*scale}))rect.setAttribute(k,v);
@@ -100,18 +100,21 @@ function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-che
  const job=activeExecution?.action==='test'?activeExecution:null,progress=job?.stage==='analysis'?job.reading_progress:null,steps=planSteps();
  const checking=!!autopilot&&!flowHold&&stageState('view')==='running';
  const checkFrame=checking&&lastViewCheck?.status==='running'&&lastViewCheck.proposal_id===executionPlan.id?lastViewCheck.latest_frame:null;
- const frame=(setup&&setupJob?.latest_frame)||job?.latest_frame||checkFrame;
+ // Between a blocked check and the setup's first frame, the check's own frame shows why the agent is setting up again.
+ const movedCheck=!job&&window.cameraSetupActive&&!setupJob?.latest_frame&&lastViewCheck?.status==='view_blocked'&&lastViewCheck.proposal_id===executionPlan?.id?lastViewCheck:null;
+ const frame=(setup&&setupJob?.latest_frame)||job?.latest_frame||checkFrame||movedCheck?.latest_frame;
  const preview=$('run-camera-preview'),img=$('run-frame');
  preview.hidden=blocked||fixing||repairing||!!flowHold;
  img.hidden=preview.hidden||!frame;
  const previewing=!preview.hidden&&!frame&&steps.length>0,capturing=!!job&&!progress;
  $('stage-preview').hidden=!previewing;
- const setupOnStage=!!setup&&!!frame,setupStep=setupJob?.stage,samWorking=setupOnStage&&!setupSaved&&setupStep==='suggesting',haveBoxes=setupOnStage&&Object.keys(setupRegions(setupJob)).length>0;
- paintStageBoxes(setupOnStage?setupJob:null);
+ const setupOnStage=!!setupJob?.latest_frame,setupStep=setupJob?.stage,samWorking=setupOnStage&&!setupSaved&&setupStep==='suggesting',haveBoxes=setupOnStage&&Object.keys(setupRegions(setupJob)).length>0;
+ const savedCheck=!setupOnStage?(checkFrame?lastViewCheck:movedCheck):null,showSaved=!!savedCheck?.saved_regions;
+ paintStageBoxes(setupOnStage?setupJob:showSaved?{id:savedCheck.id,image_width:savedCheck.image_width,image_height:savedCheck.image_height,regions:savedCheck.saved_regions,sources:{red:'saved',green:'saved',oled:'saved'}}:null);
  preview.dataset.mode=setupOnStage?(setupStep==='capture'&&!setupSaved?'checking':samWorking?'sam-working':samInUse?'sam':'checking'):frame?(progress?'reading':capturing?'recording':'checking'):'plan';
  $('stage-tag-text').textContent=setupOnStage
   ?(setupSaved?(samInUse?'SAM 3.1 · regions saved':'Regions saved'):setupStep==='capture'?'iPhone · capturing':samWorking?'SAM 3.1 · outlining parts':['aligning','locating'].includes(setupStep)?'Local vision · aligning':samInUse?'SAM 3.1 regions · checking':'Regions · checking')
-  :frame?(progress?'Muse Spark reading':capturing?(frame.live?'Live · recording':'Recording'):'Camera check'):'Plan preview';
+  :movedCheck&&frame?'Camera view changed':frame?(progress?'Muse Spark reading':capturing?(frame.live?'Live · recording':'Recording'):'Camera check'):'Plan preview';
  const count=$('stage-count'),setupRetry=setupOnStage&&setupJob.setup_attempt>1;count.hidden=!previewing&&!setupRetry&&!(frame&&!setup&&(progress||(capturing&&job.capture_step)));
  if(setupRetry)count.textContent='Attempt '+setupJob.setup_attempt;else if(frame)count.textContent=progress?readingNote(progress):capturing&&job.capture_step?'Step '+job.capture_step+' of '+steps.length:'';
  if(runClock===null){const began=Date.parse(activeExecution?.started_at_utc||'');runClock=Number.isNaN(began)?Date.now():began;}
@@ -120,7 +123,9 @@ function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-che
  if(img.hidden){img.removeAttribute('src');delete img.dataset.url;}
  const said=progress?.last_text;
  const someLocal=Object.values(setupJob?.sources||{}).includes('local-vision');
- const caption=setupOnStage
+ const caption=movedCheck&&frame?'Dashed boxes show the saved positions, which no longer match this frame. The agent is finding the parts again.'
+  :showSaved&&checkFrame?(frame.live?'Live camera. ':'')+'Dashed boxes show where the saved view expects each part.'
+  :setupOnStage
   ? (setupStep==='capture'&&!setupSaved?'Live camera':!haveBoxes?'SAM 3.1 is outlining the parts in this frame.':(samInUse?'SAM 3.1 proposed these regions from this frame.':'Local vision placed these regions on this frame.')+(someLocal&&samInUse?' Dashed boxes came from local vision.':'')+(setupSaved?' A separate capture confirmed them. SAM takes no part in the verdict.':' A separate capture decides if they are used.'))
   : frame
   ? frame.live?'Live camera':checkFrame?'Frame from this camera check':progress?(said?'Muse Spark read "'+said+'"':'Muse Spark found this frame unreadable'):'Recorded frame'

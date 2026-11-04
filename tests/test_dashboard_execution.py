@@ -231,6 +231,21 @@ class ExecutionTests(unittest.TestCase):
             job=self.view_job(row)
             self.assertEqual((job['status'],job['view_issues'][0]['part']),('view_blocked',part));self.assertIn(text,job['view_issues'][0]['problem'])
             self.assertEqual(job['view_inspection']['fix'],'Tilt the phone down.');self.service.label_reader.assert_not_called();self.assertEqual(job['meta_requests'],1)
+    def test_automatic_setup_skips_the_inspector_only_for_a_moved_camera(self):
+        moved={'status':'unknown','error':'Static border pixels do not match reference'}
+        self.service.camera_setup_available=Mock(return_value=True)
+        def run(row,**extra):
+            a,b=self.view_setup(row)
+            with a,b:return self.wait(self.service.start_view({'request_id':__import__('uuid').uuid4().hex,'device_id':'iphone','proposal_id':PROPOSAL,**extra}))
+        job=run(lambda n:moved,automatic_setup=True)
+        self.assertEqual((job['status'],job['setup_available'],job['view_inspection'],job['meta_requests']),('view_blocked',True,None,0));self.service.frame_inspector.assert_not_called()
+        job=run(lambda n:moved)
+        self.service.frame_inspector.assert_called_once();self.assertEqual(job['meta_requests'],1)
+        job=run(lambda n:{**self.GOOD,'oled_border_support':[1,.2,1,1]},automatic_setup=True)
+        self.service.frame_inspector.assert_called_once();self.assertEqual(job['view_issues'][0]['part'],'oled')
+    def test_view_check_publishes_saved_positions_for_display(self):
+        from sparkbench.dashboard.execution import _saved_regions
+        self.assertEqual(_saved_regions({'leds':{'red':{'center_x':100,'center_y':50,'radius':9}},'oled_corners':[[1,2],[9,2],[9,8],[1,8]]}),{'red':[82,32,118,68],'oled':[1,2,9,8]})
     def test_unreadable_oled_blocks_and_inspector_cannot_clear_or_break_it(self):
         a,b=self.view_setup(lambda n:self.GOOD);self.service.label_reader.return_value={'status':'unknown','text':None}
         self.service.frame_inspector.side_effect=RuntimeError('meta down')

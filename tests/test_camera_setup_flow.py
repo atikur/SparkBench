@@ -251,10 +251,38 @@ class CameraSetupFlowTests(CameraSetupFixture):
         job = self.wait(self.service.start_camera_setup(self.body()))
         self.assertEqual(job["status"], "setup_ready", job)
         self.assertFalse(job["sam_lens_agreement"])
-        self.assertEqual(job["sources"], {"oled": "sam-3.1", "red": "local-vision", "green": "local-vision"})
+        self.assertEqual(job["sources"], {"oled": "sam-3.1", "red": "local-vision", "green": "sam-3.1"})
         record = json.loads((self.service._camera_policy_path(PLAN).parent / "review.json").read_text())
         self.assertEqual(record["selection_method"], "registered_and_sam_checked_sam_unconfirmed")
         self.assertIn("isolate both LED lenses", record["registration"]["sam_lens_note"])
+
+    def test_a_short_first_capture_gets_one_more_capture(self):
+        self.automatic_fixture()
+        capture = self.capture.side_effect
+        calls = []
+        def short_then_good(*args, **kwargs):
+            calls.append(1)
+            if len(calls) == 1:
+                raise ValueError("A complete fresh iPhone capture is required")
+            return capture(*args, **kwargs)
+        self.capture.side_effect = short_then_good
+        job = self.wait(self.service.start_camera_setup(self.body()))
+        self.assertEqual(job["status"], "setup_ready", job)
+        self.assertEqual(job["setup_attempt"], 2)
+
+    def test_short_validation_capture_is_retried_once(self):
+        self.automatic_fixture()
+        capture = self.capture.side_effect
+        calls = []
+        def short_second(*args, **kwargs):
+            calls.append(1)
+            if len(calls) == 2:
+                raise ValueError("A complete fresh iPhone capture is required")
+            return capture(*args, **kwargs)
+        self.capture.side_effect = short_second
+        job = self.wait(self.service.start_camera_setup(self.body()))
+        self.assertEqual(job["status"], "setup_ready", job)
+        self.assertEqual(self.capture.call_count, 3)
 
     def test_alignment_tries_older_frames_before_a_second_capture(self):
         self.automatic_fixture()

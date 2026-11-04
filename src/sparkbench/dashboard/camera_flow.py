@@ -155,7 +155,13 @@ class CameraSetupMixin:
             found = None; last = None
             for attempt in range(1, self.SETUP_CAPTURES + 1):
                 self._set(job_id, stage='capture', setup_attempt=attempt)
-                output, rows = self._capture_once(job_id, camera, attempt, cancel)
+                try:
+                    output, rows = self._capture_once(job_id, camera, attempt, cancel)
+                except ValueError as exc:
+                    # A short camera-only capture costs no model call and moves nothing on the board.
+                    if cancel.is_set() or attempt == self.SETUP_CAPTURES: raise
+                    reasons.append('capture %d: %s' % (attempt, exc))
+                    continue
                 for row in reversed(rows[-self.SETUP_FRAMES:]):
                     if cancel.is_set(): raise ValueError('Setup cancelled while choosing a frame')
                     if (row['width'], row['height']) != (geometry['image_width'], geometry['image_height']):
@@ -203,14 +209,22 @@ class CameraSetupMixin:
                 save(self._folder(job_id) / 'sam-auto-lenses.json', led)
                 boxes = {'oled': screen, **led['regions']} if screen else dict(led['regions'])
                 self._set(job_id, proposed_regions=boxes)
-                check_regions({**boxes, 'oled': boxes.get('oled') or self._box_around(corners, row)}, corners, points, radii)
+                # Each lens stands on its own, so one poor outline does not discard a good one.
+                notes = []
+                for name in ('red', 'green'):
+                    try:
+                        check_regions({**boxes, 'oled': boxes.get('oled') or self._box_around(corners, row)}, corners, {name: points[name]}, radii)
+                    except ValueError as exc:
+                        boxes.pop(name, None); notes.append('%s: %s' % (name, exc))
+                if notes:
+                    agreement = False; lens_note = '; '.join(notes)
             except ValueError as exc:
-                agreement = False; lens_note = str(exc)
+                agreement = False; lens_note = str(exc); boxes = {}
             sources = {}
             regions = {'oled': screen or self._box_around(corners, row)}
             sources['oled'] = 'sam-3.1' if screen else 'local-vision'
             for name in ('red', 'green'):
-                box = boxes.get(name) if agreement else None
+                box = boxes.get(name)
                 regions[name] = box or self._box_around([points[name]], row, pad=radii[name] * 2)
                 sources[name] = 'sam-3.1' if box else 'local-vision'
             body = {'image_sha256': job['image_sha256'], 'regions': regions, 'sources': sources,
@@ -230,7 +244,7 @@ class CameraSetupMixin:
                     self._qualify_camera_setup(job_id, candidate_id, candidate, cancel, automatic=True, attempt=validation)
                     return
                 except ValueError as exc:
-                    if cancel.is_set() or validation == 2 or 'Reference check blocked' not in str(exc): raise
+                    if cancel.is_set() or validation == 2 or not ('Reference check blocked' in str(exc) or 'fresh iPhone capture' in str(exc)): raise
                     reasons.append('validation %d: %s' % (validation, exc))
                     self._set(job_id, stage='validating', setup_attempt=validation + 1)
         except Exception as exc:

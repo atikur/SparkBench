@@ -81,7 +81,7 @@ The firmware shows each step's text in the largest font that fits, so a lone dig
 
 ## Run on the bench
 
-On a reviewed plan, **Run on the bench** runs the same explicit jobs a person would click, in order: camera check, compile, install, identity check, camera test. It skips a step only when the saved records show it is done (a compiled build for this plan with the current runtime, an install record for that exact firmware, a confirmed identity). It never changes wiring, mappings or limits.
+On a reviewed plan, **Run on the bench** runs the same explicit jobs a person would click, in order: camera setup for a new plan or a camera check otherwise, compile, install, identity check, camera test. It skips a step only when the saved records show it is done (a compiled build for this plan with the current runtime, an install record for that exact firmware, a confirmed identity). It never changes wiring, mappings or limits.
 
 When a test has usable non-pass evidence, the agent can ask Muse Spark to explain it, show the diagnosis, next check and a frame, then wait. **I fixed it, test again** or **I checked it, test again** continues the same dashboard session. The agent checks the camera again and records a separate test of the same plan. A successful continuation reports **Passed on retest**. **Stop** ends the run at any wait. If every frame was rejected for geometry, the agent directs the operator to restore framing without asking for a diagnosis.
 

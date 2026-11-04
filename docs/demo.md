@@ -22,9 +22,8 @@ avoid presenting footage from different runs as one continuous session.
 
 ## Getting SAM 3.1 on camera
 
-SAM runs only during camera setup, and setup runs only when the camera check is blocked. A plan
-with a good saved reference skips it. To show it, approve a new plan with the phone away from the
-calibrated view: nudge the phone if the check would otherwise pass. The run card then names SAM,
+SAM runs during camera setup, which is the first thing a new plan does. A plan with a good saved
+reference skips it unless the view has changed. To show it, approve a new plan. The run card then names SAM,
 draws its boxes on the frame they came from, and holds them for five seconds after the reference
 is saved. The result page says when SAM took part in that test's camera setup.
 

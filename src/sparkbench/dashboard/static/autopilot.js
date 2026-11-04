@@ -67,8 +67,10 @@ function showViewCheck(text,liveUrl,job){$('view-check-text').textContent=text;$
  const seen=job?.view_inspection;$('view-parts').replaceChildren(...(seen?[['OLED',seen.oled],['Red LED',seen.red_led],['Green LED',seen.green_led]].map(([name,state])=>{const li=node('li',name+': '+VIEW_WORDS[state]);li.dataset.ok=String(state==='fully_visible');return li;}):[]));
  if(seen&&seen.oled==='fully_visible'&&!seen.oled_legible){const li=node('li','OLED text: not legible');li.dataset.ok='false';$('view-parts').append(li);}
  $('view-fix').hidden=!seen;$('view-fix').textContent=seen?'Muse Spark suggests: '+seen.fix:'';$('view-check').hidden=false;}
+// The agent sets the camera up itself once per check, so a moved phone needs nothing from the person.
+function agentCanSetUpCamera(){return !!autopilot&&!autopilot.setupAttempted&&executionPlan.origin!=='mapping_repair'&&!!window.setupCameraForAgent;}
 async function checkView(){$('view-check').hidden=true;lastViewCheck=null;setStage('view','running','Checking live camera view…');
- const started=await planningPost('/api/camera/check',{proposal_id:executionPlan.id,device_id:$('execution-camera').value,request_id:newId()});let job;
+ const started=await planningPost('/api/camera/check',{proposal_id:executionPlan.id,device_id:$('execution-camera').value,request_id:newId(),...(agentCanSetUpCamera()?{automatic_setup:true}:{})});let job;
  for(;;){
   await wait(700);job=await api('/api/jobs/'+started.id);lastViewCheck=job;
   if(job.status!=='running')break;
@@ -76,20 +78,30 @@ async function checkView(){$('view-check').hidden=true;lastViewCheck=null;setSta
   if(autopilot?.cancelled&&!job.cancel_requested){try{await planningPost('/api/jobs/'+job.id+'/cancel',{});}catch(e){}}
  }
  if(job.status==='view_ok'){const note='OLED and both LEDs where they should be · OLED reads "'+job.oled_reading+'"';setStage('view','done',note);autoLog('ok','Camera check: '+note);return true;}
+ if(job.status==='view_blocked'&&job.setup_available===true&&agentCanSetUpCamera()){autoLog('do','Camera check: the view no longer matches its saved position, so the agent is setting it up again.');return false;}
  if(job.status==='view_blocked'){const text=job.view_issues.map(i=>i.problem).join(' '),frame=job.latest_frame?.url;setStage('view','stopped',text);autoLog('stop','Camera check: '+text);showViewCheck(text+(frame?' Match the calibrated view, keep the phone still, then check again.':' Adjust the camera, then check again.'),frame,job);return false;}
- const text=job.error||'The camera check did not finish.';setStage('view','stopped',text);autoLog('stop',text);showViewCheck(text+' Fix it, then check again.',null,job);return false;}
+ const text=job.error||'The camera check did not finish.';
+ // A short capture costs no model call and moves nothing on the board, so the agent tries it once more by itself.
+ if(job.status==='incomplete'&&/fresh camera frames/.test(text)&&autopilot&&!autopilot.captureRetried){autopilot.captureRetried=true;autoLog('do','The camera capture came up short, so the agent is trying it once more.');return checkView();}
+ setStage('view','stopped',text);autoLog('stop',text);showViewCheck(text+' Fix it, then check again.',null,job);return false;}
 // Waits here for as long as it takes. Stop ends the run.
 async function waitForPerson(text){if(autopilot?.cancelled)return false;autopilot.waiting=true;window.renderFlow?.();setAutoState(text,'warn');window.renderFlow?.();const again=await new Promise(resolve=>{humanWait=resolve;});if(autopilot)autopilot.waiting=false;window.flowFailedRun=null;$('fix-check').hidden=true;window.renderFlow?.();return again;}
-async function checkViewUntilClear(){for(;;){if(await checkView()){if(autopilot)autopilot.setupAttempted=false;return;}
-  const canSetup=lastViewCheck?.setup_available===true&&autopilot&&!autopilot.setupAttempted&&executionPlan.origin!=='mapping_repair'&&window.setupCameraForAgent;
-  if(canSetup){
-   autopilot.setupAttempted=true;autopilot.waiting=true;$('view-check').hidden=true;
-   setStage('view','running','Locating the LEDs and OLED, then checking a fresh capture');
-   setAutoState('Setting up the camera…','busy');autoLog('do','Camera setup: SAM 3.1 outlines the parts, then a separate capture checks the result.');window.renderFlow?.();
-   let ready;try{ready=await window.setupCameraForAgent(executionPlan.id,$('execution-camera').value);}finally{if(autopilot)autopilot.waiting=false;window.renderFlow?.();}
-   if(!ready||autopilot?.cancelled)throw new Error('Stopped');
-   const samParts=Object.values(window.samStageJob?.job?.sources||{}).filter(s=>s==='sam-3.1').length;autoLog('ok',(samParts?'SAM 3.1 outlined '+samParts+' of 3 parts. ':'')+'Camera reference checked on a separate capture and saved for this plan.');setAutoState('Checking the saved camera reference…','busy');continue;
-  }
+// A plan that has neither its own camera reference nor a test yet starts with camera setup.
+function planNeedsCameraSetup(){const id=executionPlan.id;return !window.cameraSetupSavedPlans?.has(id)&&!executionJobs.some(j=>j.proposal_id===id&&(j.action==='test'||(j.action==='camera_setup'&&j.status==='setup_ready')));}
+// SAM 3.1 labels the parts, and a separate capture must then pass the same checks as a camera check. That capture
+// decides whether the run continues, not how many outlines SAM produced, so no second check is needed afterwards.
+async function setUpCameraByAgent(note,log){
+ autopilot.setupAttempted=true;autopilot.waiting=true;$('view-check').hidden=true;
+ setStage('view','running',note);setAutoState('Setting up the camera…','busy');autoLog('do',log);window.renderFlow?.();
+ let ready;try{ready=await window.setupCameraForAgent(executionPlan.id,$('execution-camera').value);}finally{if(autopilot)autopilot.waiting=false;window.renderFlow?.();}
+ if(!ready||autopilot?.cancelled)throw new Error('Stopped');
+ const job=window.samStageJob?.job,samParts=Object.values(job?.sources||{}).filter(s=>s==='sam-3.1').length,reading=job?.oled_reading;
+ autoLog('ok',(samParts?'SAM 3.1 outlined '+samParts+' of 3 parts. ':'')+'A separate capture confirmed the view, and the reference is saved for this plan.');
+ setStage('view','done','Camera set up'+(reading?' · OLED reads "'+reading+'"':''));autopilot.setupAttempted=false;autopilot.captureRetried=false;}
+async function checkViewUntilClear(){
+ if(agentCanSetUpCamera()&&planNeedsCameraSetup())return setUpCameraByAgent('Finding the OLED and LEDs with SAM 3.1','Camera setup: this plan has no camera reference yet, so SAM 3.1 labels the OLED and LEDs, then a separate capture checks them.');
+ for(;;){if(await checkView()){if(autopilot){autopilot.setupAttempted=false;autopilot.captureRetried=false;}return;}
+  if(lastViewCheck?.setup_available===true&&agentCanSetUpCamera())return setUpCameraByAgent('The view has changed. Finding the OLED and LEDs again','Camera setup: SAM 3.1 labels the OLED and LEDs again, then a separate capture checks them.');
   if(!await waitForPerson('Waiting for you: fix the camera view'))throw new Error('Stopped');setAutoState('Checking the camera…','busy');}}
 // The fix panel: what Muse Spark saw, the frame that shows it, and one button to carry on.
 function showFixPanel(run,x,mismatch){window.flowFailedRun=run;$('fix-text').textContent=x.diagnosis;$('fix-next').textContent='Next check: '+x.next_check;

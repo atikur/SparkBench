@@ -51,6 +51,13 @@ def devices():
 class Cancelled(ValueError): pass
 
 
+def _saved_regions(geometry):
+    """Where the saved view expects each part, for drawing on a frame. Display only; never read by a check."""
+    regions={name:[led['center_x']-led['radius']*2,led['center_y']-led['radius']*2,led['center_x']+led['radius']*2,led['center_y']+led['radius']*2] for name,led in geometry['leds'].items()}
+    xs,ys=zip(*geometry['oled_corners']);regions['oled']=[min(xs),min(ys),max(xs),max(ys)]
+    return regions
+
+
 class ExecutionService(CameraSetupMixin, MappingRepairMixin):
     def __init__(self, root, planner, store, *, builder=build_artifact, installer=install, runner=execute, enumerate_devices=devices, identity_checker=verify_identity, view_reader=read_images, label_reader=read_label, frame_inspector=inspect_frame, probe_runner=None, probe_analyzer=None, mapping_proposer=None, region_proposer=propose_regions):
         self.root=Path(root).resolve();self.directory=self.root/"runs/dashboard-execution"
@@ -197,7 +204,7 @@ class ExecutionService(CameraSetupMixin, MappingRepairMixin):
         return issues
 
     def start_view(self, body):
-        if set(body) not in ({'request_id','device_id'}, {'request_id','device_id','proposal_id'}) or not isinstance(body['request_id'],str) or not IDENTIFIER.fullmatch(body['request_id']):raise ValueError('Explicit camera and request ID required')
+        if set(body) not in ({'request_id','device_id'}, {'request_id','device_id','proposal_id'}, {'request_id','device_id','proposal_id','automatic_setup'}) or body.get('automatic_setup',True) is not True or not isinstance(body['request_id'],str) or not IDENTIFIER.fullmatch(body['request_id']):raise ValueError('Explicit camera and request ID required')
         if not isinstance(body['device_id'],str) or not body['device_id']:raise ValueError('Select the iPhone camera')
         if 'proposal_id' in body:
             if not isinstance(body['proposal_id'],str) or not IDENTIFIER.fullmatch(body['proposal_id']):raise ValueError('Valid proposal ID required')
@@ -219,6 +226,8 @@ class ExecutionService(CameraSetupMixin, MappingRepairMixin):
         try:
             proposal_id=self.jobs[job_id].get('proposal_id')
             calibration=self._frozen_calibration(proposal_id);geometry=calibration["geometry"]
+            try:self._set(job_id,saved_regions=_saved_regions(geometry),image_width=geometry['image_width'],image_height=geometry['image_height'])
+            except (KeyError,TypeError,ValueError):pass  # Display only: it can never fail a check.
             if calibration["camera_id"]!=device_id:raise ValueError("Selected camera differs from the frozen measurement policy")
             if device_id not in [d['id'] for d in self.enumerate_devices()['cameras']]:raise ValueError('Selected iPhone absent in this process context; no fallback camera')
             if cancel.is_set():raise Cancelled('Cancelled before camera access')
@@ -238,8 +247,10 @@ class ExecutionService(CameraSetupMixin, MappingRepairMixin):
                 last=rows[-1];result=self.label_reader(analysis/'crops'/last['label_crop'],analysis/'meta'/last['id']);requests+=1
                 if result.get('status')=='read':reading=result.get('text')
                 else:issues.append({'part':'oled','problem':'The OLED is in view, but its text could not be read from here. Check for glare or a blurry image.'})
-            # Only to tell the person what to fix. It can never clear an issue.
-            if issues and not cancel.is_set():
+            # Only to tell the person what to fix. It can never clear an issue. When the agent is about to
+            # set the camera up itself there is nobody to tell, so it spends no model request on this.
+            automatic=self.jobs[job_id].get('request',{}).get('automatic_setup') is True and all(i['part']=='camera' for i in issues) and self.camera_setup_available(proposal_id)
+            if issues and not automatic and not cancel.is_set():
                 try:
                     requests+=1;looked=self.frame_inspector((output/chosen[-1]['file']).read_bytes(),self.reference_image(proposal_id),analysis/'inspection')
                     inspection=looked.get('inspection')

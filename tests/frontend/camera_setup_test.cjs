@@ -62,6 +62,8 @@ function agentFixture(statuses,{started=false,repair=false}={}) {
  ctx.api=async()=>statuses.shift();
  vm.runInContext(fs.readFileSync(path.join(dir,'autopilot.js'),'utf8'),ctx);
  vm.runInContext('autopilot={cancelled:false,setupAttempted:false,testStarted:'+started+',waiting:false}',ctx);
+ // These scenarios start from a plan with a reference. autopilot_camera_test.cjs covers a new plan.
+ ctx.cameraSetupSavedPlans=new Set(['a'.repeat(32)]);
  ctx.setStage=()=>{};ctx.autoLog=()=>{};ctx.setupCameraForAgent=async()=>{setupCalls++;return true;};ctx.waitForPerson=async()=>false;
  return{...f,calls,setupCalls:()=>setupCalls};
 }
@@ -121,10 +123,10 @@ async function main(){
   assert.equal(f.calls.some(x=>x[1]==='/api/camera/setup'),false);assert.equal(f.$('regions-camera').value,'');
   await f.$('regions-close').click();assert.equal(await outcome,false);
  }
- // Agent invokes guided setup exactly once before testing, then checks the saved reference.
+ // A blocked check leads to one guided setup. Its validation capture already ran the same checks, so no recheck follows.
  {
   const f=agentFixture([{status:'view_blocked',setup_available:true,view_issues:[{problem:'Camera moved'}]}, {status:'view_ok',oled_reading:'READY'}]);
-  await f.ctx.checkViewUntilClear();assert.equal(f.setupCalls(),1);assert.equal(f.calls.length,2);
+  await f.ctx.checkViewUntilClear();assert.equal(f.setupCalls(),1);assert.equal(f.calls.length,1);
   assert.equal(f.calls[0][1].proposal_id,'a'.repeat(32));
  }
  // A valid reference skips SAM. Missing/ambiguous measurements never become a pass from setup alone.
@@ -141,9 +143,11 @@ async function main(){
   const f=agentFixture([{status:'view_blocked',setup_available:true,view_issues:[{problem:'Camera moved'}]}, {status:'view_ok',oled_reading:'READY'}],{started:true});
   await f.ctx.checkViewUntilClear();assert.equal(f.setupCalls(),1);
  }
+ // Each camera check leads to at most one setup, and the check after flashing can lead to its own.
  {
   const f=agentFixture([{status:'view_blocked',setup_available:true,view_issues:[{problem:'Camera moved'}]}, {status:'view_blocked',setup_available:true,view_issues:[{problem:'Camera moved'}]}]);
-  await assert.rejects(f.ctx.checkViewUntilClear(),/Stopped/);assert.equal(f.setupCalls(),1);
+  await f.ctx.checkViewUntilClear();assert.equal(f.setupCalls(),1);assert.equal(f.calls.length,1);
+  await f.ctx.checkViewUntilClear();assert.equal(f.setupCalls(),2);assert.equal(f.calls.length,2);
  }
  console.log('Camera setup UI: 13 simulated scenarios passed; no hardware or model requests.');
 }

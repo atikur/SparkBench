@@ -1,10 +1,12 @@
 # Guided camera setup
 
-Camera setup is part of the bench agent's pre-test flow. On an existing valid
-reference, the agent performs its normal readiness check and continues. Whenever
-that check finds the view no longer matches, the agent sets the camera up again
-by itself, before the first test or between attempts, and only a repair keeps its
-parent's reference. **Set up camera regions** on a ready plan also runs it.
+Camera setup is part of the bench agent's pre-test flow. A plan with no reference
+and no test yet starts directly with setup. The validation capture in step 3 runs
+the same checks as a readiness check, so whether the run continues depends on that
+capture, not on how many outlines SAM produced. On an existing valid reference, the
+agent performs its normal readiness check and continues. Whenever that check finds
+the view no longer matches, the agent sets the camera up again by itself, before
+the first test or between attempts, and only a repair keeps its parent's reference. **Set up camera regions** on a ready plan also runs it.
 
 1. Select the iPhone. The agent takes a five-second camera-only capture and
    asks SAM 3.1 to find the screen. It aligns the frame with the commissioned
@@ -13,6 +15,7 @@ parent's reference. **Set up camera regions** on a ready plan also runs it.
    If alignment fails, it looks for one lens of each color and the lit OLED
    border directly in the new frame. SAM outlines both lenses using the
    detected points. The geometry must agree with those outlines and the screen box.
+   Each lens is judged on its own, so one poor outline does not discard the other.
    The bench run card shows the frame with these boxes as each call returns. Solid boxes came from
    SAM and dashed boxes from local vision. They are display only.
 3. The existing verifier checks a separate capture for stable geometry, border
