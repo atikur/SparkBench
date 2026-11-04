@@ -205,10 +205,23 @@
 </section>
 
   <section class="card run-view" id="run-view" hidden aria-label="Bench run">
-    <div class="run-head"><h2 id="flow-title" aria-live="polite">Starting</h2><button id="stop-bench" class="button danger" type="button" hidden>Stop</button></div>
+    <div class="run-head"><h2 id="flow-title" aria-live="polite">Starting</h2><span id="run-elapsed" class="run-elapsed" aria-label="Time elapsed"></span><button id="stop-bench" class="button danger" type="button" hidden>Stop</button></div>
     <div class="run-bar"><i id="run-bar"></i></div>
     <div class="run-cols">
-      <figure id="run-camera-preview" class="run-frame" hidden><img id="run-frame" alt="Frame from the current bench run" hidden><figcaption id="run-frame-label" class="help"></figcaption></figure>
+      <figure id="run-camera-preview" class="run-frame run-stage" hidden>
+        <div class="stage-screen">
+          <img id="run-frame" alt="Frame from the current bench run" hidden>
+          <div id="stage-preview" class="stage-preview" aria-hidden="true" hidden>
+            <div class="stage-oled"><span id="stage-oled-text"></span></div>
+            <div class="stage-leds"><span><i id="stage-led-red" class="stage-led red"></i>Red</span><span><i id="stage-led-green" class="stage-led green"></i>Green</span></div>
+          </div>
+          <i class="stage-scan" aria-hidden="true"></i>
+          <i class="stage-corner tl" aria-hidden="true"></i><i class="stage-corner tr" aria-hidden="true"></i><i class="stage-corner bl" aria-hidden="true"></i><i class="stage-corner br" aria-hidden="true"></i>
+          <span class="stage-tag"><i aria-hidden="true"></i><span id="stage-tag-text"></span></span>
+          <span id="stage-count" class="stage-count" hidden></span>
+        </div>
+        <figcaption id="run-frame-label" class="help"></figcaption>
+      </figure>
       <ol id="run-phases" class="phases"></ol>
     </div>
     <div id="run-strip" class="step-strip" aria-label="Plan steps"></div>

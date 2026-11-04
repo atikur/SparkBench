@@ -51,6 +51,18 @@ function runPhases(){const job=activeExecution?.action==='test'?activeExecution:
  return {phases:out,percent:Math.round(percent)};}
 function showFlowFrame(img,label,url,text){if(url&&img.dataset.url!==url){img.dataset.url=url;img.src=url;}$(label).textContent=text;}
 let flowPeak=0;
+// The run stage: real camera frames as soon as there are any. Until then it plays the approved plan at the board's own
+// pace, labelled as the plan, so the person sees what the camera is about to check. It is never presented as evidence.
+let stageTimer=null,stageTicks=0,stageStep=0,runClock=null;
+const stageStill=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function paintStagePreview(){const steps=planSteps();if(!steps.length)return;const step=steps[stageStep%steps.length],text=$('stage-oled-text');
+ if(text.textContent!==step.text){text.textContent=step.text;text.parentNode.dataset.size=step.text.length<=6?'large':step.text.length<=12?'medium':'small';text.classList.remove('stage-swap');void text.offsetWidth;text.classList.add('stage-swap');}
+ $('stage-led-red').classList.toggle('on',!!step.red);$('stage-led-green').classList.toggle('on',!!step.green);
+ if(!$('stage-preview').hidden){$('stage-count').textContent='Step '+(stageStep%steps.length+1)+' of '+steps.length;for(const [i,chip] of Array.from($('run-strip').children).entries()){if(i===stageStep%steps.length)chip.dataset.preview='';else delete chip.dataset.preview;}}}
+function paintRunClock(){const s=Math.max(0,Math.floor((Date.now()-runClock)/1000));$('run-elapsed').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function stageTick(){stageTimer=null;if($('run-view').hidden||$('guide-workspace').hidden||flowHold)return;paintRunClock();
+ if(!$('stage-preview').hidden&&!stageStill()&&++stageTicks%3===0){stageStep++;paintStagePreview();}
+ stageTimer=setTimeout(stageTick,1000);}
 function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-check').hidden,repairing=activeExecution?.action==='mapping_repair'||!!(typeof mappingRepair!=='undefined'&&mappingRepair.waiter),fixing=!$('fix-check').hidden;let active=RUN_PHASES.find(([id])=>phases[id].state==='running')||RUN_PHASES.find(([id])=>phases[id].state==='stopped');
  const attempt=autopilot?.attempt>1?' · attempt '+autopilot.attempt:'';
  $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':fixing||repairing?$('autopilot-status').textContent||'Waiting for you':(active?RUN_TITLES[active[0]]:'Starting')+attempt;
@@ -68,22 +80,32 @@ function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-che
  const checkFrame=checking&&lastViewCheck?.status==='running'&&lastViewCheck.proposal_id===executionPlan.id?lastViewCheck.latest_frame:null;
  const frame=job?.latest_frame||checkFrame;
  const preview=$('run-camera-preview'),img=$('run-frame');
- preview.hidden=blocked||fixing||(!checking&&!job);
+ preview.hidden=blocked||fixing||repairing||!!flowHold;
  img.hidden=preview.hidden||!frame;
+ const previewing=!preview.hidden&&!frame&&steps.length>0,capturing=!!job&&!progress;
+ $('stage-preview').hidden=!previewing;
+ preview.dataset.mode=frame?(progress?'reading':capturing?'recording':'checking'):'plan';
+ $('stage-tag-text').textContent=frame?(progress?'Muse Spark reading':capturing?(frame.live?'Live · recording':'Recording'):'Camera check'):'Plan preview';
+ const count=$('stage-count');count.hidden=!previewing&&!(frame&&(progress||(capturing&&job.capture_step)));
+ if(frame)count.textContent=progress?readingNote(progress):capturing&&job.capture_step?'Step '+job.capture_step+' of '+steps.length:'';
+ if(runClock===null){const began=Date.parse(activeExecution?.started_at_utc||'');runClock=Number.isNaN(began)?Date.now():began;}
+ $('run-elapsed').hidden=!!flowHold;
+ if(!flowHold){paintRunClock();if(stageTimer===null)stageTimer=setTimeout(stageTick,1000);}
  if(img.hidden){img.removeAttribute('src');delete img.dataset.url;}
  const said=progress?.last_text;
  const caption=frame
   ? frame.live?'Live camera':checkFrame?'Frame from this camera check':progress?(said?'Muse Spark read "'+said+'"':'Muse Spark found this frame unreadable'):'Recorded frame'
-  : checking?'Checking live camera view…':'Waiting for camera frames…';
+  : 'Drawn from your plan, not the camera. Real frames replace this as soon as they arrive.';
  showFlowFrame(img,'run-frame-label',img.hidden?null:frame.url,preview.hidden?'':caption);
  const failed=autopilot?.waiting&&window.flowFailedRun?window.flowFailedRun:null;
  const per=Object.fromEntries((progress?.steps||[]).map(s=>[s.step,s]));
  if(!steps.length)return;
- $('run-strip').replaceChildren(...steps.map((s,i)=>{const n=i+1,chip=node('div',undefined,'step-chip');chip.append(node('strong',s.text));const info=per[n];let state='';let small='';
+ $('run-strip').replaceChildren(...steps.map((s,i)=>{const n=i+1,chip=node('div',undefined,'step-chip');chip.append(node('strong',s.text),ledDots(!!s.red,!!s.green));const info=per[n];let state='';let small='';
    if(failed){const s=failed.steps.find(x=>x.id===n);if(s){state=stepResult(failed,n);small=state==='bad'?'mismatch':state==='unknown'?'unknown':'matched';}}
    else if(progress){if(info){small=info.read+' of '+info.total;state=info.read>=info.total?'read':info.read>0?'now':'';}}
    else if(job?.stage==='capture'&&job.capture_step){state=n===job.capture_step?'now':n<job.capture_step?'read':'';small=n===job.capture_step?'on screen':'';}
-   chip.dataset.state=state;if(small)chip.append(node('small',small));return chip;}));}
+   chip.dataset.state=state;if(small)chip.append(node('small',small));return chip;}));
+ if(previewing)paintStagePreview();}
 // Result: the verdict first, then one chip per plan step. A chip opens that step's frame and readings.
 function stepFrames(run,id){return run.frames.filter(f=>f.evaluated&&f.step===id);}
 function stepResult(run,id){const frames=stepFrames(run,id);return frames.some(f=>frameMismatch(f,run))?'bad':frames.some(f=>frameUnknown(f,run))?'unknown':'ok';}
@@ -233,6 +255,7 @@ function renderProjectProgress(state) {
 }
 function renderFlowNow(){flowQueued=false;if(typeof lifecycleSnapshot==='undefined'||typeof autopilot==='undefined')return;const state=flowState(),page=$('guide-workspace');page.dataset.flow=state;$('run-view').hidden=state!=='running';$('result-view').hidden=state!=='result';$('flow-details').hidden=!project;
  if(state!==flowLastState){flowLastState=state;if(!page.hidden)window.scrollTo({top:0});}
+ if(state!=='running')runClock=null;
  if(state==='running')renderRunView();
  if(state==='result'){const job=(flowPick&&testHistory().find(j=>j.id===flowPick))||currentTest();if(job)loadResult(job);}else flowRunId=state==='running'?null:flowRunId;
  $('flow-back').hidden=!(state==='plan'&&flowOverride==='plan'&&currentTest());renderProjectProgress(state);renderStatus();}
@@ -251,8 +274,8 @@ window.renderFlow=function(){if(flowQueued)return;flowQueued=true;setTimeout(ren
   const next=(compact?spacer.getBoundingClientRect().bottom-gap:panel.getBoundingClientRect().bottom)<64;
   if(next!==compact)apply(next);else if(compact)place();};
  window.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);new MutationObserver(update).observe(panel,{attributes:true,attributeFilter:['hidden']});window.progressPanelUpdate=update;}
-window.resetFlow=function(){flowPick=null;flowOverride=null;flowHold=null;flowRun=null;flowRunId=null;flowStep=null;flowLastState=null;window.closeCameraRegions?.();window.resetMappingRepair?.();window.renderFlow();};
-window.flowRunStarted=function(){window.closeCameraRegions?.();flowPick=null;window.flowFailedRun=null;flowPeak=0;$('autopilot-error').hidden=true;flowOverride=null;flowHold=null;flowRunId=null;window.renderFlow();};
+window.resetFlow=function(){runClock=null;stageStep=0;flowPick=null;flowOverride=null;flowHold=null;flowRun=null;flowRunId=null;flowStep=null;flowLastState=null;window.closeCameraRegions?.();window.resetMappingRepair?.();window.renderFlow();};
+window.flowRunStarted=function(){runClock=Date.now();stageStep=0;window.closeCameraRegions?.();flowPick=null;window.flowFailedRun=null;flowPeak=0;$('autopilot-error').hidden=true;flowOverride=null;flowHold=null;flowRunId=null;window.renderFlow();};
 // A run that ends without a test result stays on the running screen, so the reason is not lost.
 window.flowRunEnded=function(text,hold){flowHold=hold?text:null;window.renderFlow();};
 function startAgain(){flowHold=null;runBench();}
