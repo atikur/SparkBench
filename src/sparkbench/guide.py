@@ -28,7 +28,7 @@ ASSEMBLY = [
     {"id":"power","title":"Prepare with power disconnected","detail":"Disconnect ESP32 USB and keep the servo's external supply off before changing wiring. Keep the existing servo signal and power wiring untouched."},
     {"id":"leds","title":"Connect the two LED circuits","detail":"For this identified carrier, each LED uses its own 330 Ω series resistor: GPIO25 signal → resistor → red LED anode, and GPIO26 signal → resistor → green LED anode. Each cathode connects to ground. Confirm carrier S/G/V labels before connecting."},
     {"id":"oled","title":"Connect the OLED","detail":"For the existing confirmed module: GND → ground, VCC → 3.3 V, SDA → GPIO21, SCL → GPIO22. Use the printed pin labels; wire colors and connector order alone do not establish identity."},
-    {"id":"frame","title":"Prepare the camera view","detail":"Hold the phone in a fixed stand. Include both LED lenses and the entire OLED face in good light. A changed view requires a new camera reference before automatic verification."},
+    {"id":"frame","title":"Prepare the camera view","detail":"Hold the phone in a fixed stand. Include both LED lenses and the entire OLED face in good light. The agent finds the parts and checks the view before every run."},
     {"id":"firmware","title":"Review and test the behavior","detail":"Prepare a firmware proposal, check every step, then use the separate Compile, Install and Camera test controls. Checklist completion records your report; the test supplies measured evidence."},
 ]
 

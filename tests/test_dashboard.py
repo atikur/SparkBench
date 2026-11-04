@@ -152,6 +152,29 @@ class HTTPTests(unittest.TestCase):
 
 
 class StaticPageTests(unittest.TestCase):
+    def test_the_project_page_keeps_wiring_and_drops_the_chat(self):
+        static=Path(__file__).parent.parent/'src/sparkbench/dashboard/static'
+        html=(static/'index.html').read_text();script=(static/'projects.js').read_text()
+        for gone in ('guide-question-form','guide-conversation','guide-photos','build-kit-card','guide-assembly'):
+            self.assertNotIn(gone,html+script)
+        for kept in ('open-bench','bench-dialog','fix-wiring','result-wiring'):
+            self.assertIn('id="%s"'%kept,html)
+        self.assertEqual(html.count('src="/wiring.svg"'),3)
+        self.assertIn('images:[]',script)
+        scripts=''.join(path.read_text() for path in static.glob('*.js'))
+        for name in ('clearProjectPhotos','renderAttachments','attachFile','listText','projectPhotos','guideCapture'):
+            self.assertNotIn(name,scripts)
+    def test_every_function_the_page_scripts_call_exists(self):
+        # A removed helper fails only when its button is pressed, so catch it here.
+        import re
+        static=Path(__file__).parent.parent/'src/sparkbench/dashboard/static'
+        code='\n'.join(path.read_text() for path in static.glob('*.js'))
+        defined=set(re.findall(r'(?:function\s+|(?:const|let|var)\s+|,\s*)([A-Za-z_$][\w$]*)\s*(?==|\()',code))
+        for params in re.findall(r'function\s*\w*\(([^)]*)\)',code):
+            defined.update(p.split('=')[0].strip() for p in params.split(','))
+        builtin=set('if for while switch catch return function typeof await async new parseFloat parseInt setTimeout clearTimeout setInterval clearInterval fetch String Number Boolean Array Object JSON Math Date Promise Set Map URL File Blob Error matchMedia atob btoa encodeURIComponent decodeURIComponent isNaN createImageBitmap requestAnimationFrame super constructor AudioContext AudioWorkletNode AudioWorkletProcessor registerProcessor Float32Array Uint8Array ArrayBuffer DataView AbortController Response MutationObserver process sampleRate getComputedStyle of Spark border'.split())
+        called=set(re.findall(r"(?<![.\w$'\"])([A-Za-z_$][\w$]*)\s*\(",code))
+        self.assertEqual(called-defined-builtin,set())
     """The page is plain scripts sharing one scope, so a clash fails silently in the browser."""
     STATIC=Path(__file__).resolve().parents[1]/"src/sparkbench/dashboard/static"
     def scripts(self):

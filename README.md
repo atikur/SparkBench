@@ -60,7 +60,7 @@ OLED requests, each for one eligible crop.
 
 | Role | Input and output |
 | --- | --- |
-| **Build guide** | An idea, a fixed parts catalog and optional photos produce a brief, clarification or unsupported result. |
+| **Build guide** | An idea and a fixed parts catalog produce a brief, clarification or unsupported result. |
 | **Intent planner** | The instruction and capability contract produce a structured plan for review. The planner matched the independently written expectations in eight benchmark cases. |
 | **OLED reader** | A single display crop produces a readable flag and text. The request omits the expected label. |
 | **Frame checker** | A blocked camera view can produce placement advice for the operator. The local check decides whether the view is usable. |

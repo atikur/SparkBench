@@ -55,7 +55,7 @@ In order of weight in the proof:
    cannot determine and proposes one check. Citations outside the supplied frames are rejected.
 4. **Intent planner (text).** Turns the brief into a plan of up to eight steps, or one question.
    It never sees the test oracle.
-5. **Build guide (text and photos).** Drafts the brief from the idea and the supported parts
+5. **Build guide (text).** Drafts the brief from the idea and the supported parts
    catalog, or asks for clarification.
 6. **Frame checker (vision).** When the camera check is blocked, says which parts are cut off and
    how to move the phone. It cannot clear the check.

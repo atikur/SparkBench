@@ -28,6 +28,7 @@
   <nav class="tabs" aria-label="Main">
     <button id="tab-projects" class="tab" type="button" aria-pressed="true">Projects</button>
     <button id="tab-evidence" class="tab" type="button" aria-pressed="false">Evidence</button>
+    <button id="open-bench" class="tab" type="button">Your bench</button>
   </nav>
   <span id="planner-config" class="meta-status" role="status">Checking Meta…</span>
 </header>
@@ -240,6 +241,7 @@
       <p id="fix-text" class="next-step"></p>
       <p id="fix-next" class="fix-next"></p>
       <figure class="run-frame fix-frame"><img id="fix-frame" alt="The recorded frame that shows the problem"><figcaption id="fix-frame-label" class="help"></figcaption></figure>
+      <figure id="fix-wiring" class="wiring-figure" hidden><img class="wiring" src="/wiring.svg" alt="ESP32 wiring: GPIO25 through a 330-ohm resistor to the red LED and GPIO26 through another to the green LED, both LED short legs to GND; OLED SDA to GPIO21, SCL to GPIO22, VCC to 3.3 V and GND to GND."><figcaption class="help">How the bench should be wired. Unplug USB before you change any wiring.</figcaption></figure>
       <div class="actions wrap"><button id="fix-again" class="primary-button" type="button">I fixed it, test again</button></div>
     </div>
     <div id="run-ended" class="actions wrap" hidden><button id="run-again" class="primary-button" type="button">Try again</button><button id="run-to-plan" class="button" type="button">Back to the plan</button></div>
@@ -262,6 +264,7 @@
       <div id="result-step" class="result-step"></div>
     </div>
     <p id="result-sam" class="result-sam" hidden></p>
+    <figure id="result-wiring" class="wiring-figure" hidden><img class="wiring" src="/wiring.svg" alt="ESP32 wiring: GPIO25 through a 330-ohm resistor to the red LED and GPIO26 through another to the green LED, both LED short legs to GND; OLED SDA to GPIO21, SCL to GPIO22, VCC to 3.3 V and GND to GND."><figcaption class="help">How the bench should be wired. Unplug USB before you change any wiring.</figcaption></figure>
     <div id="result-explain" class="result-explain" hidden></div>
     <p id="result-error" class="error-line" role="alert" hidden></p>
     <div class="actions wrap"><button id="result-again" class="primary-button" type="button">Run again</button><button id="result-change" class="button" type="button">Change the plan</button><button id="result-explain-run" class="button" type="button" hidden>Explain with Muse Spark</button><button id="result-evidence" class="button" type="button">Open full evidence</button></div>
@@ -293,7 +296,7 @@
   </section>
 
   <details id="flow-details" class="card quiet" hidden>
-    <summary><span class="summary-title">Details</span><span class="help">Run log, firmware, parts, and questions</span></summary>
+    <summary><span class="summary-title">Details</span><span class="help">Run log, manual controls and firmware</span></summary>
   <section class="card stage-card" id="bench-stage" hidden>
     <div class="stage-head"><h2>Run log</h2><span id="autopilot-status" class="pill"></span></div>
     <p class="help">The bench runs the same jobs a person would click. A confirmed LED mismatch can trigger one fixed mapping probe. Muse Spark may propose a mapping correction, which needs your approval before installation. The approved behavior and measurement limits stay fixed.</p>
@@ -336,41 +339,6 @@
     </details>
   </section>
 
-  <details id="guide-conversation-card" class="card quiet" hidden>
-    <summary><span class="summary-title">Ask Muse Spark about this build</span><span class="meta-chip">Muse Spark · text + photos</span></summary>
-    <div id="guide-conversation" class="conversation" aria-live="polite"></div>
-    <form id="guide-question-form">
-      <label for="guide-question" class="sr-only">Your question</label>
-      <textarea id="guide-question" rows="2" maxlength="3000" required placeholder="What do I do next? Or attach photos and ask what it can see."></textarea>
-      <div class="actions wrap">
-        <label class="button upload-label">Add photos<input id="guide-photos" type="file" accept="image/jpeg,image/png" multiple></label>
-        <button id="guide-show-camera" class="button" type="button">Use iPhone camera</button>
-        <select id="guide-run" aria-label="Attach a recorded test"><option value="">No test attached</option></select>
-        <button id="ask-guide" class="primary-button" type="submit">Ask Muse Spark</button>
-        <span id="guide-request-status" class="help"></span>
-      </div>
-      <div id="guide-camera-controls" class="actions wrap" hidden>
-        <select id="guide-camera" aria-label="iPhone camera"></select>
-        <button id="guide-take-photo" class="button" type="button" disabled>Take photo · 10 s</button>
-      </div>
-      <div id="guide-attachments" class="attachments"></div>
-    </form>
-  </details>
-
-  <details id="build-kit-card" class="card quiet" hidden>
-    <summary><span class="summary-title">Parts and wiring</span><span id="kit-progress" class="help"></span></summary>
-    <div class="kit-grid">
-      <div>
-        <h3>Parts</h3>
-        <ul id="guide-parts" class="kit-list"></ul>
-      </div>
-      <div>
-        <h3>Wiring</h3>
-        <img class="wiring" src="/wiring.svg" alt="ESP32 wiring: GPIO25 through a 330-ohm resistor to the red LED and GPIO26 through another to the green LED, both LED short legs to GND; OLED SDA to GPIO21, SCL to GPIO22, VCC to 3.3 V and GND to GND.">
-        <ol id="guide-assembly" class="kit-steps"></ol>
-      </div>
-    </div>
-  </details>
   </details>
 </section>
 
@@ -452,6 +420,15 @@
   <button id="open-limits" class="link-button" type="button">Limits</button>
 </footer>
 
+<dialog id="bench-dialog" class="bench-dialog" aria-label="Your bench">
+  <div class="dialog-header"><strong>Your bench</strong><button id="close-bench" class="button" type="button">Close</button></div>
+  <p class="help">SparkBench supports one bench. Build it once, and every project runs on it.</p>
+  <div class="bench-grid">
+    <div><h3>Parts</h3><ul id="bench-parts" class="bench-list"></ul></div>
+    <div><h3>Wiring</h3><img class="wiring" src="/wiring.svg" alt="ESP32 wiring: GPIO25 through a 330-ohm resistor to the red LED and GPIO26 through another to the green LED, both LED short legs to GND; OLED SDA to GPIO21, SCL to GPIO22, VCC to 3.3 V and GND to GND."><p class="help">The diagram shows logical connections, not the physical layout.</p><ol id="bench-steps" class="bench-list numbered"></ol></div>
+  </div>
+</dialog>
+
 <dialog id="limits-dialog" aria-label="Limits">
   <div class="dialog-header"><strong>What SparkBench does and does not claim</strong><button id="close-limits" class="button" type="button">Close</button></div>
   <ul class="limits">
@@ -459,9 +436,8 @@
     <li>Plans are at most 8 steps of 3 seconds with short uppercase labels. Muse Spark proposes data; trusted local code renders the firmware.</li>
     <li>A camera verdict covers sampled settled windows in the recorded view, not continuous behaviour or electrical measurements.</li>
     <li>Unknown readings stay unknown. They never count as a pass or a fail.</li>
-    <li>Parts and wiring ticks are your own report. They save automatically and do not check the hardware.</li>
     <li>A spoken idea is transcribed by Muse Voice into text you review before planning. The audio is never saved; the request record is.</li>
-    <li>Muse Spark's advice and photo descriptions are guidance, not a pass. A photo cannot establish continuity, voltage or polarity.</li>
+    <li>Muse Spark's explanations are guidance, not a pass. The camera cannot establish continuity, voltage or polarity.</li>
     <li>The servo on the rig is never driven by this runtime and its angles are unmeasured.</li>
     <li>The phone must stay still in its calibrated position. Frames from anywhere else are rejected, never read or guessed.</li>
     <li>The agent never repairs anything. Muse Spark explains, you fix the bench, and the same run re-tests. The plan is never edited to match a fault.</li>

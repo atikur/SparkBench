@@ -55,7 +55,7 @@ A project page shows one state at a time, with one status at the top.
 - **Running:** the camera frame, five phases (Ready, Installed, Recorded, Read by Muse Spark, Verdict), overall progress and one chip per plan step. During reading the picture follows the frame just read and shows what Muse Spark returned. This is display only, and the verifier still decides at the end.
 - **Result:** the verdict first. Each step's chip opens its frame with what the plan expected, what the camera measured and what Muse Spark read, with LED states drawn as dots. A failed or incomplete run shows the explanation or the next action in the same place. Earlier tests of the same build appear below the steps. A pass following a mismatch or incomplete result is labeled **passed on retest**. The results show what each attempt measured; they do not establish what the operator changed.
 
-A project's status comes from the latest test of its current firmware. **Details** holds the run log, manual controls, firmware source, optional project details, the Muse Spark chat, and parts and wiring.
+A project's status comes from the latest test of its current firmware. **Details** holds the run log, manual controls and firmware source. **Your bench** in the top bar holds the parts, wiring diagram and wiring steps, and a mismatch shows the diagram next to the evidence.
 
 ## Camera position
 

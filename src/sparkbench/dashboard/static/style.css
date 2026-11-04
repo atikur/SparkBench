@@ -119,24 +119,8 @@ input[type=range] { accent-color: var(--accent); }
 .run-icon.incomplete { background: var(--warning-bg); color: var(--warning); }
 
 /* Conversation */
-.conversation { max-height: 560px; overflow-y: auto; overscroll-behavior: contain; position: relative; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: 0 16px; margin-bottom: 14px; }
-.conversation:empty { display: none; }
-.guide-turn { padding: 18px 0; }
-.guide-turn + .guide-turn { border-top: 1px solid var(--line); }
-.turn-author { font-size: 11px; letter-spacing: 1.2px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
-.meta-author { color: var(--accent); margin-top: 16px; }
-.guide-copy { font-size: 14px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
-.guide-turn > .small { margin-top: 12px; }
-.guide-turn > .button { margin-top: 10px; }
 .guide-response-list { font-size: 14px; line-height: 1.7; margin-top: 12px; }
 .guide-response-list ul { padding-left: 18px; margin: 4px 0; }
-.turn-images, .attachments { display: flex; gap: 10px; flex-wrap: wrap; }
-.turn-images:empty, .attachments:empty { display: none; }
-.turn-images { margin-top: 10px; }
-.attachments { margin-top: 12px; }
-.turn-images img, .attachments img { width: 140px; height: 105px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); }
-.attachments figure { margin: 0; width: 140px; display: grid; gap: 6px; }
-.attachments figcaption { overflow-wrap: anywhere; }
 
 /* Parts and assembly */
 .parts { display: grid; gap: 0; }
@@ -368,23 +352,6 @@ dialog img { display: block; max-width: 90vw; max-height: 80vh; object-fit: cont
 .pill.neutral { background: var(--line); color: var(--muted); margin-top: 8px; }
 
 /* Parts and wiring: tick lists beside the diagram */
-.kit-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 28px; align-items: start; }
-.kit-grid h3 { margin: 0 0 8px; font-size: 14px; }
-.kit-list, .kit-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.kit-row label, .kit-step label { display: flex; gap: 12px; align-items: flex-start; margin: 0; padding: 8px 10px; border-radius: 8px; color: var(--text); font-size: 14px; cursor: pointer; }
-.kit-row label:hover, .kit-step label:hover { background: var(--bg); }
-.kit-row input, .kit-step input { width: 18px; height: 18px; margin: 2px 0 0; flex-shrink: 0; accent-color: var(--accent); }
-.kit-row span { display: grid; gap: 1px; min-width: 0; }
-.kit-row strong { font-weight: 600; }
-.kit-row small { font-size: 12px; line-height: 1.4; color: var(--muted); }
-.kit-row .tag { justify-self: start; margin-top: 3px; font-style: normal; font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; }
-.kit-steps { margin-top: 12px; }
-.kit-step.done label span { color: var(--muted); text-decoration: line-through; }
-.kit-step.current { background: var(--soft); border-radius: 10px; }
-.kit-step.current label span { font-weight: 600; color: var(--accent); }
-.kit-step p { margin: 0; padding: 0 12px 12px 40px; }
-.kit-grid .wiring { display: block; width: 100%; max-width: none; border-radius: 10px; border: 1px solid var(--line); }
-@media (max-width: 900px) { .kit-grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* Project page: folded helper cards and the single next-action line */
 details.card > summary { display: flex; align-items: center; gap: 12px; cursor: pointer; list-style: none; color: var(--text); }
@@ -638,12 +605,12 @@ button.step-chip[aria-pressed="true"] { outline: 2px solid var(--accent); outlin
 .run-view.fixing #run-strip { order: 2; }
 .run-view.fixing .run-cols { order: 3; }
 .step-chip[data-state="bad"] small, .step-chip[data-state="unknown"] small { font-weight: 600; }
-.run-view.fixing #fix-check { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "text frame" "next frame" "actions frame"; gap: 10px 20px; align-items: start; }
+.run-view.fixing #fix-check { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto auto 1fr; grid-template-areas: "text frame" "next frame" "actions frame" "wiring frame"; gap: 10px 20px; align-items: start; }
 .run-view.fixing #fix-text { grid-area: text; margin: 0; }
 .run-view.fixing #fix-next { grid-area: next; }
 .run-view.fixing #fix-check .actions { grid-area: actions; margin: 0; }
 .run-view.fixing .fix-frame { grid-area: frame; max-width: none; }
-@media (max-width: 760px) { .run-view.fixing #fix-check { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "frame" "next" "actions"; } }
+@media (max-width: 760px) { .run-view.fixing #fix-check { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "text" "frame" "next" "actions" "wiring"; } }
 
 /* Home: the bench on the right, the idea box on the left. */
 main { max-width: 1120px; }
@@ -1020,4 +987,34 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 @media (max-width: 760px) {
  .progress-panel.compact .activity-kicker { display: none; }
  .progress-panel.compact .activity-copy h2 { font-size: 14px; line-height: 1.25; }
+}
+
+/* Your bench, and the wiring shown beside a mismatch */
+.bench-dialog { width: min(980px, calc(100vw - 32px)); }
+.bench-dialog > .help { margin: 0 0 14px; }
+.bench-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 28px; align-items: start; }
+.bench-grid h3 { margin: 0 0 8px; font-size: 14px; }
+.bench-grid .wiring { max-width: none; border: 1px solid var(--line); border-radius: 8px; }
+.bench-grid > div > .help { margin: 6px 0 14px; font-size: 12px; }
+.bench-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.bench-list li { display: grid; gap: 1px; min-width: 0; }
+.bench-list strong { font-size: 14px; font-weight: 600; }
+.bench-list .help { font-size: 12.5px; line-height: 1.45; overflow-wrap: anywhere; }
+.bench-list.numbered { counter-reset: bench; }
+.bench-list.numbered li { counter-increment: bench; grid-template-columns: 22px minmax(0, 1fr); column-gap: 4px; }
+.bench-list.numbered li::before { content: counter(bench) "."; grid-row: span 2; font-family: var(--serif); font-weight: 700; color: var(--accent); }
+.bench-list.numbered .help { grid-column: 2; }
+@media (max-width: 760px) { .bench-grid { grid-template-columns: minmax(0, 1fr); } }
+.wiring-figure { margin: 0; display: grid; gap: 6px; max-width: 560px; }
+.wiring-figure[hidden] { display: none; }
+.wiring-figure .wiring { border: 1px solid var(--line); border-radius: 8px; }
+.run-view.fixing #fix-wiring { grid-area: wiring; }
+/* Three nav items have to fit beside the brand on a phone. */
+.tab { white-space: nowrap; }
+@media (max-width: 560px) {
+ .topbar { gap: 8px; padding: 0 12px; }
+ .brand { font-size: 17px; gap: 6px; }
+ .brand-mark { width: 22px; height: 22px; }
+ .tabs { gap: 0; }
+ .tab { margin-right: 6px; font-size: 13px; }
 }
