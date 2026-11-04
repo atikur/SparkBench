@@ -131,9 +131,15 @@ async function main(){
  {
   const f=agentFixture([{status:'view_ok',oled_reading:'READY'}]);await f.ctx.checkViewUntilClear();assert.equal(f.setupCalls(),0);
  }
- for(const options of [{started:true},{repair:true}]){
-  const f=agentFixture([{status:'view_blocked',setup_available:true,view_issues:[{problem:'Camera moved'}]}],options);
+ // A repair keeps its parent's reference, so the agent never sets up for one.
+ {
+  const f=agentFixture([{status:'view_blocked',setup_available:true,view_issues:[{problem:'Camera moved'}]}],{repair:true});
   await assert.rejects(f.ctx.checkViewUntilClear(),/Stopped/);assert.equal(f.setupCalls(),0);
+ }
+ // After a test has started in this run, a bumped phone still gets an automatic setup before the next test.
+ {
+  const f=agentFixture([{status:'view_blocked',setup_available:true,view_issues:[{problem:'Camera moved'}]}, {status:'view_ok',oled_reading:'READY'}],{started:true});
+  await f.ctx.checkViewUntilClear();assert.equal(f.setupCalls(),1);
  }
  {
   const f=agentFixture([{status:'view_blocked',setup_available:true,view_issues:[{problem:'Camera moved'}]}, {status:'view_blocked',setup_available:true,view_issues:[{problem:'Camera moved'}]}]);

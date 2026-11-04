@@ -233,7 +233,7 @@
    const job = await api('/api/jobs/' + current.jobId);
    if (review !== current) return null;
    if (job.status !== 'running') return job;
-   status(job.stage === 'capture' ? 'Capturing a fresh iPhone reference…' :
+   status(job.stage === 'capture' ? (job.setup_attempt > 1 ? 'Taking a second capture…' : 'Capturing a fresh iPhone reference…') :
     job.stage === 'validating' || job.stage === 'validation' ? 'Validating on a separate capture…' :
     job.stage === 'aligning' ? 'Matching the calibrated bench landmarks…' :
     job.stage === 'locating' ? 'Finding the LED lenses and lit screen border in this frame…' :

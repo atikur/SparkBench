@@ -214,7 +214,7 @@ class CameraSetupFlowTests(CameraSetupFixture):
         self.automatic_fixture()
         self.label.return_value = {"status": "unknown"}
         job = self.start()
-        self.assertIn("Automatic setup needs help", job["setup_note"])
+        self.assertIn("could not qualify a reference", job["setup_note"])
         self.assertEqual(self.service._camera_policy_path(PLAN), self.base)
         self.label.return_value = {"status": "read", "text": "READY"}
         manual = self.wait(self.service.confirm_camera_setup(job["id"], self.confirmation(job)))
@@ -222,7 +222,7 @@ class CameraSetupFlowTests(CameraSetupFixture):
         self.assertEqual(self.capture.call_count, 3)
         self.assertEqual(self.service._camera_policy_path(PLAN).parent.name, job["id"])
 
-    def test_sam_disagreement_does_not_start_automatic_validation(self):
+    def test_sam_lens_disagreement_is_advisory_and_the_validation_capture_decides(self):
         self.automatic_fixture()
         automatic_sam = self.sam.side_effect
         def sam(body):
@@ -231,24 +231,76 @@ class CameraSetupFlowTests(CameraSetupFixture):
                 result["regions"].pop("red")
             return result
         self.sam.side_effect = sam
+        job = self.wait(self.service.start_camera_setup(self.body()))
+        self.assertEqual(job["status"], "setup_ready", job)
+        self.assertFalse(job["sam_lens_agreement"])
+        self.assertEqual(job["sources"], {"oled": "sam-3.1", "red": "local-vision", "green": "local-vision"})
+        record = json.loads((self.service._camera_policy_path(PLAN).parent / "review.json").read_text())
+        self.assertEqual(record["selection_method"], "registered_and_sam_checked_sam_unconfirmed")
+        self.assertIn("isolate both LED lenses", record["registration"]["sam_lens_note"])
+
+    def test_alignment_tries_older_frames_before_a_second_capture(self):
+        self.automatic_fixture()
+        good = self.registration.return_value
+        self.registration.side_effect = [ValueError("blur"), ValueError("blur"), ValueError("blur"), ValueError("blur"), good]
+        job = self.wait(self.service.start_camera_setup(self.body()))
+        self.assertEqual(job["status"], "setup_ready", job)
+        self.assertEqual(self.capture.call_count, 2)
+        self.assertEqual(job["source_file"], "frame-000002.jpg")
+
+    def test_second_capture_when_no_frame_of_the_first_is_usable(self):
+        self.automatic_fixture()
+        good = self.registration.return_value
+        self.registration.side_effect = [ValueError("moving")] * 6 + [good]
+        job = self.wait(self.service.start_camera_setup(self.body()))
+        self.assertEqual(job["status"], "setup_ready", job)
+        self.assertEqual(self.capture.call_count, 3)
+        self.assertEqual(job["setup_attempt"], 2)
+
+    def test_blocked_validation_is_retried_once_on_a_fresh_capture(self):
+        self.automatic_fixture()
+        good = self.reader.side_effect; calls = []
+        def reader(run, geometry, frames, output, **kwargs):
+            calls.append(run.name)
+            if len(calls) == 1:
+                return {row["file"]: {"status": "unknown", "error": "Static border pixels do not match reference"} for row in frames}
+            return good(run, geometry, frames, output, **kwargs)
+        self.reader.side_effect = reader
+        job = self.wait(self.service.start_camera_setup(self.body()))
+        self.assertEqual(job["status"], "setup_ready", job)
+        self.assertEqual(self.capture.call_count, 3)
+        self.assertEqual(calls, ["automatic-validation", "automatic-validation-2"])
+
+    def test_nothing_usable_ends_in_review_with_every_attempt_recorded(self):
+        self.automatic_fixture()
+        self.registration.side_effect = ValueError("no landmarks")
         job = self.start()
-        self.assertIn("could not isolate both LED lenses", job["setup_note"])
-        self.assertEqual(self.capture.call_count, 1)
+        self.assertEqual(self.capture.call_count, 2)
+        self.assertEqual(len(job["setup_attempts"]), 6)
+        self.assertIn("2 captures", job["setup_note"])
         self.assertEqual(self.service._camera_policy_path(PLAN), self.base)
+
+    def test_tested_plan_can_get_a_new_reference_and_each_test_keeps_its_own(self):
+        self.service.jobs["a" * 32] = {"id": "a" * 32, "action": "test", "proposal_id": PLAN, "status": "pass"}
+        self.automatic_fixture()
+        job = self.wait(self.service.start_camera_setup(self.body()))
+        self.assertEqual(job["status"], "setup_ready", job)
+        self.assertEqual(job["tests_seen"], ["a" * 32])
 
     def test_fresh_capture_confirmation_and_independent_validation_persist(self):
         original = self.base.read_bytes()
         job = self.activate()
         self.assertEqual(job["status"], "setup_ready", job)
-        self.assertEqual(self.capture.call_count, 2)
-        source, validation = [call.kwargs["output"] for call in self.capture.call_args_list]
+        self.assertEqual(self.capture.call_count, 3)
+        *sources, validation = [call.kwargs["output"] for call in self.capture.call_args_list]
+        source = sources[-1]
         self.assertNotEqual(source, validation)
         self.assertNotEqual(digest(source / "frame-000004.jpg"), digest(validation / "frame-000004.jpg"))
         self.assertEqual(job["physical_verification"], "not_performed")
         self.assertEqual(job["serial_commands_sent"], [])
         for action in (self.builder, self.installer, self.runner, self.identity):
             action.assert_not_called()
-        self.sam.assert_called_once()
+        self.assertEqual(self.sam.call_count, 6)
         self.label.assert_called_once()
         self.assertEqual(self.base.read_bytes(), original)
         path = self.service._camera_policy_path(PLAN)
@@ -283,7 +335,7 @@ class CameraSetupFlowTests(CameraSetupFixture):
         self.assertEqual(self.service.cancel(job["id"])["status"], "cancelled")
         with self.assertRaisesRegex(ValueError, "new setup reference"):
             self.service.confirm_camera_setup(job["id"], self.confirmation(job))
-        self.assertEqual(self.capture.call_count, 1)
+        self.assertEqual(self.capture.call_count, 2)
 
     def test_unknown_native_geometry_stops_before_oled_request(self):
         self.reader.side_effect = lambda run, geometry, frames, output, **kwargs: {
@@ -295,10 +347,10 @@ class CameraSetupFlowTests(CameraSetupFixture):
 
     def test_test_started_while_dialog_open_blocks_confirmation(self):
         job = self.start()
-        self.service.jobs["e" * 32] = {"action": "test", "proposal_id": PLAN, "status": "incomplete"}
-        with self.assertRaisesRegex(ValueError, "already been tested"):
+        self.service.jobs["e" * 32] = {"id": "e" * 32, "action": "test", "proposal_id": PLAN, "status": "incomplete"}
+        with self.assertRaisesRegex(ValueError, "after this setup capture"):
             self.service.confirm_camera_setup(job["id"], self.confirmation(job))
-        self.assertEqual(self.capture.call_count, 1)
+        self.assertEqual(self.capture.call_count, 2)
         self.assertFalse((self.root / "runs/camera-setup" / job["id"]).exists())
 
     def test_repair_cannot_recalibrate_and_uses_parent_reference(self):
@@ -317,15 +369,15 @@ class CameraSetupFlowTests(CameraSetupFixture):
         self.service.jobs["f" * 32] = {"action": "test", "status": "fail"}
         with self.assertRaisesRegex(ValueError, "Unknown camera setup"):
             self.service.confirm_camera_setup("f" * 32, self.confirmation(job))
-        self.assertEqual(self.capture.call_count, 1)
+        self.assertEqual(self.capture.call_count, 2)
 
-    def test_sam_failure_is_reviewable_and_never_retried_automatically(self):
+    def test_sam_failure_tries_every_frame_then_asks_for_review(self):
         self.sam.side_effect = ValueError("Synthetic unavailable model")
         job = self.start()
         self.assertEqual(job["regions"], {})
-        self.assertIn("manually", job["setup_note"])
-        self.sam.assert_called_once()
-        self.assertEqual(self.capture.call_count, 1)
+        self.assertIn("could not isolate the screen", job["setup_note"])
+        self.assertEqual(self.sam.call_count, 6)
+        self.assertEqual(self.capture.call_count, 2)
 
     def test_changed_saved_reference_fails_closed_after_restart(self):
         self.assertEqual(self.activate()["status"], "setup_ready")
@@ -350,7 +402,7 @@ class CameraSetupFlowTests(CameraSetupFixture):
         self.assertIsNone(self.service.active)
         saved = self.service.get(job["id"])
         self.assertEqual(saved["status"], "setup_review")
-        self.assertEqual(saved["meta_requests"], 2)
+        self.assertEqual(saved["meta_requests"], 7)
         records = list(self.service._folder(job["id"]).glob("sam-*.json"))
         guided = [json.loads(path.read_text()) for path in records if path.name != "sam-suggestion.json"]
         self.assertEqual(len(guided), 1)
@@ -359,8 +411,8 @@ class CameraSetupFlowTests(CameraSetupFixture):
         self.assertEqual(guided[0]["result"], result)
         ready = self.wait(self.service.confirm_camera_setup(job["id"], self.confirmation(job)))
         self.assertEqual(ready["status"], "setup_ready")
-        self.assertEqual(ready["meta_requests"], 3)  # OLED SAM, LED SAM, Muse label.
-        self.assertEqual(self.sam.call_count, 2)
+        self.assertEqual(ready["meta_requests"], 8)  # six screen calls, one guided lens call, one Muse label.
+        self.assertEqual(self.sam.call_count, 7)
 
     def test_guided_sam_cancel_during_model_call_rejects_result_and_confirmation(self):
         job = self.start()
@@ -389,12 +441,12 @@ class CameraSetupFlowTests(CameraSetupFixture):
         for points in invalid:
             with self.subTest(points=points), self.assertRaises(ValueError):
                 self.service.suggest_camera_setup(job["id"], {"points": points})
-        self.assertEqual(self.sam.call_count, 1)
-        source = self.service._folder(job["id"]) / "workflow/capture/camera" / job["source_file"]
+        self.assertEqual(self.sam.call_count, 6)
+        source = self.service._folder(job["id"]) / "workflow" / job["source_path"]
         source.write_bytes(jpeg(b"changed source"))
         with self.assertRaisesRegex(ValueError, "source image changed"):
             self.service.suggest_camera_setup(job["id"], {"points": self.confirmation(job)["points"]})
-        self.assertEqual(self.sam.call_count, 1)
+        self.assertEqual(self.sam.call_count, 6)
 
     def test_guided_sam_wrong_image_result_is_retained_as_error(self):
         job = self.start()
@@ -402,7 +454,7 @@ class CameraSetupFlowTests(CameraSetupFixture):
         with self.assertRaisesRegex(ValueError, "different source image"):
             self.service.suggest_camera_setup(job["id"], {"points": self.confirmation(job)["points"]})
         self.assertEqual(self.service.get(job["id"])["status"], "setup_review")
-        self.assertEqual(self.service.get(job["id"])["meta_requests"], 2)
+        self.assertEqual(self.service.get(job["id"])["meta_requests"], 7)
         self.assertIsNone(self.service.active)
 
 
@@ -452,7 +504,7 @@ class CameraSetupHTTPTests(CameraSetupFixture):
         confirmation = self.confirmation(job)
         confirmation["source_path"] = "/tmp/failed-test/frame-000001.jpg"
         self.assertEqual(self.request("/api/camera/setup/" + job["id"] + "/confirm", confirmation)[0], 400)
-        self.assertEqual(self.capture.call_count, 1)
+        self.assertEqual(self.capture.call_count, 2)
         self.assertEqual(self.service._camera_policy_path(PLAN), self.base)
 
     def test_http_confirmation_routes_to_fresh_validation(self):
@@ -472,14 +524,14 @@ class CameraSetupHTTPTests(CameraSetupFixture):
         body = {"points": self.confirmation(job)["points"]}
         injected = {**body, "image": {"name": "failed-test.jpg", "data": base64.b64encode(jpeg()).decode()}}
         self.assertEqual(self.request(path, injected)[0], 400)
-        self.assertEqual(self.sam.call_count, 1)
+        self.assertEqual(self.sam.call_count, 6)
         status, value = self.request(path, body)
         self.assertEqual(status, 200)
         result = json.loads(value)
         self.assertEqual(result["image_sha256"], job["image_sha256"])
         self.assertEqual(set(result["regions"]), {"red", "green"})
-        self.assertEqual(self.service.get(job["id"])["meta_requests"], 2)
-        self.assertEqual(self.capture.call_count, 1)
+        self.assertEqual(self.service.get(job["id"])["meta_requests"], 7)
+        self.assertEqual(self.capture.call_count, 2)
 
 
 if __name__ == "__main__":

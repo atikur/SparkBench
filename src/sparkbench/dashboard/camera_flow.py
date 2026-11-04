@@ -38,16 +38,20 @@ class CameraSetupMixin:
             proposal_id = proposal['parent_id']
         return CameraSetupStore(self.root, self.planner).policy_path(proposal_id, default)
 
-    def _setup_eligible(self, proposal_id):
+    def _tests_for(self, proposal_id):
+        return sorted(j.get('id') or key for key, j in self.jobs.items() if j.get('action') == 'test' and j.get('proposal_id') == proposal_id)
+
+    def _setup_eligible(self, proposal_id, tests_seen=None):
+        """A ready plan may get a new camera reference at any time the bench is idle. Every test records
+        the reference it used, so earlier results keep their own. A test that ran after a setup capture
+        means the capture no longer describes the bench, so that capture cannot be activated."""
         if not isinstance(proposal_id, str) or not IDENTIFIER.fullmatch(proposal_id):
             raise ValueError('Choose a ready project plan before camera setup')
         proposal = self.planner.get(proposal_id)
         if proposal.get('status') != 'ready' or proposal.get('origin') == 'mapping_repair':
             raise ValueError('Camera setup needs an original ready plan, not a repair')
-        if any(j.get('action') == 'test' and j.get('proposal_id') == proposal_id
-               for j in self.jobs.values()):
-            raise ValueError('This plan has already been tested. Restore its saved camera view, '
-                             'or create a new plan to establish a new reference. Earlier results stay unchanged.')
+        if tests_seen is not None and set(self._tests_for(proposal_id)) - set(tests_seen):
+            raise ValueError('A test ran after this setup capture. Capture a fresh reference.')
         return proposal
 
     def camera_setup_available(self, proposal_id):
@@ -83,6 +87,7 @@ class CameraSetupMixin:
                    'proposal_id': body['proposal_id'], 'plan_sha256': proposal['plan_sha256'],
                    'request_id': body['request_id'], 'request': dict(body), 'started_at_utc': now(),
                    'base_policy_path': str(policy_path), 'base_policy_sha256': digest(policy_path),
+                   'tests_seen': self._tests_for(body['proposal_id']),
                    'serial_commands_sent': [], 'servo_actuation': False,
                    'physical_verification': 'not_performed', 'meta_requests': 0}
             self.jobs[job_id] = job; save(folder / 'job.json', job)
@@ -113,94 +118,140 @@ class CameraSetupMixin:
             last = pts
         return rows
 
+    SETUP_CAPTURES = 2
+    SETUP_FRAMES = 3
+
+    def _capture_once(self, job_id, camera, attempt, cancel):
+        output = self._folder(job_id) / ('workflow/capture' if attempt == 1 else 'workflow/capture-%d' % attempt) / 'camera'
+        output.parent.mkdir(parents=True)
+        capture_frames(camera, seconds=5, fps=2, output=output)
+        if cancel.is_set(): raise ValueError('Setup cancelled after capture')
+        return output, self._setup_frames(output, camera)
+
+    def _auto_landmarks(self, job_id, source, screen, calibration, cancel):
+        """Landmarks for one frame: the commissioned view aligned onto it, else the lenses and lit
+        border found in the frame itself inside SAM's screen box."""
+        try:
+            self._set(job_id, stage='aligning')
+            return register_setup(source, calibration)
+        except ValueError as exc:
+            if cancel.is_set(): raise ValueError('Setup cancelled before locating components') from exc
+            save(self._folder(job_id) / ('alignment-failure-' + source.stem + '.json'), {'reason': str(exc)})
+            if screen is None:
+                raise ValueError('SAM could not isolate the screen and the saved view does not align') from exc
+            self._set(job_id, stage='locating')
+            return register_setup(source, calibration, screen=screen)
+
     def _capture_camera_setup(self, job_id, calibration, cancel):
         job = self.jobs[job_id]
+        geometry = calibration['geometry']
+        radii = {name: geometry['leds'][name]['radius'] for name in ('red', 'green')}
+        reasons = []
         try:
             camera = job['request']['device_id']
             if camera not in [d['id'] for d in self.enumerate_devices()['cameras']]:
                 raise ValueError('Selected iPhone absent in this process context; no fallback camera')
             if cancel.is_set(): raise ValueError('Setup cancelled before capture')
-            output = self._folder(job_id) / 'workflow/capture/camera'
-            output.parent.mkdir(parents=True)
-            capture_frames(camera, seconds=5, fps=2, output=output)
-            if cancel.is_set(): raise ValueError('Setup cancelled after capture')
-            row = self._setup_frames(output, camera)[-1]
-            geometry = calibration['geometry']
-            if (row['width'], row['height']) != (geometry['image_width'], geometry['image_height']):
-                raise ValueError('Capture resolution differs from the calibrated bench')
-            source = output / row['file']
-            self._set(job_id, stage='suggesting', image_sha256=digest(source),
-                      source_file=row['file'], image_width=row['width'], image_height=row['height'],
-                      led_radii={name: geometry['leds'][name]['radius'] for name in ('red', 'green')},
-                      meta_requests=1)
-            regions, sources, note = {}, {}, None
-            try:
-                suggestion = self.region_proposer({'image': {'name': source.name,
-                    'data': base64.b64encode(source.read_bytes()).decode('ascii')},
-                    'width': row['width'], 'height': row['height'], 'points': {}})
-                if suggestion['image_sha256'] != digest(source):
-                    raise ValueError('SAM result belongs to another photo')
-                regions = suggestion['regions']
-                sources = {name: suggestion['model'] for name in regions}
-                save(self._folder(job_id) / 'sam-suggestion.json', suggestion)
-            except ValueError as exc:
-                note = str(exc) + ' Draw the screen box manually.'
-            if cancel.is_set(): raise ValueError('Setup cancelled before alignment')
-            prefill = {}
-            if 'oled' in regions:
-                try:
-                    self._set(job_id, stage='aligning')
+            found = None; last = None
+            for attempt in range(1, self.SETUP_CAPTURES + 1):
+                self._set(job_id, stage='capture', setup_attempt=attempt)
+                output, rows = self._capture_once(job_id, camera, attempt, cancel)
+                for row in reversed(rows[-self.SETUP_FRAMES:]):
+                    if cancel.is_set(): raise ValueError('Setup cancelled while choosing a frame')
+                    if (row['width'], row['height']) != (geometry['image_width'], geometry['image_height']):
+                        raise ValueError('Capture resolution differs from the calibrated bench')
+                    source = output / row['file']
+                    last = {'source': source, 'row': row, 'regions': {}, 'sources': {}, 'suggestion': None}
+                    self._set(job_id, stage='suggesting', image_sha256=digest(source), source_file=source.name, source_path=str(source.relative_to(self._folder(job_id) / 'workflow')),
+                              image_width=row['width'], image_height=row['height'], led_radii=radii,
+                              meta_requests=job['meta_requests'] + 1)
+                    screen = None
                     try:
-                        aligned = register_setup(source, calibration)
+                        suggestion = self.region_proposer({'image': {'name': source.name,
+                            'data': base64.b64encode(source.read_bytes()).decode('ascii')},
+                            'width': row['width'], 'height': row['height'], 'points': {}})
+                        if suggestion['image_sha256'] != digest(source):
+                            raise ValueError('SAM result belongs to another photo')
+                        screen = suggestion['regions'].get('oled')
+                        last.update(regions=dict(suggestion['regions']), sources={n: suggestion['model'] for n in suggestion['regions']}, suggestion=suggestion)
+                        save(self._folder(job_id) / ('screen-suggestion-' + source.stem + '.json'), suggestion)
                     except ValueError as exc:
-                        if cancel.is_set():
-                            raise ValueError('Setup cancelled before locating components') from exc
-                        save(self._folder(job_id) / 'alignment-failure.json', {'reason': str(exc)})
-                        self._set(job_id, stage='locating')
-                        aligned = register_setup(source, calibration, screen=regions['oled'])
-                    corners = aligned['landmarks'][:4]
-                    points = dict(zip(('red', 'green'), aligned['landmarks'][4:]))
-                    if cancel.is_set(): raise ValueError('Setup cancelled before SAM lens check')
-                    self._set(job_id, stage='suggesting', meta_requests=job['meta_requests'] + 1)
-                    led = self.region_proposer({'image': {'name': source.name,
-                        'data': base64.b64encode(source.read_bytes()).decode('ascii')},
-                        'width': row['width'], 'height': row['height'], 'points': points})
-                    if led['image_sha256'] != job['image_sha256']:
-                        raise ValueError('SAM lens result belongs to another photo')
-                    save(self._folder(job_id) / 'sam-auto-lenses.json', led)
-                    boxes = {'oled': regions['oled'], **led['regions']}
-                    check_regions(boxes, corners, points, job['led_radii'])
-                    body = {'image_sha256': job['image_sha256'], 'regions': boxes,
-                            'sources': {name: 'sam-3.1' for name in boxes},
-                            'points': points, 'oled_corners': corners}
-                    if cancel.is_set(): raise ValueError('Setup cancelled before validation')
-                    base = self._camera_policy_path(job['proposal_id'])
-                    if str(base) != job['base_policy_path'] or digest(base) != job['base_policy_sha256']:
-                        raise ValueError('Camera policy changed during setup')
-                    # Keep an unsuccessful automatic candidate separate from the
-                    # manual fallback, so neither overwrites the other's evidence.
-                    candidate_id = uuid.uuid4().hex
-                    candidate = CameraSetupStore(self.root, self.planner).prepare(
-                        candidate_id, job['proposal_id'], camera, source, body, base,
-                        registration=aligned)
-                    prefill = {'points': points, 'oled_corners': corners}
-                    regions, sources = boxes, body['sources']
-                    self._set(job_id, stage='validating', automatic_candidate_id=candidate_id)
-                    self._qualify_camera_setup(job_id, candidate_id, candidate, cancel, automatic=True)
+                        reasons.append(row['file'] + ': ' + str(exc))
+                    try:
+                        aligned = self._auto_landmarks(job_id, source, screen, calibration, cancel)
+                        found = (source, row, screen, aligned); break
+                    except ValueError as exc:
+                        reasons.append(row['file'] + ': ' + str(exc))
+                if found: break
+            if not found:
+                raise ValueError('No frame from %d captures gave a usable view. ' % self.SETUP_CAPTURES + reasons[-1].split(': ', 1)[-1])
+            source, row, screen, aligned = found
+            corners = aligned['landmarks'][:4]
+            points = dict(zip(('red', 'green'), aligned['landmarks'][4:]))
+            # SAM's view of the lenses is corroboration, never a gate: the separate validation capture decides.
+            agreement = True; lens_note = None; boxes = {}
+            if cancel.is_set(): raise ValueError('Setup cancelled before SAM lens check')
+            self._set(job_id, stage='suggesting', meta_requests=job['meta_requests'] + 1)
+            try:
+                led = self.region_proposer({'image': {'name': source.name,
+                    'data': base64.b64encode(source.read_bytes()).decode('ascii')},
+                    'width': row['width'], 'height': row['height'], 'points': points})
+                if led['image_sha256'] != job['image_sha256']:
+                    raise ValueError('SAM lens result belongs to another photo')
+                save(self._folder(job_id) / 'sam-auto-lenses.json', led)
+                boxes = {'oled': screen, **led['regions']} if screen else dict(led['regions'])
+                check_regions({**boxes, 'oled': boxes.get('oled') or self._box_around(corners, row)}, corners, points, radii)
+            except ValueError as exc:
+                agreement = False; lens_note = str(exc)
+            sources = {}
+            regions = {'oled': screen or self._box_around(corners, row)}
+            sources['oled'] = 'sam-3.1' if screen else 'local-vision'
+            for name in ('red', 'green'):
+                box = boxes.get(name) if agreement else None
+                regions[name] = box or self._box_around([points[name]], row, pad=radii[name] * 2)
+                sources[name] = 'sam-3.1' if box else 'local-vision'
+            body = {'image_sha256': job['image_sha256'], 'regions': regions, 'sources': sources,
+                    'points': points, 'oled_corners': corners}
+            if cancel.is_set(): raise ValueError('Setup cancelled before validation')
+            base = self._camera_policy_path(job['proposal_id'])
+            if str(base) != job['base_policy_path'] or digest(base) != job['base_policy_sha256']:
+                raise ValueError('Camera policy changed during setup')
+            candidate_id = uuid.uuid4().hex
+            candidate = CameraSetupStore(self.root, self.planner).prepare(
+                candidate_id, job['proposal_id'], camera, source, body, base,
+                registration={**aligned, 'sam_lens_agreement': agreement, 'sam_lens_note': lens_note})
+            self._set(job_id, stage='validating', automatic_candidate_id=candidate_id, regions=regions, sources=sources,
+                      points=points, oled_corners=corners, sam_lens_agreement=agreement)
+            for validation in range(1, 3):
+                try:
+                    self._qualify_camera_setup(job_id, candidate_id, candidate, cancel, automatic=True, attempt=validation)
                     return
-                except (ValueError, OSError, subprocess.TimeoutExpired) as exc:
-                    note = 'Automatic setup needs help: ' + str(exc)[:300]
-            else:
-                note = note or 'SAM could not isolate the screen. Mark it to continue.'
-            if cancel.is_set(): raise ValueError('Setup cancelled before review')
-            self._set(job_id, status='setup_review', stage='review', regions=regions,
-                      sources=sources, setup_note=note, ended_at_utc=now(), **prefill)
+                except ValueError as exc:
+                    if cancel.is_set() or validation == 2 or 'Reference check blocked' not in str(exc): raise
+                    reasons.append('validation %d: %s' % (validation, exc))
+                    self._set(job_id, stage='validating', setup_attempt=validation + 1)
         except Exception as exc:
-            self._set(job_id, status='cancelled' if cancel.is_set() else 'incomplete', stage='finished',
-                      error=str(exc)[:400] if isinstance(exc, ValueError) else 'Camera setup capture unavailable',
-                      ended_at_utc=now())
+            if cancel.is_set() or not isinstance(exc, ValueError) or last is None:
+                self._set(job_id, status='cancelled' if cancel.is_set() else 'incomplete', stage='finished',
+                          error=str(exc)[:400] if isinstance(exc, ValueError) else 'Camera setup capture unavailable',
+                          ended_at_utc=now())
+            else:
+                note = ('Automatic setup could not qualify a reference: ' + str(exc)[:300]
+                        + ' Keep the phone still and run again, or adjust the regions by hand.')
+                prefill = {}
+                if found:
+                    prefill = {'points': points, 'oled_corners': corners}
+                self._set(job_id, status='setup_review', stage='review', regions=last['regions'] if not found else regions,
+                          sources=last['sources'] if not found else sources, setup_note=note,
+                          setup_attempts=reasons, ended_at_utc=now(), **prefill)
         finally:
             with self.lock: self.active = None
+
+    @staticmethod
+    def _box_around(points, row, pad=12):
+        xs = [p[0] for p in points]; ys = [p[1] for p in points]
+        return [max(0, min(xs) - pad), max(0, min(ys) - pad),
+                min(row['width'] - 1, max(xs) + pad), min(row['height'] - 1, max(ys) + pad)]
 
     def confirm_camera_setup(self, job_id, body):
         with self.lock:
@@ -210,13 +261,13 @@ class CameraSetupMixin:
                 return job_id
             if self.active: raise BusyError('Another job owns the bench')
             if job.get('status') != 'setup_review': raise ValueError('Capture a new setup reference before confirming')
-            proposal = self._setup_eligible(job['proposal_id'])
+            proposal = self._setup_eligible(job['proposal_id'], job.get('tests_seen'))
             if proposal['plan_sha256'] != job['plan_sha256']:
                 raise ValueError('The project plan changed during setup')
             base = self._camera_policy_path(job['proposal_id'])
             if str(base) != job['base_policy_path'] or digest(base) != job['base_policy_sha256']:
                 raise ValueError('Camera policy changed during setup; capture a fresh reference')
-            source = self._folder(job_id) / 'workflow/capture/camera' / job['source_file']
+            source = self._folder(job_id) / 'workflow' / job.get('source_path', 'capture/camera/' + job['source_file'])
             if digest(source) != job['image_sha256']:
                 raise ValueError('The setup source image changed')
             candidate = CameraSetupStore(self.root, self.planner).prepare(job_id, job['proposal_id'],
@@ -249,7 +300,7 @@ class CameraSetupMixin:
                     raise ValueError('Lens points must be inside the setup image')
             if points and points['red'] == points['green']:
                 raise ValueError('Select separate LED lenses')
-            source = self._folder(job_id) / 'workflow/capture/camera' / job['source_file']
+            source = self._folder(job_id) / 'workflow' / job.get('source_path', 'capture/camera/' + job['source_file'])
             if digest(source) != job['image_sha256']:
                 raise ValueError('The setup source image changed')
             call_id = uuid.uuid4().hex
@@ -289,7 +340,7 @@ class CameraSetupMixin:
         finally:
             with self.lock: self.active = None
 
-    def _qualify_camera_setup(self, job_id, candidate_id, candidate, cancel, *, automatic=False):
+    def _qualify_camera_setup(self, job_id, candidate_id, candidate, cancel, *, automatic=False, attempt=1):
         job = self.jobs[job_id]
         camera = job['request']['device_id']
         if camera not in [d['id'] for d in self.enumerate_devices()['cameras']]:
@@ -297,7 +348,7 @@ class CameraSetupMixin:
         if cancel.is_set(): raise ValueError('Setup cancelled before validation')
         _, calibration_path = check_policy(candidate['policy_path'])
         calibration = json.loads(calibration_path.read_text()); geometry = calibration['geometry']
-        run = self._folder(job_id) / ('workflow/automatic-validation' if automatic else 'workflow/validation'); run.mkdir()
+        run = self._folder(job_id) / (('workflow/automatic-validation' if automatic else 'workflow/validation') + ('' if attempt == 1 else '-%d' % attempt)); run.mkdir()
         output = run / 'camera'
         capture_frames(camera, seconds=5, fps=2, output=output)
         if cancel.is_set(): raise ValueError('Setup cancelled after validation capture')
@@ -323,7 +374,7 @@ class CameraSetupMixin:
                  'validation_directory': str(run), 'validation_integrity_sha256': digest(run / 'integrity.json'),
                  'thresholds': 'inherited_unchanged'}
         with self.lock:
-            self._setup_eligible(job['proposal_id'])
+            self._setup_eligible(job['proposal_id'], job.get('tests_seen'))
             if cancel.is_set(): raise ValueError('Setup cancelled before reference activation')
             CameraSetupStore(self.root, self.planner).activate(candidate_id, job['proposal_id'], proof)
             self._set(job_id, status='setup_ready', stage='finished', ended_at_utc=now(),

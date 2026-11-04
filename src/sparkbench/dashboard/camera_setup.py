@@ -76,7 +76,7 @@ def validate_regions(body, geometry):
     if not isinstance(regions, dict) or set(regions) != names:
         raise ValueError("Confirm all three component regions")
     if (not isinstance(sources, dict) or set(sources) != names
-            or any(v not in ("manual", "sam-3.1") for v in sources.values())):
+            or any(v not in ("manual", "sam-3.1", "local-vision") for v in sources.values())):
         raise ValueError("Each region needs its proposal source")
     for box in regions.values():
         if (not isinstance(box, list) or len(box) != 4
@@ -287,6 +287,8 @@ class CameraSetupStore:
                   **copy.deepcopy(body), "parent_policy_sha256": digest(base_policy_path),
                   "parent_calibration_sha256": digest(calibration_path),
                   "scope": "Confirmed geometry only; inherited LED thresholds; behavior verification not performed"}
+        if registration is not None and registration.get("sam_lens_agreement") is False:
+            method += "_sam_unconfirmed"
         record.update(selection_method=method, registration=registration)
         save(folder / "review.json", record)
         # Preserve measurement definitions, but do not mislabel old frames as this

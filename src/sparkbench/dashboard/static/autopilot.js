@@ -80,8 +80,8 @@ async function checkView(){$('view-check').hidden=true;lastViewCheck=null;setSta
  const text=job.error||'The camera check did not finish.';setStage('view','stopped',text);autoLog('stop',text);showViewCheck(text+' Fix it, then check again.',null,job);return false;}
 // Waits here for as long as it takes. Stop ends the run.
 async function waitForPerson(text){if(autopilot?.cancelled)return false;autopilot.waiting=true;window.renderFlow?.();setAutoState(text,'warn');window.renderFlow?.();const again=await new Promise(resolve=>{humanWait=resolve;});if(autopilot)autopilot.waiting=false;window.flowFailedRun=null;$('fix-check').hidden=true;window.renderFlow?.();return again;}
-async function checkViewUntilClear(){for(;;){if(await checkView())return;
-  const canSetup=lastViewCheck?.setup_available===true&&autopilot&&!autopilot.setupAttempted&&!autopilot.testStarted&&executionPlan.origin!=='mapping_repair'&&window.setupCameraForAgent;
+async function checkViewUntilClear(){for(;;){if(await checkView()){if(autopilot)autopilot.setupAttempted=false;return;}
+  const canSetup=lastViewCheck?.setup_available===true&&autopilot&&!autopilot.setupAttempted&&executionPlan.origin!=='mapping_repair'&&window.setupCameraForAgent;
   if(canSetup){
    autopilot.setupAttempted=true;autopilot.waiting=true;$('view-check').hidden=true;
    setStage('view','running','Locating the LEDs and OLED, then checking a fresh capture');
