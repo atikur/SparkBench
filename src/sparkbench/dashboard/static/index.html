@@ -317,6 +317,7 @@
 
 <dialog id="plan-dialog" aria-label="Plan">
   <div class="dialog-header"><div><p class="eyebrow">Plan</p><strong id="dlg-title">Planning your build</strong></div><button id="dlg-close" class="button" type="button">Close</button></div>
+  <div id="dlg-busy" class="dlg-busy" hidden><span class="spinner" aria-hidden="true"></span><span id="dlg-busy-text">Muse Spark is planning…</span></div>
   <p id="dlg-state" class="dlg-state"></p>
   <p id="dlg-error" class="error-line" role="alert" hidden></p>
   <p id="dlg-summary" class="copy"></p>
@@ -337,7 +338,6 @@
   <div class="actions wrap">
     <button id="dlg-approve" class="primary-button" type="button" hidden>Approve plan and run on the bench →</button>
     <button id="dlg-edit-open" class="button" type="button" hidden>Change something</button>
-    <button id="dlg-open" class="link-button" type="button">Open the project</button>
   </div>
 </dialog>
 
