@@ -85,6 +85,33 @@ async function main(){
   assert.equal(f.calls.some(x=>x[1].endsWith('/confirm')),false);
   assert.equal(f.ctx.cameraSetupSavedPlans.has(f.proposalId),true);
  }
+ // The panel stays hidden while the agent sets up alone, and Stop still cancels it.
+ {
+  let release;const gate=new Promise(r=>release=r),f=panelFixture({automatic:true,validationGate:gate});const outcome=f.ctx.setupCameraForAgent(f.proposalId,'iphone');await flush();
+  assert.equal(f.$('regions-panel').hidden,true);assert.equal(f.ctx.cameraSetupActive,true);assert.equal(f.ctx.cameraSetupActivity.busy,true);
+  release();assert.equal(await outcome,true);assert.equal(f.$('regions-panel').hidden,true);
+  const g=panelFixture({automatic:true,startGate:new Promise(()=>{})});const stopped=g.ctx.setupCameraForAgent(g.proposalId,'iphone');await flush();
+  g.ctx.cancelCameraSetup();assert.equal(await stopped,false);assert.equal(g.$('regions-panel').hidden,true);
+ }
+ // It opens with a reason when the agent cannot place the parts.
+ {
+  const f=panelFixture();const outcome=f.ctx.setupCameraForAgent(f.proposalId,'iphone');await flush();
+  assert.equal(f.$('regions-panel').hidden,false);assert.match(f.$('regions-title').textContent,/needs your help/);assert.match(f.$('regions-help').textContent,/could not place every part/);
+  await f.$('regions-close').click();assert.equal(await outcome,false);
+ }
+ // It opens with the error when setup stops, so the run cannot look stuck.
+ {
+  const f=panelFixture();f.ctx.planningPost=async()=>{throw new Error('The camera is busy');};const outcome=f.ctx.setupCameraForAgent(f.proposalId,'iphone');await flush();
+  assert.equal(f.$('regions-panel').hidden,false);assert.match(f.$('regions-status').textContent,/camera is busy/);assert.match(f.$('regions-title').textContent,/needs your help/);
+  await f.$('regions-close').click();assert.equal(await outcome,false);
+ }
+ // It opens when no camera is selected, and at once when the person asks for it by hand.
+ {
+  const f=panelFixture();const outcome=f.ctx.setupCameraForAgent(f.proposalId,null);await flush();
+  assert.equal(f.$('regions-panel').hidden,false);assert.match(f.$('regions-help').textContent,/Choose the iPhone/);await f.$('regions-close').click();assert.equal(await outcome,false);
+  const g=panelFixture({startGate:new Promise(()=>{})});const manual=g.ctx.setupCameraForAgent(g.proposalId,'iphone',true);
+  assert.equal(g.$('regions-panel').hidden,false);assert.match(g.$('regions-title').textContent,/Set up the camera/);await g.$('regions-close').click();assert.equal(await manual,false);
+ }
  // Closing during creation cancels the exact new job even if its ID arrives later.
  {
   let release;const gate=new Promise(r=>release=r),f=panelFixture({startGate:gate});const outcome=f.ctx.setupCameraForAgent(f.proposalId,'iphone');
@@ -149,6 +176,6 @@ async function main(){
   await f.ctx.checkViewUntilClear();assert.equal(f.setupCalls(),1);assert.equal(f.calls.length,1);
   await f.ctx.checkViewUntilClear();assert.equal(f.setupCalls(),2);assert.equal(f.calls.length,2);
  }
- console.log('Camera setup UI: 13 simulated scenarios passed; no hardware or model requests.');
+ console.log('Camera setup UI: 17 simulated scenarios passed; no hardware or model requests.');
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

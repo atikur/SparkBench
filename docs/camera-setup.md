@@ -6,7 +6,9 @@ the same checks as a readiness check, so whether the run continues depends on th
 capture, not on how many outlines SAM produced. On an existing valid reference, the
 agent performs its normal readiness check and continues. Whenever that check finds
 the view no longer matches, the agent sets the camera up again by itself, before
-the first test or between attempts, and only a repair keeps its parent's reference. **Set up camera regions** on a ready plan also runs it.
+the first test or between attempts, and only a repair keeps its parent's reference.
+While it works alone, the setup panel stays hidden: the run card shows the work and
+**Stop** cancels it. The panel opens only when the agent needs you, and says why. **Set up camera regions** on a ready plan also runs it.
 
 1. Select the iPhone. The agent takes a five-second camera-only capture and
    asks SAM 3.1 to find the screen. It aligns the frame with the commissioned

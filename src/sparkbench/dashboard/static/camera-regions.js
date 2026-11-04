@@ -87,9 +87,23 @@
    review.corners.length === 4 && !validCorners(review) ? 'The four border corners must form a clockwise rectangle inside the OLED box. Redraw the box or select the corners again.' :
    'Confirm that both sampling circles sit entirely on the LED lenses and the numbered outline follows the lit screen border.';
  }
- function begin(guided = false, proposalId = null) {
+ // While the agent sets the camera up by itself the panel stays out of the way: the run card shows the work and Stop
+ // cancels it. It opens only when the agent needs the person, and says why.
+ function reveal() {
+  panel.hidden = false;
+  $('regions-title').focus({preventScroll:true});
+  panel.scrollIntoView({block:'nearest'});
+ }
+ function askForHelp(current, help) {
+  if (!current.quiet) return;
+  current.quiet = false;
+  $('regions-title').textContent = 'The agent needs your help with the camera';
+  $('regions-help').textContent = help;
+  reveal();
+ }
+ function begin(guided = false, proposalId = null, quiet = false) {
   if (review) return null;
-  review = {guided, proposalId, regions: {}, points: {}, sources: {}, corners: [], radii: {}, busy: false, cancelled: false};
+  review = {guided, proposalId, quiet, regions: {}, points: {}, sources: {}, corners: [], radii: {}, busy: false, cancelled: false};
   window.cameraSetupActive = guided;
   $('regions-editor').hidden = true;
   canvas.hidden = true;
@@ -109,15 +123,13 @@
   $('regions-title').textContent = guided ? 'Set up the camera for this plan' : 'Review camera regions';
   $('regions-close').textContent = guided ? 'Cancel setup' : 'Close';
   $('regions-help').textContent = guided
-   ? 'The agent aligns a fresh iPhone photo with the calibrated bench, checks the regions with SAM, and validates the reference on a separate capture. If it needs help, you can adjust the regions here.'
+   ? 'The agent finds the parts in a fresh iPhone photo, outlines them with SAM 3.1 and checks the result on a separate capture. You can adjust the regions here.'
    : 'Use SAM 3.1 to outline the display and LED lenses in this photo. Each SAM action sends this photo to Meta. Review the boxes before saving them as setup notes.';
   $('regions-save').textContent = guided ? 'Confirm and check camera' : 'Save region notes';
   $('regions-capture').textContent = guided ? 'Capture and suggest regions' : 'Capture review photo';
   for (const id of ['suggest', 'oled', 'red', 'green', 'outline', 'save', 'corners', 'circles']) $('regions-' + id).disabled = true;
   status(guided ? 'Select the iPhone for this plan. Keep the rig idle and the phone fixed.' : 'Choose a bench photo or capture one with the iPhone.');
-  panel.hidden = false;
-  $('regions-title').focus({preventScroll:true});
-  panel.scrollIntoView({block:'nearest'});
+  if (!quiet) reveal();
   window.updateProjectActions?.();
   return review;
  }
@@ -197,7 +209,7 @@
   $('regions-find-camera').disabled = true;
   $('regions-capture').disabled = true;
   try { await operation(current); }
-  catch (error) { if (review === current) status(error.message); }
+  catch (error) { if (review === current) { askForHelp(current, 'Camera setup stopped before it finished. The reason is below. Fix it and try again, or cancel to end the run.'); status(error.message); } }
   finally {
    if (review === current) {
     current.busy = false;
@@ -209,6 +221,7 @@
   }
  }
  async function findCamera(current) {
+  askForHelp(current, 'Choose the iPhone so the agent can set up the camera.');
   status('Looking for the iPhone camera…');
   const devices = await api('/api/devices');
   if (review !== current) return;
@@ -263,6 +276,7 @@
   if (!job || review !== current) return;
   if (job.status === 'setup_ready') { finishSetup(current); return; }
   if (job.status !== 'setup_review') throw new Error(job.error || 'Camera setup could not capture a reference. Close this panel to stop.');
+  askForHelp(current, 'The agent could not place every part by itself. Adjust the regions here, then confirm, and it will check them on a separate capture.');
   await loadPhoto(current, job.latest_frame.url, 'iPhone-setup.jpg');
   if (review !== current) return;
   if (current.sha !== job.image_sha256 || canvas.width !== job.image_width || canvas.height !== job.image_height) {
@@ -275,8 +289,8 @@
    ? 'Adjust the regions or the camera view before checking again.'
    : 'Select each LED lens, outline both LEDs, then mark the four corners of the lit screen border.'));
  }
- window.setupCameraForAgent = function(proposalId, deviceId) {
-  const current = begin(true, proposalId);
+ window.setupCameraForAgent = function(proposalId, deviceId, openedByPerson = false) {
+  const current = begin(true, proposalId, !openedByPerson);
   if (!current) return Promise.resolve(false);
   const outcome = new Promise(resolve => { current.resolve = resolve; });
   chooseSource(async () => deviceId ? captureSetup(current, deviceId) : findCamera(current));
@@ -287,7 +301,7 @@
   if (typeof autopilot !== 'undefined' && autopilot || typeof activeExecution !== 'undefined' && activeExecution) return;
   const plan = typeof proposalResult !== 'undefined' ? proposalResult : null;
   if (!plan || plan.status !== 'ready') return;
-  const ok = await window.setupCameraForAgent(plan.id, $('execution-camera').value || null);
+  const ok = await window.setupCameraForAgent(plan.id, $('execution-camera').value || null, true);
   if (ok) { window.syncStages?.(); window.updateProjectActions?.(); }
  }
  $('plan-camera-regions').addEventListener('click', setupFromPlan);
