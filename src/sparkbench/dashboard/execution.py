@@ -375,7 +375,28 @@ class ExecutionService:
             rows=frame_rows(capture)
             if rows and re.fullmatch(r"frame-\d{6}\.jpg",rows[-1].get("file","")):
                 row=rows[-1];result["latest_frame"]={"file":row["file"],"url":f"/api/jobs/{job_id}/frames/{row['file']}","live":result.get("stage")=="capture" and result.get("status")=="running"}
+        if result.get("action")=="test" and result.get("status")=="running" and result.get("stage")=="analysis":
+            progress=self._reading_progress(job_id)
+            if progress:
+                last=progress.pop("last_frame")
+                result["reading_progress"]=progress
+                if last:result["latest_frame"]={"file":last,"url":f"/api/jobs/{job_id}/frames/{last}","live":False}
         return result
+
+    def _reading_progress(self, job_id):
+        """How far the OLED reading has got, from the files it saves. Display only; never read by the verifier."""
+        analysis=self._folder(job_id)/"workflow/analysis"
+        try:
+            geometry=json.loads((analysis/"calibration.snapshot.json").read_text())["geometry"]
+            rows=[json.loads(line) for line in (analysis/"pixels.jsonl").read_text().splitlines() if line.strip()]
+            ready=[row["id"] for row in rows if geometry_valid(row,geometry)]
+            finished=sorted((path.stat().st_mtime,name) for name in ready if (path:=analysis/"meta"/name/"reading.json").is_file())
+        except (OSError,ValueError,KeyError,TypeError):
+            return None
+        if not ready:return None
+        done=len(finished);seconds_left=None
+        if done>=2:seconds_left=round((finished[-1][0]-finished[0][0])/(done-1)*(len(ready)-done))
+        return {"done":done,"total":len(ready),"seconds_left":seconds_left,"last_frame":finished[-1][1]+".jpg" if finished else None}
 
     def image(self, job_id, name):
         self.get(job_id)

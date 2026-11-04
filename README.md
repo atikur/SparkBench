@@ -130,7 +130,7 @@ Guides: [dashboard](docs/dashboard.md),
 [building a project](docs/build-guide.md), [intent planning](docs/intent-planning.md),
 [software pipeline and trust boundary](docs/software-pipeline.md), [live validation](docs/live-validation.md).
 
-Host tests (241, no hardware, no network):
+Host tests (244, no hardware, no network):
 
 ```bash
 .venv/bin/python -m unittest discover -s tests -v
@@ -160,7 +160,7 @@ quoted above are summarised in [docs/live-validation.md](docs/live-validation.md
 | `src/sparkbench/` | CLI, Meta clients (`meta.py`, `intent.py`, `guide.py`, `diagnosis.py`, `generation.py`), verifier, build and install, camera and servo tooling |
 | `src/sparkbench/dashboard/` | local server, project and job state, static UI |
 | `firmware/` | PlatformIO projects: the LED/OLED runtime and the bring-up diagnostics |
-| `tests/` | 241 host tests plus native C++ and Swift simulation tests |
+| `tests/` | 244 host tests plus native C++ and Swift simulation tests |
 | `tools/` | macOS camera, vision and tracker helpers, bootstrap and packaging scripts |
 | `hardware/` | board, camera and calibration records, wiring diagrams |
 | `docs/` | guides, contest audit, and the full [project history](docs/history.md) |

@@ -171,6 +171,27 @@ class ExecutionTests(unittest.TestCase):
         a,b=self.view_setup(row)
         with a,b:return self.wait(self.service.start_view({'request_id':__import__('uuid').uuid4().hex,'device_id':device}))
     GOOD={'status':'measured','oled_border_support':[1,1,1,1],'leds':{'red':{'mean_luma_srgb':70},'green':{'mean_luma_srgb':90}},'label_crop':'x.png','id':'x'}
+    def reading_job(self,finished):
+        job='b'*32;folder=self.root/'runs/dashboard-execution'/job;analysis=folder/'workflow/analysis';analysis.mkdir(parents=True)
+        self.service.jobs[job]={'id':job,'action':'test','status':'running','stage':'analysis'}
+        geometry={'minimum_border_support':.85};(analysis/'calibration.snapshot.json').write_text(json.dumps({'geometry':geometry}))
+        rows=[{'id':'frame-%06d'%i,'status':'measured','oled_border_support':[1,1,1,1]} for i in range(1,5)]+[{'id':'frame-000005','status':'unknown'}]
+        (analysis/'pixels.jsonl').write_text('\n'.join(json.dumps(r) for r in rows)+'\n')
+        for i,stamp in enumerate(finished,1):
+            path=analysis/'meta'/('frame-%06d'%i)/'reading.json';path.parent.mkdir(parents=True);path.write_text('{}');__import__('os').utime(path,(stamp,stamp))
+        return job
+    def test_reading_progress_counts_only_readable_frames_and_estimates_time(self):
+        result=self.service.get(self.reading_job([100,104,108]))
+        self.assertEqual(result['reading_progress'],{'done':3,'total':4,'seconds_left':4})
+        self.assertEqual(result['latest_frame']['file'],'frame-000003.jpg')
+    def test_reading_progress_before_first_reading_has_no_estimate_or_frame(self):
+        result=self.service.get(self.reading_job([]))
+        self.assertEqual(result['reading_progress'],{'done':0,'total':4,'seconds_left':None});self.assertNotIn('latest_frame',result)
+    def test_reading_progress_is_absent_until_the_files_exist_and_after_finish(self):
+        job='c'*32;(self.root/'runs/dashboard-execution'/job).mkdir(parents=True);self.service.jobs[job]={'id':job,'action':'test','status':'running','stage':'analysis'}
+        self.assertNotIn('reading_progress',self.service.get(job))
+        finished=self.reading_job([100,104]);self.service.jobs[finished]['status']='pass'
+        self.assertNotIn('reading_progress',self.service.get(finished))
     def test_build_with_an_older_runtime_is_marked_so_it_is_rebuilt_not_installed(self):
         build=self.compile();self.assertTrue(self.service.get(build['id'])['runtime_current'])
         path=self.root/'runs/dashboard-execution'/build['id']/'artifact/artifact.json';record=json.loads(path.read_text());record['trusted_runtime_sha256']['src/main.cpp']='0'*64;path.write_text(json.dumps(record))

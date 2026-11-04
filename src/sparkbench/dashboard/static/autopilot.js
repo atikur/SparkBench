@@ -34,7 +34,7 @@ async function runJob(action,stage){const body={proposal_id:executionPlan.id,pla
  if(action!=='compile'){const b=buildJob();if(!b)throw new Error('No compiled build to use');body.build_id=b.id;body.port=$('execution-port').value;}
  if(action==='test')body.device_id=$('execution-camera').value;
  const started=await planningPost('/api/execute/'+action,body);activeExecution={id:started.id,action,stage:'queued'};updateExecutionButtons();
- let job;for(;;){await wait(700);job=await api('/api/jobs/'+started.id);activeExecution=job.status==='running'?job:null;renderExecution(job);updateExecutionButtons();if(stage&&job.status==='running')setStage(stage,'running',executionLabels[job.stage]||job.stage);if(job.status!=='running')break;if(autopilot?.cancelled&&!job.cancel_requested){try{await planningPost('/api/jobs/'+job.id+'/cancel',{});}catch(e){}}}
+ let job;for(;;){await wait(700);job=await api('/api/jobs/'+started.id);activeExecution=job.status==='running'?job:null;renderExecution(job);updateExecutionButtons();if(stage&&job.status==='running')setStage(stage,'running',jobStageText(job));if(job.status!=='running')break;if(autopilot?.cancelled&&!job.cancel_requested){try{await planningPost('/api/jobs/'+job.id+'/cancel',{});}catch(e){}}}
  await refreshJobs();return job;}
 // Devices: use what is selected; otherwise enumerate and pick only when the choice is unambiguous.
 async function ensureDevices(){if(!($('execution-port').value&&$('execution-camera').value)){setStage('connect','running','looking for the ESP32 port and the iPhone camera');const data=await api('/api/devices');$('device-controls').hidden=false;
