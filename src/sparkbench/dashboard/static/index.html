@@ -90,7 +90,6 @@
 
 <!-- Project page: describe, plan, bench -->
 <section id="guide-workspace" class="view" hidden aria-label="Project">
-  <button class="back-link" type="button" data-view="projects">← Projects</button>
   <div class="page-head"><div><p class="eyebrow">Project</p><h1 id="project-title">New project</h1></div><span id="flow-status" class="pill"></span></div>
   <section id="progress-panel" class="progress-panel" aria-label="Project progress" hidden>
     <div class="progress-heading"><p class="eyebrow">Project progress</p><span id="progress-position" class="help"></span></div>
@@ -161,12 +160,12 @@
           </div>
     <p id="planner-error" class="error-line" role="alert" hidden></p>
     <div class="actions wrap plan-actions">
-      <button id="approve-run" class="primary-button" type="button" hidden>Approve plan and run on the bench →</button>
       <form id="plan-edit-form" class="plan-adjust" hidden>
         <label for="plan-edit" class="sr-only">What should change?</label>
         <input id="plan-edit" maxlength="3000" required placeholder="Say GO instead of START, or green while counting…">
         <button class="button" type="submit">Adjust plan</button>
       </form>
+      <button id="approve-run" class="primary-button" type="button" hidden>Approve plan and run on the bench →</button>
       <button id="accept-brief" class="primary-button" type="button" hidden>Accept and plan the steps →</button>
       <button id="project-firmware" class="button" type="button" hidden>Plan the steps →</button>
                       </div>
