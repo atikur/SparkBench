@@ -487,9 +487,6 @@ details.card[open] > summary { margin-bottom: 16px; }
 .progress-panel[data-state="waiting"] { --activity-color: var(--warning); --activity-bg: var(--warning-bg); }
 .progress-panel[data-state="done"] { --activity-color: var(--pass); --activity-bg: var(--pass-bg); }
 .progress-panel[data-state="bad"] { --activity-color: var(--fail); --activity-bg: var(--fail-bg); }
-.progress-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
-.progress-heading .eyebrow { color: var(--muted); margin: 0; font-size: 11px; letter-spacing: 1.5px; }
-.progress-heading .help { font-size: 12px; font-variant-numeric: tabular-nums; }
 #project-progress { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 0; margin: 0 0 20px; list-style: none; }
 #project-progress li { display: flex; align-items: center; gap: 9px; min-width: 0; position: relative; border: 1px solid var(--line); border-radius: 7px; padding: 13px 10px; color: var(--muted); background: var(--panel); }
 #project-progress li:not(:last-child)::after { content: ""; position: absolute; right: -11px; top: 50%; width: 10px; height: 2px; background: var(--line); }
@@ -524,15 +521,6 @@ details.card[open] > summary { margin-bottom: 16px; }
 #activity-meter::-webkit-meter-bar { background: var(--panel); border: 0; }
 #activity-meter::-webkit-meter-optimum-value { background: var(--accent); transition: width .4s; }
 #activity-meter::-moz-meter-bar { background: var(--accent); }
-.activity-recent { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 18px; padding: 16px 2px 0; }
-.activity-log-label { color: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding-top: 3px; }
-#activity-events { display: grid; gap: 7px; list-style: none; padding: 0; margin: 0; }
-#activity-events li { display: grid; grid-template-columns: 8px 83px minmax(0, 1fr); align-items: baseline; gap: 9px; font-size: 12px; color: var(--muted); }
-#activity-events li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); align-self: start; margin-top: 6px; }
-#activity-events .auto-ok::before, #activity-events .auto-skip::before { background: var(--pass); }
-#activity-events .auto-bad::before, #activity-events .auto-stop::before { background: var(--fail); }
-#activity-events time { font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-#activity-events span { overflow-wrap: anywhere; }
 @keyframes activity-wave { 0%, 100% { transform: scaleY(.35); } 50% { transform: scaleY(1); } }
 @keyframes activity-glow { 0%, 100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--activity-color) 8%, transparent); } }
 @media (max-width: 900px) {
@@ -554,8 +542,6 @@ details.card[open] > summary { margin-bottom: 16px; }
  .agent-emblem svg { width: 23px; height: 23px; }
  .activity-copy h2 { font-size: 20px; }
  .activity-copy p { font-size: 12px; }
- .activity-recent { grid-template-columns: minmax(0, 1fr); gap: 8px; }
- #activity-events li { grid-template-columns: 6px 75px minmax(0, 1fr); gap: 6px; font-size: 11px; }
 }
 
 /* Project page: one state at a time. */
@@ -877,7 +863,7 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 /* The project page has no back link above its title, so its heading sits closer to the top bar. */
 #guide-workspace { margin-top: -12px; }
 .progress-panel.compact { position: fixed; top: 0; z-index: 5; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px 20px; padding: 8px 14px; margin: 0; border-radius: 0 0 10px 10px; box-shadow: 0 10px 24px rgba(28, 26, 23, .12); }
-.progress-panel.compact .progress-heading, .progress-panel.compact #activity-note, .progress-panel.compact #activity-recent, .progress-panel.compact .activity-context { display: none; }
+.progress-panel.compact #activity-note, .progress-panel.compact .activity-context { display: none; }
 .progress-panel.compact #project-progress { display: flex; gap: 6px; margin: 0; }
 .progress-panel.compact #project-progress li { padding: 5px 9px 5px 5px; gap: 6px; border-radius: 999px; font-size: 12px; }
 .progress-panel.compact #project-progress li::after { display: none; }
@@ -895,7 +881,7 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 .progress-panel.compact .activity-copy h2 { margin: 0; font-size: 15px; }
 @media (max-width: 760px) { .progress-panel.compact { grid-template-columns: minmax(0, 1fr); } .progress-panel.compact #project-progress li:not([data-state="current"]) { padding-right: 5px; } }
 .plan-actions { align-items: center; }
-.plan-adjust { display: flex; align-items: center; gap: 8px; }
+.plan-adjust { display: flex; align-items: center; gap: 8px; flex: 1 1 320px; max-width: 520px; }
 .plan-actions #approve-run { margin-left: auto; }
 .plan-adjust input { width: min(380px, 50vw); }
 .plan-adjust[hidden] { display: none; }
@@ -907,7 +893,7 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 .plan-activity > .help:empty { display: none; }
 @media (max-width: 760px) { .plan-adjust { width: 100%; } .plan-adjust input { width: 100%; } .plan-actions #approve-run { margin-left: 0; } }
 .plan-adjust button { white-space: nowrap; }
-.plan-adjust input { width: min(320px, 40vw); }
+.plan-adjust input { flex: 1 1 auto; width: auto; min-width: 0; }
 
 /* The bench run: a stage that always has something real to show */
 .run-elapsed { margin-left: auto; font: 500 13px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -999,4 +985,39 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .hero-title { font-size: 34px; }
+}
+
+/* Project progress: slim enough that the plan, the run or the evidence stays above the fold */
+.progress-panel { padding: 12px; margin-bottom: 0; }
+#project-progress { gap: 8px; margin: 0 0 8px; }
+#project-progress li:not(:last-child)::after { right: -9px; width: 8px; }
+.agent-activity { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; padding: 10px 14px; }
+.agent-emblem { width: 40px; height: 40px; border-radius: 10px; }
+.agent-emblem svg { width: 21px; height: 21px; }
+.activity-kicker { margin-bottom: 1px; }
+.activity-copy h2 { margin: 0; font-size: 19px; }
+.activity-copy p { margin-top: 1px; line-height: 1.45; }
+.activity-copy p:empty { display: none; }
+.activity-owner[hidden] { display: none; }
+/* The progress panel shows this next step, so the plan card does not repeat it. */
+#lifecycle-next { display: none; }
+.activity-context { gap: 5px; }
+@media (min-width: 901px) {
+ #project-progress li { padding: 7px 10px; gap: 8px; }
+ .progress-node { flex-basis: 24px; width: 24px; height: 24px; }
+}
+@media (max-width: 900px) {
+ .agent-activity { grid-template-columns: 40px minmax(0, 1fr); }
+}
+/* The pinned bar stays one tidy row of stages on small screens, whatever the full panel does. */
+@media (max-width: 900px) {
+ .progress-panel.compact #project-progress li { flex-direction: row; align-items: center; gap: 6px; padding: 3px 9px 3px 3px; }
+ .progress-panel.compact #project-progress li:not([data-state="current"]) { padding: 0; border: 0; background: none; box-shadow: none; }
+ .progress-panel.compact .agent-emblem { display: none; }
+ .progress-panel.compact .agent-activity { grid-template-columns: minmax(0, 1fr); padding: 0; }
+ .progress-panel.compact { gap: 5px; }
+}
+@media (max-width: 760px) {
+ .progress-panel.compact .activity-kicker { display: none; }
+ .progress-panel.compact .activity-copy h2 { font-size: 14px; line-height: 1.25; }
 }

@@ -32,8 +32,8 @@ to start planning.
 The progress panel names the current task and its worker (Muse Spark, SAM,
 the camera or local code). Active jobs have animated indicators, while approval,
 blocked and completed states remain still. OLED reading progress uses the job's
-actual frame counts, and recent activity comes from the same session log
-shown under Details. Motion respects the browser's reduced-motion preference.
+actual frame counts, and the session log is under Details. Motion respects the
+browser's reduced-motion preference.
 
 The Projects page opens with the one-line pitch, the four-step loop and three proof cards drawn from real recorded runs: a pass, the caught wiring fault and an incomplete run. Each card opens its evidence. Every place a Meta model contributes carries a blue Muse Spark mark. A run page opens on the frame that tells its story: the first mismatch for a fault, the first unknown reading for an incomplete run. See [the build-guide walkthrough](build-guide.md). Guidance and photo capture are explicit actions; browsing saved projects makes no model calls. Compiled proposals also offer source/binary downloads and a source viewer.
 

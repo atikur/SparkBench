@@ -2,8 +2,7 @@
 // The project page shows one state at a time: the plan, the running bench, or the result.
 // It only reads the same jobs and records the agent uses. It never starts hardware by itself or changes a verdict.
 let flowOverride=null,flowHold=null,flowRun=null,flowRunId=null,flowStep=null,flowLastState=null,flowQueued=false;
-const RUN_PHASES=[['ready','Ready'],['installed','Installed'],['recorded','Recorded'],['reading','Read by Muse Spark'],['verdict','Verdict']];
-const RUN_TITLES={ready:'Checking the bench',installed:'Putting the firmware on the board',recorded:'Recording the board on camera',reading:'Muse Spark is reading the OLED',verdict:'Working out the verdict'};
+const RUN_PHASES=[['ready','Bench ready'],['installed','Firmware installed'],['recorded','Recorded on camera'],['reading','OLED read by Muse Spark'],['verdict','Verdict']];
 // Every finished test of the current firmware, newest first. The result screen shows the latest unless the person picks another.
 function testHistory(){const build=buildJob();return build?matchingJobs().filter(j=>j.action==='test'&&j.status!=='running'&&j.evidence_available&&j.request?.build_id===build.id):[];}
 function currentTest(){return testHistory()[0];}
@@ -87,7 +86,7 @@ function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-che
  const setup=activeExecution?.action==='test'?null:setupStage(),setupJob=setup?.job,setupSaved=!!setup?.until,samInUse=!!setup&&setupUsedSam(setupJob);
  if(setup&&!setupSaved&&active&&window.cameraSetupActivity?.note)phases[active[0]].note=window.cameraSetupActivity.note;
  const setupTitle=setup&&(samInUse?(setupSaved?'Camera set up with SAM 3.1':'Setting up the camera with SAM 3.1'):setupSaved?'Camera set up':'Setting up the camera');
- $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':fixing||repairing?$('autopilot-status').textContent||'Waiting for you':setupTitle||(active?RUN_TITLES[active[0]]:'Starting')+attempt;
+ $('flow-title').textContent=flowHold?flowHold:blocked?'Bench run · paused':fixing||repairing?$('autopilot-status').textContent||'Waiting for you':setupTitle||'Bench run'+attempt;
  flowPeak=Math.max(flowPeak,percent);$('run-bar').style.width=Math.max(flowPeak,2)+'%';$('run-view').classList.toggle('blocked',blocked||fixing);$('run-view').classList.toggle('fixing',fixing&&!blocked);$('run-ended').hidden=!flowHold;
  if (!$('run-phases').children.length) $('run-phases').replaceChildren(...RUN_PHASES.map(([id,name])=>{
   const li=node('li');li.dataset.phase=id;li.append(node('span',undefined,'phase-dot'));
@@ -193,8 +192,8 @@ function projectActivity(state) {
   if (autopilot?.cancelled || job?.cancel_requested) return activity(step, 'working', 'Stopping the bench run', 'Waiting for the current operation to finish cleanup.', 'Local runtime');
   if (flowHold) return activity(step, 'waiting', 'The run needs attention', flowHold, 'Your turn');
   if (autopilot?.waiting || !$('view-check').hidden || !$('fix-check').hidden) return activity(
-   !$('view-check').hidden ? 2 : step, 'waiting', 'Ready for your next move',
-   $('autopilot-status').textContent || 'Follow the check below to continue this run.', 'Your turn');
+   !$('view-check').hidden ? 2 : step, 'waiting', !$('view-check').hidden ? 'The camera view needs a fix' : !$('fix-check').hidden ? 'Fix the bench, then test again' : 'The agent is waiting for you',
+   !$('view-check').hidden ? 'The run is paused. Fix what the check found, then continue.' : !$('fix-check').hidden ? 'The run is paused until you have checked the bench.' : $('autopilot-status').textContent || 'Follow the check below to continue this run.', 'Your turn');
   if (job?.action === 'test' && job.stage === 'analysis') {
    const result = activity(3, 'working', 'Muse Spark is reading the OLED',
     'Each camera sample is read without the expected text, then compared with your plan.', 'Muse Spark', readingNote(job.reading_progress));
@@ -231,9 +230,9 @@ function projectActivity(state) {
    cancelled: ['idle', 'This test was cancelled', 'The retained evidence is available below. No completed verdict was reached.'],
    interrupted: ['waiting', 'This test was interrupted', 'Review the retained evidence before starting another run.']
   };
-  const [tone, title, note] = messages[job?.status] || ['waiting', 'Review the test result', 'Open the evidence for the recorded outcome.'];
+  const [tone, title] = messages[job?.status] || ['waiting', 'Review the test result', 'Open the evidence for the recorded outcome.'];
   const count = flowRunId === job?.id ? flowRun?.evaluated_sample_count : null;
-  return activity(4, tone, title, note, 'Local verifier', Number.isFinite(count) ? count+' samples checked' : 'Saved result');
+  return activity(4, tone, title, '', 'Local verifier', Number.isFinite(count) ? count+' samples checked' : 'Saved result');
  }
  if (plannerBusy || planUpdating || project?.busy) return activity(0, 'working',
   plannerBusy ? 'Muse Spark is planning the steps' : 'Muse Spark is working on your idea',
@@ -245,7 +244,7 @@ function projectActivity(state) {
  if (!$('project-error').hidden || !$('planner-error').hidden) return activity(0, 'waiting', 'Planning needs attention',
   !$('project-error').hidden ? $('project-error').textContent : $('planner-error').textContent, 'Your turn');
  return activity(0, 'waiting', project?.draft?.decision === 'clarify' ? 'Muse Spark has a question' : 'Let’s shape your build',
-  $('lifecycle-next').textContent || 'Describe the behavior you want, and Muse Spark will help plan it.', 'Your turn');
+  $('lifecycle-next').textContent.replace(/^Next:\s*(.)/, (_, c) => c.toUpperCase()) || 'Describe the behavior you want, and Muse Spark will help plan it.', 'Your turn');
 }
 function renderProjectProgress(state) {
  const panel = $('progress-panel'), progress = $('project-progress');
@@ -255,13 +254,12 @@ function renderProjectProgress(state) {
  panel.dataset.state = a.tone;
  $('guide-workspace').dataset.agentState = a.tone;
  $('run-view').dataset.activity = a.tone;
- $('progress-position').textContent = 'Stage '+(a.step+1)+' of 5';
  for (const [index, item] of Array.from(progress.children).entries()) {
   item.dataset.state = index < a.step ? 'done' : index === a.step ? 'current' : 'pending';
   if (index === a.step) item.setAttribute('aria-current', 'step');
   else item.removeAttribute('aria-current');
   item.querySelector('small').textContent = index < a.step ? 'Complete' : index === a.step
-   ? (window.cameraSetupActive&&working&&index===2?a.owner:{working:'In progress',waiting:'Needs your attention',done:'Verified on camera',bad:'Mismatch found',idle:'Stopped'}[a.tone])
+   ? (window.cameraSetupActive&&working&&index===2?a.owner:{working:'In progress',waiting:'Your turn',done:'Passed',bad:'Mismatch found',idle:'Stopped'}[a.tone])
    : ['Muse Spark','Your review','SAM + camera','Build + test','Camera evidence'][index];
   if (state === 'result' && index === 3) item.querySelector('small').textContent = a.tone === 'idle' ? 'Stopped' : 'Finished';
  }
@@ -272,20 +270,12 @@ function renderProjectProgress(state) {
  if ($('activity-title').textContent !== a.title) $('activity-title').textContent = a.title;
  $('activity-note').textContent = a.note;
  $('activity-owner').textContent = a.owner;
+ $('activity-owner').hidden = a.owner === label;
  $('activity-detail').textContent = a.detail;
  $('activity-detail').hidden = !a.detail;
  const meter = $('activity-meter');
  meter.hidden = !(working && a.reading?.total > 0);
  if (!meter.hidden) { meter.max = a.reading.total; meter.value = a.reading.done; }
- const events = state === 'running' && autopilot
-  ? Array.from($('autopilot-log').children).filter(li => !li.classList.contains('auto-plan')).slice(-3) : [];
- $('activity-recent').hidden = !events.length;
- // Keep existing DOM while a job is polled, so animation does not restart at every refresh.
- const eventKey = events.map(li => li.textContent).join('\n');
- if ($('activity-events').dataset.key !== eventKey) {
-  $('activity-events').dataset.key = eventKey;
-  $('activity-events').replaceChildren(...events.map(li => li.cloneNode(true)));
- }
 }
 function renderFlowNow(){flowQueued=false;if(typeof lifecycleSnapshot==='undefined'||typeof autopilot==='undefined')return;const state=flowState(),page=$('guide-workspace');page.dataset.flow=state;$('run-view').hidden=state!=='running';$('result-view').hidden=state!=='result';$('flow-details').hidden=!project;
  if(state!==flowLastState){flowLastState=state;if(!page.hidden)window.scrollTo({top:0});}
