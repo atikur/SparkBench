@@ -117,8 +117,14 @@
     </div>
     <p id="planner-error" class="error-line" role="alert" hidden></p>
     <div id="guide-next-step" class="next-step" hidden></div>
+    <form id="plan-edit-form" hidden>
+      <label for="plan-edit">What should change?</label>
+      <textarea id="plan-edit" rows="2" maxlength="3000" required placeholder="For example: say GO instead of START, or use green while counting and red at the end."></textarea>
+      <div class="actions wrap"><button class="primary-button" type="submit">Update the plan</button><button id="plan-edit-cancel" class="button" type="button">Cancel</button></div>
+    </form>
     <div class="actions wrap">
       <button id="approve-run" class="primary-button" type="button" hidden>Approve plan and run on the bench →</button>
+      <button id="plan-edit-open" class="button" type="button" hidden>Change something</button>
       <button id="accept-brief" class="primary-button" type="button" hidden>Accept and plan the steps →</button>
       <button id="project-firmware" class="button" type="button" hidden>Plan the steps →</button>
       <button id="review-plan" class="button" type="button" hidden>Mark reviewed</button>
@@ -323,9 +329,15 @@
   </form>
   <table id="dlg-table" class="plan-table" hidden><thead><tr><th>Step</th><th>Red</th><th>Green</th><th>OLED</th><th>Time</th></tr></thead><tbody id="dlg-steps"></tbody></table>
   <p id="dlg-usage" class="help"></p>
+  <form id="dlg-edit-form" hidden>
+    <label for="dlg-edit">What should change?</label>
+    <textarea id="dlg-edit" rows="2" maxlength="3000" required placeholder="For example: say GO instead of START, or use green while counting and red at the end."></textarea>
+    <div class="actions wrap"><button class="primary-button" type="submit">Update the plan</button><button id="dlg-edit-cancel" class="button" type="button">Cancel</button></div>
+  </form>
   <div class="actions wrap">
     <button id="dlg-approve" class="primary-button" type="button" hidden>Approve plan and run on the bench →</button>
-    <button id="dlg-open" class="button" type="button">Open the project</button>
+    <button id="dlg-edit-open" class="button" type="button" hidden>Change something</button>
+    <button id="dlg-open" class="link-button" type="button">Open the project</button>
   </div>
 </dialog>
 
