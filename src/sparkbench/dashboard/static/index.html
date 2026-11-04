@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap">
 <title>SparkBench</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/style.css">
@@ -18,7 +21,7 @@
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="/" aria-label="SparkBench home"><span class="brand-mark">S</span>SparkBench</a>
+  <a class="brand" href="/" aria-label="SparkBench home"><svg class="brand-mark" width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="13" fill="currentColor"></circle><path d="M15.5 5 9 15h5.5L13 23l6.5-10H14z" fill="var(--bg)"></path></svg>SparkBench</a>
   <nav class="tabs" aria-label="Main">
     <button id="tab-projects" class="tab" type="button" aria-pressed="true">Projects</button>
     <button id="tab-evidence" class="tab" type="button" aria-pressed="false">Evidence</button>
@@ -35,10 +38,10 @@
   <div class="hero hero-grid">
     <div class="hero-copy">
       <p class="eyebrow">Proof beyond the build</p>
-      <h1 class="hero-title">Describe it. Meta plans it.<br>The camera proves it.</h1>
-      <p class="lead">You describe it. Muse Spark plans it. The agent builds, installs and tests it. The camera proves what the board actually did. When it fails, Muse Spark explains why, you fix the bench, and the same run proves the fix.</p>
+      <h1 class="hero-title">Describe it.<br>Meta plans it.<br><em class="hero-em">The camera proves it.</em></h1>
+      <p class="lead">An AI that writes firmware can say "done". SparkBench makes it prove it: a phone watches the real board, and when something is wrong, Muse Spark tells you why and the same run proves your fix.</p>
       <form id="home-plan-form" class="home-plan">
-        <label for="home-idea" class="sr-only">What should the board do?</label>
+        <label for="home-idea" class="home-label">What should the board do?</label>
         <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
         <div class="actions wrap"><button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button></div>
         <div class="idea-chips" aria-label="Example ideas">
@@ -51,8 +54,7 @@
       </form>
     </div>
     <figure class="hero-bench" id="hero-bench">
-      <div class="hero-shot"><img id="hero-frame" alt="The bench as the phone sees it"><span id="hero-badge" class="hero-badge"></span></div>
-      <figcaption id="hero-caption" class="help">The bench as the phone sees it</figcaption>
+      <div class="hero-print"><div class="hero-shot"><img id="hero-frame" alt="The bench as the phone sees it"></div><figcaption id="hero-caption" class="hero-caption">The bench as the phone sees it</figcaption><span id="hero-badge" class="hero-badge"></span></div>
       <div class="hero-stats" id="hero-stats" aria-label="Recorded results"></div>
     </figure>
   </div>
@@ -65,7 +67,7 @@
     <li class="meta"><span class="loop-n">5</span><strong>Explain</strong><span>When it fails, Muse Spark says why from the frames</span></li>
     <li><span class="loop-n">6</span><strong>Fix</strong><span>You fix the bench; the same run re-tests and proves the fix</span></li>
   </ol>
-  <p class="loop-legend help"><span class="loop-n meta-dot" aria-hidden="true"></span>Muse Spark works in the blue steps. Trusted local code and the camera do the rest.</p>
+  <p class="loop-legend help"><span class="loop-n meta-dot" aria-hidden="true"></span> are where Muse Spark works. The rest is trusted local code and the camera.</p>
 
   <section class="home-section" aria-labelledby="projects-heading">
     <div class="section-head"><h2 id="projects-heading">Your projects</h2></div>

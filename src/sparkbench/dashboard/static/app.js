@@ -24,12 +24,12 @@ function frameState(f,r){let s='none',t='Not evaluated';if(f.evaluated){if(frame
 // The hero shows the bench as the phone saw it in the latest pass, with the counts from every kept run.
 async function renderHero(runs){const ok=runs.filter(r=>r.available),newest=list=>[...list].sort((a,b)=>String(b.recorded_at).localeCompare(String(a.recorded_at)))[0];
  const counts=[['pass','Verified on camera'],['fail','Faults caught'],['incomplete','Kept as incomplete']].map(([v,label])=>[v,label,ok.filter(r=>r.behavior_verdict===v).length]);
- $('hero-stats').replaceChildren(...counts.map(([v,label,n])=>{const d=node('div',undefined,'hero-stat '+v);d.append(node('strong',String(n)),node('span',label));return d;}));
+ $('hero-stats').replaceChildren(...counts.flatMap(([v,label,n],i)=>{const d=node('div',undefined,'hero-stat '+v);d.append(node('strong',String(n)),node('span',label));return i?[node('i',undefined,'hero-divider'),d]:[d];}));
  const latest=newest(ok.filter(r=>r.behavior_verdict==='pass'&&r.id.startsWith('test-')))||newest(ok.filter(r=>r.behavior_verdict==='pass'));
  const fallback=()=>{$('hero-frame').src='/api/camera/reference';$('hero-badge').textContent='';$('hero-caption').textContent='The bench as the phone sees it';};
  if(!latest){fallback();return;}
  try{const run=await api('/api/runs/'+encodeURIComponent(latest.id));const f=run.frames.find(x=>x.evaluated&&x.step===1&&!frameMismatch(x,run)&&!frameUnknown(x,run))||run.frames.find(x=>x.evaluated);if(!f)return fallback();
-  $('hero-frame').src=f.image_url;$('hero-badge').textContent='Verified on camera';$('hero-badge').dataset.state='pass';$('hero-caption').textContent=run.title+' · '+run.evaluated_sample_count+' samples matched the plan · '+date(run.recorded_at);
+  $('hero-frame').src=f.image_url;$('hero-badge').textContent='Verified on camera';$('hero-badge').dataset.state='pass';const when=new Date(run.recorded_at);$('hero-caption').textContent=run.title+' · '+(Number.isNaN(when.getTime())?'':when.toLocaleDateString(undefined,{day:'numeric',month:'short'})+', '+when.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
   const b=$('hero-bench');b.classList.add('clickable');b.onclick=()=>selectRun(run.id);}catch(e){fallback();}}
 async function renderProof(runs){const ok=runs.filter(r=>r.available),newest=list=>[...list].sort((a,b)=>String(b.recorded_at).localeCompare(String(a.recorded_at)))[0];const picks=[
  ['pass','Passed',newest(ok.filter(r=>r.behavior_verdict==='pass'&&r.id.startsWith('test-')))||ok.find(r=>r.behavior_verdict==='pass'),r=>[r.evaluated_sample_count,'samples matched the plan, with '+r.mismatch_count+' mismatches and '+r.unknown_count+' unknown']],
