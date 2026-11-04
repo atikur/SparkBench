@@ -590,3 +590,39 @@ button.step-chip[aria-pressed="true"] { outline: 2px solid var(--accent); outlin
 .run-view.fixing #fix-check .actions { grid-area: actions; margin: 0; }
 .run-view.fixing .fix-frame { grid-area: frame; max-width: none; }
 @media (max-width: 760px) { .run-view.fixing #fix-check { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "frame" "next" "actions"; } }
+
+/* Home: the bench on the right, the idea box on the left. */
+main { max-width: 1120px; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 44px; align-items: center; padding: 6px 0 2px; }
+.hero-title { font-size: 40px; }
+.hero .lead { max-width: none; font-size: 17px; }
+.home-plan { max-width: none; margin-top: 14px; }
+.home-plan .actions { align-items: center; gap: 14px; }
+.idea-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.idea-chip { font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--text); }
+.idea-chip:hover { border-color: var(--accent); color: var(--accent); }
+.hero-bench { margin: 0; display: grid; gap: 10px; }
+.hero-bench.clickable { cursor: pointer; }
+.hero-shot { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--soft); aspect-ratio: 16 / 10; }
+.hero-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-badge { position: absolute; top: 12px; left: 12px; font-size: 12px; font-weight: 700; padding: 6px 11px; border-radius: 999px; background: var(--panel); color: var(--text); box-shadow: 0 2px 10px rgba(0, 0, 0, .18); }
+.hero-badge:empty { display: none; }
+.hero-badge[data-state="pass"] { background: var(--pass-bg); color: var(--pass); }
+.hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.hero-stat { display: grid; gap: 3px; padding: 10px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); min-width: 0; }
+.hero-stat strong { font-size: 22px; line-height: 1; font-variant-numeric: tabular-nums; }
+.hero-stat span { font-size: 12px; color: var(--muted); }
+.hero-stat.pass strong { color: var(--pass); } .hero-stat.fail strong { color: var(--fail); } .hero-stat.incomplete strong { color: var(--warning); }
+/* How it works: one strip with a line through the numbers. */
+.loop { position: relative; gap: 0 10px; margin-top: 22px; }
+.loop::before { content: ""; position: absolute; left: 13px; right: calc(16.666% - 10px); top: 13px; height: 2px; background: var(--line); }
+.loop li, .loop li.meta { border: 0; background: none; padding: 0; min-width: 0; }
+.loop .loop-n { position: relative; z-index: 1; margin-bottom: 8px; box-shadow: 0 0 0 4px var(--bg); }
+.loop li strong { font-size: 14px; }
+.loop li > span:not(.loop-n) { font-size: 12.5px; }
+.loop-legend { margin: 8px 0 0; display: flex; align-items: center; gap: 8px; }
+.loop-legend .meta-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--meta-bg); border: 2px solid var(--meta); display: inline-block; }
+#project-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.saved-plan-button { padding: 14px 16px; }
+@media (max-width: 900px) { .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; } #project-list { grid-template-columns: minmax(0, 1fr); } .hero-title { font-size: 34px; } }
+.bench-note { margin-top: 12px; }

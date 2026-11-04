@@ -32,31 +32,46 @@
 
 <!-- Home -->
 <section id="projects-home" class="view" aria-label="Projects">
-  <div class="hero">
-    <p class="eyebrow">Proof beyond the build</p>
-    <h1 class="hero-title">Describe it. Meta plans it.<br>The camera proves it.</h1>
-    <p class="lead">You describe it. Muse Spark plans it. The agent builds, installs and tests it. The camera proves what the board actually did. When it fails, Muse Spark explains why, you fix the bench, and the same run proves the fix.</p>
-    <form id="home-plan-form" class="home-plan">
-      <label for="home-idea" class="sr-only">What should the board do?</label>
-      <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
-      <div class="actions wrap"><button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button></div>
-    </form>
+  <div class="hero hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Proof beyond the build</p>
+      <h1 class="hero-title">Describe it. Meta plans it.<br>The camera proves it.</h1>
+      <p class="lead">You describe it. Muse Spark plans it. The agent builds, installs and tests it. The camera proves what the board actually did. When it fails, Muse Spark explains why, you fix the bench, and the same run proves the fix.</p>
+      <form id="home-plan-form" class="home-plan">
+        <label for="home-idea" class="sr-only">What should the board do?</label>
+        <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
+        <div class="actions wrap"><button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button></div>
+        <div class="idea-chips" aria-label="Example ideas">
+          <span class="help">Try one:</span>
+          <button class="idea-chip" type="button" data-idea="A desk status light. Show READY with only the green LED, BUSY with only the red LED, then DONE with both LEDs off. Three seconds each.">Desk status light</button>
+          <button class="idea-chip" type="button" data-idea="Count down from 5 to GO on the OLED. Red LED on while counting, then green LED on and red off at GO. Three seconds per step.">Countdown to GO</button>
+          <button class="idea-chip" type="button" data-idea="A traffic light. Show STOP with the red LED, then WAIT with both LEDs on, then GO with only the green LED. Three seconds each.">Traffic light</button>
+        </div>
+        <p class="help bench-note">One supported bench: a classic ESP32, a red and a green LED, and a small OLED. Plans run up to 8 steps of 3 seconds.</p>
+      </form>
+    </div>
+    <figure class="hero-bench" id="hero-bench">
+      <div class="hero-shot"><img id="hero-frame" alt="The bench as the phone sees it"><span id="hero-badge" class="hero-badge"></span></div>
+      <figcaption id="hero-caption" class="help">The bench as the phone sees it</figcaption>
+      <div class="hero-stats" id="hero-stats" aria-label="Recorded results"></div>
+    </figure>
   </div>
+
+  <ol class="loop" aria-label="How it works">
+    <li><span class="loop-n">1</span><strong>Describe</strong><span>Your idea in plain words</span></li>
+    <li class="meta"><span class="loop-n">2</span><strong>Plan</strong><span>Muse Spark writes up to 8 steps; you approve them</span></li>
+    <li><span class="loop-n">3</span><strong>Run</strong><span>The agent builds, installs and tests, skipping what is already proven</span></li>
+    <li class="meta"><span class="loop-n">4</span><strong>Prove</strong><span>The camera watches the board; Muse Spark reads the display blind</span></li>
+    <li class="meta"><span class="loop-n">5</span><strong>Explain</strong><span>When it fails, Muse Spark says why from the frames</span></li>
+    <li><span class="loop-n">6</span><strong>Fix</strong><span>You fix the bench; the same run re-tests and proves the fix</span></li>
+  </ol>
+  <p class="loop-legend help"><span class="loop-n meta-dot" aria-hidden="true"></span>Muse Spark works in the blue steps. Trusted local code and the camera do the rest.</p>
 
   <section class="home-section" aria-labelledby="projects-heading">
     <div class="section-head"><h2 id="projects-heading">Your projects</h2></div>
     <nav id="project-list" class="card-list" aria-label="Saved projects"></nav>
     <button id="project-more" class="link-button" type="button" hidden></button>
   </section>
-
-  <ol class="loop" aria-label="How it works">
-    <li><span class="loop-n">1</span><strong>Describe</strong><span>Your idea in plain words</span></li>
-    <li class="meta"><span class="loop-n">2</span><strong>Plan</strong><span>Muse Spark writes up to 8 steps; you approve them</span><em class="meta-chip">Muse Spark</em></li>
-    <li><span class="loop-n">3</span><strong>Run</strong><span>The agent builds, installs and tests, skipping what is already proven</span></li>
-    <li class="meta"><span class="loop-n">4</span><strong>Prove</strong><span>The camera watches the board; Muse Spark reads the display without knowing the answer</span><em class="meta-chip">Muse Spark</em></li>
-    <li class="meta"><span class="loop-n">5</span><strong>Explain</strong><span>When it fails, Muse Spark says why from the frames and proposes one check</span><em class="meta-chip">Muse Spark</em></li>
-    <li><span class="loop-n">6</span><strong>Fix</strong><span>You fix the bench. The same run checks the camera again, re-tests, and proves the fix</span></li>
-  </ol>
 
   <section class="home-section" aria-labelledby="proof-heading">
     <div class="section-head"><h2 id="proof-heading">Proof from the bench</h2><button class="link-button" type="button" data-view="evidence">All runs →</button></div>
