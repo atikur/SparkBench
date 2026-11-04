@@ -37,25 +37,22 @@
 <section id="projects-home" class="view" aria-label="Projects">
   <div class="hero hero-grid">
     <div class="hero-copy">
-      <p class="eyebrow">Proof beyond the build</p>
-      <h1 class="hero-title">Describe it.<br>Meta plans it.<br><em class="hero-em">The camera proves it.</em></h1>
-      <p class="lead">An AI that writes firmware can say "done". SparkBench makes it prove it: a phone watches the real board, and when something is wrong, Muse Spark tells you why and the same run proves your fix.</p>
+      <h1 class="hero-title">Describe it. Meta plans it.<br><em class="hero-em">The camera proves it.</em></h1>
+      <p class="lead">A phone watches the real board. When something is wrong, Muse Spark says why, and the same run proves your fix.</p>
       <form id="home-plan-form" class="home-plan">
-        <label for="home-idea" class="home-label">What should the board do?</label>
+        <label for="home-idea" class="sr-only">What should the board do?</label>
         <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
         <div class="actions wrap"><button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button></div>
         <div class="idea-chips" aria-label="Example ideas">
-          <span class="help">Try one:</span>
+          <span class="help">Try:</span>
           <button class="idea-chip" type="button" data-idea="A desk status light. Show READY with only the green LED, BUSY with only the red LED, then DONE with both LEDs off. Three seconds each.">Desk status light</button>
           <button class="idea-chip" type="button" data-idea="Count down from 5 to GO on the OLED. Red LED on while counting, then green LED on and red off at GO. Three seconds per step.">Countdown to GO</button>
           <button class="idea-chip" type="button" data-idea="A traffic light. Show STOP with the red LED, then WAIT with both LEDs on, then GO with only the green LED. Three seconds each.">Traffic light</button>
         </div>
-        <p class="help bench-note">One supported bench: a classic ESP32, a red and a green LED, and a small OLED. Plans run up to 8 steps of 3 seconds.</p>
       </form>
     </div>
     <figure class="hero-bench" id="hero-bench">
       <div class="hero-print"><div class="hero-shot"><img id="hero-frame" alt="The bench as the phone sees it"></div><figcaption id="hero-caption" class="hero-caption">The bench as the phone sees it</figcaption><span id="hero-badge" class="hero-badge"></span></div>
-      <div class="hero-stats" id="hero-stats" aria-label="Recorded results"></div>
     </figure>
   </div>
 
@@ -76,7 +73,7 @@
   </section>
 
   <section class="home-section" aria-labelledby="proof-heading">
-    <div class="section-head"><h2 id="proof-heading">Proof from the bench</h2><button class="link-button" type="button" data-view="evidence">All runs →</button></div>
+    <div class="section-head"><h2 id="proof-heading">Proof from the bench</h2><div class="hero-stats" id="hero-stats" aria-label="Recorded results"></div><button class="link-button" type="button" data-view="evidence">All runs →</button></div>
     <div id="proof-cards" class="proof-cards"></div>
   </section>
 

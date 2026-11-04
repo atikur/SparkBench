@@ -730,3 +730,24 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 .loop-legend::before { content: "Orange numbers"; color: var(--accent); font-weight: 700; margin-right: 4px; }
 .loop { border-top: 2px solid var(--ink); padding-top: 18px; }
 @media (max-width: 900px) { .hero-print { transform: none; } }
+
+/* Calmer hero: headline, one sentence, the box, the photo. */
+.hero-grid { align-items: center; gap: 56px; }
+.hero-title { font-size: 46px; }
+.hero .lead { font-size: 17px; max-width: 480px; margin-bottom: 4px; }
+.home-plan { margin-top: 8px; }
+.home-plan textarea { box-shadow: none; border-width: 1.5px; }
+.home-plan textarea:focus { outline: none; border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.idea-chips { margin-top: 10px; gap: 4px 14px; }
+.idea-chip { border: 0; padding: 0; background: none; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; font-size: 13px; border-radius: 0; }
+.idea-chip:hover { background: none; color: var(--text); }
+.hero-print { padding: 10px 10px 36px; }
+.hero-caption { font-size: 13px; }
+.hero-badge { font-size: 12px; letter-spacing: 1.5px; border-width: 2.5px; right: 18px; bottom: 20px; }
+.section-head .hero-stats { margin: 0 auto 0 24px; gap: 18px; align-items: baseline; }
+.section-head .hero-stat { display: inline-flex; gap: 6px; align-items: baseline; }
+.section-head .hero-stat strong { font-size: 20px; }
+.section-head .hero-divider { display: none; }
+@media (max-width: 900px) { .section-head .hero-stats { display: none; } }
+.hero-title { font-size: 40px; }
+.hero-grid { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); }
