@@ -76,5 +76,7 @@ def _transcribe(audio, config, settings, post, requests, record):
     if not isinstance(transcript, str) or not transcript.strip():
         record["error"] = "no_speech"
         raise VoiceServiceError("No speech was transcribed. Try again or type your idea.")
-    record.update(status="transcribed", transcript=transcript.strip())
-    return {"transcript": transcript.strip(), "model": VOICE_MODEL}
+    # The service sometimes ends a sentence with an ideographic full stop; keep the text as typed English.
+    text = " ".join(transcript.replace("\u3002", ".").replace("\uff0c", ",").split())
+    record.update(status="transcribed", transcript=text)
+    return {"transcript": text, "model": VOICE_MODEL}

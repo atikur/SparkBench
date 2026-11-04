@@ -39,6 +39,9 @@ class IdeaVoiceTests(unittest.TestCase):
                 transcribe_idea(audio, config=Config("fixture"), post=post)
         post.assert_not_called()
 
+    def test_ideographic_punctuation_and_spacing_are_normalised(self):
+        post=Mock(return_value=Mock(status_code=200,json=Mock(return_value={"transcript":"  READY in green\u3002  BUSY\uff0c then DONE\u3002 "})))
+        self.assertEqual(transcribe_idea(recording(),config=Config("k","muse-spark-1.3-contributor"),post=post)["transcript"],"READY in green. BUSY, then DONE.")
     def test_request_record_is_written_without_the_audio(self):
         import tempfile
         from pathlib import Path
