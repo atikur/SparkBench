@@ -1,9 +1,10 @@
 # Guided camera setup
 
 Camera setup is part of the bench agent's pre-test flow. On an existing valid
-reference, the agent performs its normal readiness check and continues. When
-that check finds unsupported geometry before a plan has been tested, the agent
-opens guided setup once. **Set up camera regions** on a ready plan also opens it.
+reference, the agent performs its normal readiness check and continues. Whenever
+that check finds the view no longer matches, the agent sets the camera up again
+by itself, before the first test or between attempts, and only a repair keeps its
+parent's reference. **Set up camera regions** on a ready plan also runs it.
 
 1. Select the iPhone. The agent takes a five-second camera-only capture and
    asks SAM 3.1 to find the screen. It aligns the frame with the commissioned
