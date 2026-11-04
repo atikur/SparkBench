@@ -20,6 +20,7 @@
 <script defer src="/mapping-repair.js"></script>
 <script defer src="/flow.js"></script>
 <script defer src="/camera-regions.js"></script>
+<script defer src="/idea-voice.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -44,7 +45,13 @@
       <form id="home-plan-form" class="home-plan">
         <label for="home-idea" class="sr-only">What should the board do?</label>
         <textarea id="home-idea" rows="2" maxlength="2000" required placeholder="A desk light that shows READY in green, BUSY in red, then DONE with both off. Three seconds each."></textarea>
-        <div class="actions wrap"><button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button></div>
+        <div class="actions wrap">
+          <button id="home-plan" class="primary-button large" type="submit">Plan it with Muse Spark</button>
+          <button id="idea-voice" class="button" type="button" aria-describedby="idea-voice-help" hidden>Record idea</button>
+          <button id="idea-voice-cancel" class="link-button" type="button" hidden>Discard recording</button>
+        </div>
+        <p id="idea-voice-help" class="help" hidden>Muse Voice turns a short recording into editable text.</p>
+        <p id="idea-voice-status" class="help" role="status" hidden></p>
         <div class="idea-chips" aria-label="Example ideas">
           <span class="help">Try:</span>
           <button class="idea-chip" type="button" data-idea="A desk status light. Show READY with only the green LED, BUSY with only the red LED, then DONE with both LEDs off. Three seconds each.">Desk status light</button>

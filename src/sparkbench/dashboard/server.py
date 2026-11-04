@@ -16,6 +16,7 @@ from .projects import ProjectService
 from ..guide import CATALOG, ASSEMBLY
 from ..meta import configuration
 from ..sam_regions import propose_regions
+from ..voice import MAX_VOICE_BYTES, VoiceServiceError, transcribe_idea
 
 STATIC = Path(__file__).with_name("static")
 ASSETS = {"/": "index.html", "/app.js": "app.js", "/planning.js": "planning.js", "/execution.js":"execution.js", "/style.css": "style.css", "/favicon.svg": "favicon.svg"}
@@ -27,6 +28,8 @@ ASSETS['/flow.js']='flow.js'
 ASSETS['/autopilot.js']='autopilot.js'
 ASSETS['/mapping-repair.js']='mapping-repair.js'
 ASSETS['/camera-regions.js']='camera-regions.js'
+ASSETS['/idea-voice.js']='idea-voice.js'
+ASSETS['/idea-recorder.js']='idea-recorder.js'
 
 
 class DashboardServer(ThreadingHTTPServer):
@@ -161,11 +164,21 @@ class Handler(BaseHTTPRequestHandler):
         repair_approval=re.fullmatch(r'/api/repairs/([0-9a-f]{32})/approve',path)
         camera_confirmation=re.fullmatch(r'/api/camera/setup/([0-9a-f]{32})/confirm',path)
         camera_suggestion=re.fullmatch(r'/api/camera/setup/([0-9a-f]{32})/regions',path)
-        if path not in ("/api/plans",'/api/projects','/api/guide/photo','/api/camera/check','/api/camera/regions','/api/camera/setup','/api/repairs') and not review and not operation and not cancellation and not project_action and not explain and not repair_approval and not camera_confirmation and not camera_suggestion:
+        if path not in ("/api/plans",'/api/projects','/api/guide/photo','/api/camera/check','/api/camera/regions','/api/camera/setup','/api/repairs','/api/idea/transcribe') and not review and not operation and not cancellation and not project_action and not explain and not repair_approval and not camera_confirmation and not camera_suggestion:
             self.method_rejected();return
         if not self.local_request(mutation=True): return
         try:
             length = int(self.headers.get("Content-Length", "0"))
+            if path == '/api/idea/transcribe':
+                if not 1 <= length <= MAX_VOICE_BYTES:
+                    self.json(413, {"error": "Record an idea of up to 30 seconds."});return
+                if self.headers.get("Content-Type", "").split(";")[0] != "audio/wav":
+                    self.json(415, {"error": "WAV audio required"});return
+                self.connection.settimeout(10)
+                audio = self.rfile.read(length)
+                if len(audio) != length:
+                    raise ValueError("The audio upload was incomplete.")
+                self.json(200, transcribe_idea(audio));return
             maximum = 16384
             if project_action and project_action[2] == 'ask':
                 maximum = 25_000_000
@@ -228,6 +241,8 @@ class Handler(BaseHTTPRequestHandler):
             self.json(404, {"error": "Unknown proposal or run"})
         except EvidenceError as exc:
             self.json(409, {"error": str(exc)})
+        except VoiceServiceError as exc:
+            self.json(502, {"error": str(exc)})
         except (ValueError, TypeError) as exc:
             self.json(400, {"error": str(exc)[:300]})
         except OSError:

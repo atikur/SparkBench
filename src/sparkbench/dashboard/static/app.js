@@ -1,7 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const views={projects:'projects-home',project:'guide-workspace',evidence:'evidence-home',run:'workspace'};
-function showView(name){for(const [key,id] of Object.entries(views))$(id).hidden=key!==name;$('tab-projects').setAttribute('aria-pressed',String(['projects','project'].includes(name)));$('tab-evidence').setAttribute('aria-pressed',String(['evidence','run'].includes(name)));$('notice').hidden=true;$('error').hidden=true;window.scrollTo(0,0);}
+function showView(name){if(name!=='projects')window.cancelIdeaVoice?.();for(const [key,id] of Object.entries(views))$(id).hidden=key!==name;$('tab-projects').setAttribute('aria-pressed',String(['projects','project'].includes(name)));$('tab-evidence').setAttribute('aria-pressed',String(['evidence','run'].includes(name)));$('notice').hidden=true;$('error').hidden=true;window.scrollTo(0,0);}
 let current = null, selected = 0, visibleFrames = [], selectionVersion = 0, imageVersion = 0, imageURL = null;
 const verdicts = {pass:'Behavior passed',fail:'Behavior mismatch',incomplete:'Incomplete',unavailable:'Unavailable'};
 // Plain-language result shared by the run page, the plan page and the home proof cards.
