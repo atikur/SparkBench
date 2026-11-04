@@ -215,6 +215,7 @@
             <div class="stage-oled"><span id="stage-oled-text"></span></div>
             <div class="stage-leds"><span><i id="stage-led-red" class="stage-led red"></i>Red</span><span><i id="stage-led-green" class="stage-led green"></i>Green</span></div>
           </div>
+          <div id="stage-boxes" class="stage-boxes" aria-hidden="true" hidden></div>
           <i class="stage-scan" aria-hidden="true"></i>
           <i class="stage-corner tl" aria-hidden="true"></i><i class="stage-corner tr" aria-hidden="true"></i><i class="stage-corner bl" aria-hidden="true"></i><i class="stage-corner br" aria-hidden="true"></i>
           <span class="stage-tag"><i aria-hidden="true"></i><span id="stage-tag-text"></span></span>
@@ -258,6 +259,7 @@
       <figure class="run-frame"><img id="result-frame" alt="Recorded frame for this step"><figcaption id="result-frame-label" class="help"></figcaption></figure>
       <div id="result-step" class="result-step"></div>
     </div>
+    <p id="result-sam" class="result-sam" hidden></p>
     <div id="result-explain" class="result-explain" hidden></div>
     <p id="result-error" class="error-line" role="alert" hidden></p>
     <div class="actions wrap"><button id="result-again" class="primary-button" type="button">Run again</button><button id="result-change" class="button" type="button">Change the plan</button><button id="result-explain-run" class="button" type="button" hidden>Explain with Muse Spark</button><button id="result-evidence" class="button" type="button">Open full evidence</button></div>

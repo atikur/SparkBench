@@ -949,3 +949,20 @@ dialog { border-radius: 6px; border: 2px solid var(--ink); }
 .step-chip .led { width: 9px; height: 9px; border-width: 1.5px; }
 .step-chip[data-preview]:not([data-state="now"]) { border-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .stage-swap, .stage-scan, .run-stage .stage-tag > i { animation: none !important; } }
+
+/* SAM 3.1 on the stage: its real boxes on the frame they came from */
+.stage-boxes { position: absolute; inset: 0; pointer-events: none; }
+.stage-boxes[hidden] { display: none; }
+.stage-boxes svg { display: block; width: 100%; height: 100%; }
+.stage-boxes rect { fill: color-mix(in srgb, currentColor 16%, transparent); stroke: currentColor; stroke-width: 2px; vector-effect: non-scaling-stroke; stroke-dasharray: 1; animation: stage-box 0.7s ease-out; }
+.stage-boxes g.local rect { stroke-dasharray: 5 4; fill: none; animation: none; }
+.stage-boxes text { fill: currentColor; font-weight: 700; paint-order: stroke; stroke: #1C1A17; stroke-width: 3px; vector-effect: non-scaling-stroke; }
+@keyframes stage-box { from { stroke-dashoffset: 1; fill-opacity: 0; } to { stroke-dashoffset: 0; fill-opacity: 1; } }
+.run-stage[data-mode^="sam"] .stage-tag { background: #E8632B; color: #fff; }
+.run-stage[data-mode^="sam"] .stage-tag > i { background: #fff; border-color: #fff; }
+.run-stage[data-mode="sam-working"] .stage-scan { display: block; animation-duration: 1.4s; }
+.phases strong[data-model]::after { content: attr(data-model); margin-left: 8px; padding: 1px 6px; border-radius: 3px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .4px; vertical-align: 1px; white-space: nowrap; }
+.result-sam { margin: 0; font-size: 13px; color: var(--muted); }
+.result-sam[hidden] { display: none; }
+.result-sam strong { margin-right: 2px; color: var(--accent); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .stage-boxes rect { animation: none !important; } }

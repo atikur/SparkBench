@@ -163,7 +163,7 @@ class CameraSetupMixin:
                     source = output / row['file']
                     last = {'source': source, 'row': row, 'regions': {}, 'sources': {}, 'suggestion': None}
                     self._set(job_id, stage='suggesting', image_sha256=digest(source), source_file=source.name, source_path=str(source.relative_to(self._folder(job_id) / 'workflow')),
-                              image_width=row['width'], image_height=row['height'], led_radii=radii,
+                              image_width=row['width'], image_height=row['height'], led_radii=radii, proposed_regions=None,
                               meta_requests=job['meta_requests'] + 1)
                     screen = None
                     try:
@@ -173,6 +173,8 @@ class CameraSetupMixin:
                         if suggestion['image_sha256'] != digest(source):
                             raise ValueError('SAM result belongs to another photo')
                         screen = suggestion['regions'].get('oled')
+                        # Display only: lets the page draw SAM's output as it arrives. The validation capture decides.
+                        self._set(job_id, proposed_regions=dict(suggestion['regions']))
                         last.update(regions=dict(suggestion['regions']), sources={n: suggestion['model'] for n in suggestion['regions']}, suggestion=suggestion)
                         save(self._folder(job_id) / ('screen-suggestion-' + source.stem + '.json'), suggestion)
                     except ValueError as exc:
@@ -200,6 +202,7 @@ class CameraSetupMixin:
                     raise ValueError('SAM lens result belongs to another photo')
                 save(self._folder(job_id) / 'sam-auto-lenses.json', led)
                 boxes = {'oled': screen, **led['regions']} if screen else dict(led['regions'])
+                self._set(job_id, proposed_regions=boxes)
                 check_regions({**boxes, 'oled': boxes.get('oled') or self._box_around(corners, row)}, corners, points, radii)
             except ValueError as exc:
                 agreement = False; lens_note = str(exc)

@@ -232,12 +232,14 @@
    if (current.cancelled) { await cancelJob(current); return null; }
    const job = await api('/api/jobs/' + current.jobId);
    if (review !== current) return null;
+   // The bench run card draws this job's frame and SAM's boxes while the agent sets up the camera.
+   window.samStageJob = ['running', 'setup_ready'].includes(job.status) ? {job, until: null} : null;
    if (job.status !== 'running') return job;
    status(job.stage === 'capture' ? (job.setup_attempt > 1 ? 'Taking a second capture…' : 'Capturing a fresh iPhone reference…') :
     job.stage === 'validating' || job.stage === 'validation' ? 'Validating on a separate capture…' :
     job.stage === 'aligning' ? 'Matching the calibrated bench landmarks…' :
     job.stage === 'locating' ? 'Finding the LED lenses and lit screen border in this frame…' :
-    'Checking component regions with SAM…',
+    'SAM 3.1 is outlining the OLED and both LED lenses…',
     job.stage === 'capture' ? 'iPhone camera' :
     ['validation', 'validating'].includes(job.stage) ? 'Camera + Muse Spark' :
     ['aligning', 'locating'].includes(job.stage) ? 'Local vision' : 'SAM 3.1');
@@ -245,6 +247,8 @@
  }
  function finishSetup(current) {
   current.complete = true;
+  // Stays on the stage a few seconds after the agent moves on: display only, nothing waits for it.
+  if (window.samStageJob) window.samStageJob.until = Date.now() + 5000;
   (window.cameraSetupSavedPlans ||= new Set()).add(current.proposalId);
   closeReview();
  }
@@ -314,6 +318,7 @@
   if (!current) return;
   panel.hidden = true;
   current.cancelled = !current.complete;
+  if (!current.complete) window.samStageJob = null;
   if (current.guided && !current.complete) cancelJob(current);
   current.bitmap?.close(); current.resolve?.(Boolean(current.complete));
   window.cameraSetupActive = false;

@@ -4,6 +4,7 @@ These tests exercise persistence, ownership and HTTP boundaries. They provide no
 physical calibration evidence and never access a real camera, board or model.
 """
 import base64
+import copy
 import hashlib
 import http.client
 import json
@@ -193,6 +194,22 @@ class CameraSetupFlowTests(CameraSetupFixture):
         record = json.loads((policy.parent / "review.json").read_text())
         self.assertEqual(record["selection_method"], "registered_and_sam_checked")
         self.runner.assert_not_called()
+
+    def test_sam_boxes_are_published_as_each_call_returns(self):
+        self.automatic_fixture()
+        sam = self.sam.side_effect
+        seen = []
+        def spying(body):
+            seen.append(copy.deepcopy(next(iter(self.service.jobs.values())).get("proposed_regions")))
+            return sam(body)
+        self.sam.side_effect = spying
+        job = self.wait(self.service.start_camera_setup(self.body()))
+        self.assertEqual(job["status"], "setup_ready", job)
+        self.assertIsNone(seen[0])
+        self.assertEqual(set(seen[1]), {"oled"})
+        self.assertEqual(set(job["proposed_regions"]), {"oled", "red", "green"})
+        self.assertEqual(job["latest_frame"]["file"], job["source_file"])
+        self.assertTrue(self.service.image(job["id"], job["source_file"]).startswith(b"\xff\xd8\xff"))
 
     def test_changed_view_uses_current_frame_before_asking_for_manual_setup(self):
         self.automatic_fixture()

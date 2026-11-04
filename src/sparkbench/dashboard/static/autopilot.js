@@ -85,10 +85,10 @@ async function checkViewUntilClear(){for(;;){if(await checkView()){if(autopilot)
   if(canSetup){
    autopilot.setupAttempted=true;autopilot.waiting=true;$('view-check').hidden=true;
    setStage('view','running','Locating the LEDs and OLED, then checking a fresh capture');
-   setAutoState('Setting up the camera…','busy');autoLog('do','Camera setup: trying automatic region alignment and an independent camera check.');window.renderFlow?.();
+   setAutoState('Setting up the camera…','busy');autoLog('do','Camera setup: SAM 3.1 outlines the parts, then a separate capture checks the result.');window.renderFlow?.();
    let ready;try{ready=await window.setupCameraForAgent(executionPlan.id,$('execution-camera').value);}finally{if(autopilot)autopilot.waiting=false;window.renderFlow?.();}
    if(!ready||autopilot?.cancelled)throw new Error('Stopped');
-   autoLog('ok','Camera reference checked on a separate capture and saved for this plan.');setAutoState('Checking the saved camera reference…','busy');continue;
+   const samParts=Object.values(window.samStageJob?.job?.sources||{}).filter(s=>s==='sam-3.1').length;autoLog('ok',(samParts?'SAM 3.1 outlined '+samParts+' of 3 parts. ':'')+'Camera reference checked on a separate capture and saved for this plan.');setAutoState('Checking the saved camera reference…','busy');continue;
   }
   if(!await waitForPerson('Waiting for you: fix the camera view'))throw new Error('Stopped');setAutoState('Checking the camera…','busy');}}
 // The fix panel: what Muse Spark saw, the frame that shows it, and one button to carry on.

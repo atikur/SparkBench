@@ -415,6 +415,9 @@ class ExecutionService(CameraSetupMixin, MappingRepairMixin):
             rows=frame_rows(capture)
             if rows and re.fullmatch(r"frame-\d{6}\.jpg",rows[-1].get("file","")):
                 row=rows[-1];result["latest_frame"]={"file":row["file"],"url":f"/api/jobs/{job_id}/frames/{row['file']}","live":result.get("stage") in ('capture','probe') and result.get("status")=="running"}
+        # Camera setup draws its regions on the frame they came from, which a second capture may have replaced.
+        if result.get("action")=="camera_setup" and result.get("source_file") and result.get("stage")!="capture":
+            result["latest_frame"]={"file":result["source_file"],"url":f"/api/jobs/{job_id}/frames/{result['source_file']}","live":False}
         if result.get("action")=="test" and result.get("status")=="running" and result.get("stage")=="capture":
             step=self._capture_step(job_id)
             if step:result["capture_step"]=step
@@ -477,6 +480,8 @@ class ExecutionService(CameraSetupMixin, MappingRepairMixin):
         job=self.get(job_id)
         if not re.fullmatch(r"frame-\d{6}\.jpg",name):raise KeyError("Unknown frame")
         file=self._folder(job_id)/('repair' if job.get('action')=='mapping_repair' else 'workflow')/"capture/camera"/name
+        if job.get('action')=='camera_setup' and job.get('source_file')==name and job.get('source_path'):
+            file=self._folder(job_id)/'workflow'/job['source_path']
         if file.is_symlink() or not file.is_file():raise KeyError("Frame unavailable")
         data=file.read_bytes()
         if not data.startswith(b'\xff\xd8\xff'):raise ValueError("Unsupported image")

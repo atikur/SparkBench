@@ -13,6 +13,8 @@ parent's reference. **Set up camera regions** on a ready plan also runs it.
    If alignment fails, it looks for one lens of each color and the lit OLED
    border directly in the new frame. SAM outlines both lenses using the
    detected points. The geometry must agree with those outlines and the screen box.
+   The bench run card shows the frame with these boxes as each call returns. Solid boxes came from
+   SAM and dashed boxes from local vision. They are display only.
 3. The existing verifier checks a separate capture for stable geometry, border
    support and idle/off LED readings. Muse Spark reads the OLED without expected
    text. Only a successful check saves the reference and resumes the agent.

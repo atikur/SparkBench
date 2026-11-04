@@ -59,13 +59,35 @@ function paintStagePreview(){const steps=planSteps();if(!steps.length)return;con
  if(text.textContent!==step.text){text.textContent=step.text;text.parentNode.dataset.size=step.text.length<=6?'large':step.text.length<=12?'medium':'small';text.classList.remove('stage-swap');void text.offsetWidth;text.classList.add('stage-swap');}
  $('stage-led-red').classList.toggle('on',!!step.red);$('stage-led-green').classList.toggle('on',!!step.green);
  if(!$('stage-preview').hidden){$('stage-count').textContent='Step '+(stageStep%steps.length+1)+' of '+steps.length;for(const [i,chip] of Array.from($('run-strip').children).entries()){if(i===stageStep%steps.length)chip.dataset.preview='';else delete chip.dataset.preview;}}}
+// Camera setup on the stage. The boxes are the job's own regions, drawn on the frame they came from.
+const STAGE_PART_COLORS={oled:'#5EEAD4',red:'#FB7185',green:'#86EFAC'},STAGE_PART_NAMES={oled:'OLED',red:'Red LED',green:'Green LED'};
+function setupStage(){const s=window.samStageJob;if(!s)return null;if(s.until&&Date.now()>s.until){window.samStageJob=null;return null;}return s;}
+const setupRegions=job=>job?.regions||job?.proposed_regions||{};
+const setupUsedSam=job=>!job?.sources||Object.values(job.sources).includes('sam-3.1');
+function paintStageBoxes(job){const wrap=$('stage-boxes'),ns='http://www.w3.org/2000/svg';let svg=wrap.firstElementChild;wrap.hidden=!job;if(!job)return;
+ if(!svg){svg=document.createElementNS(ns,'svg');svg.setAttribute('preserveAspectRatio','xMidYMid slice');wrap.append(svg);}
+ const width=job.image_width||1920,height=job.image_height||1080,regions=setupRegions(job),scale=width/1920;
+ svg.setAttribute('viewBox','0 0 '+width+' '+height);
+ for(const old of Array.from(svg.children))if(!regions[old.dataset.part])old.remove();
+ for(const [part,box] of Object.entries(regions)){if(!Array.isArray(box)||box.length!==4)continue;
+  const key=box.join(','),local=job.sources?.[part]==='local-vision';let g=Array.from(svg.children).find(x=>x.dataset.part===part);
+  if(g?.dataset.box!==key){g?.remove();g=document.createElementNS(ns,'g');g.dataset.part=part;g.dataset.box=key;g.style.color=STAGE_PART_COLORS[part]||'#fff';
+   const rect=document.createElementNS(ns,'rect'),label=document.createElementNS(ns,'text'),[x0,y0,x1,y1]=box;
+   for(const [k,v] of Object.entries({x:x0,y:y0,width:x1-x0,height:y1-y0,pathLength:1,rx:4*scale}))rect.setAttribute(k,v);
+   const right=x0>width*.7;label.textContent=STAGE_PART_NAMES[part]||part;label.setAttribute('x',right?x1:x0);label.setAttribute('y',y0>70*scale?y0-14*scale:y1+40*scale);label.setAttribute('text-anchor',right?'end':'start');label.setAttribute('font-size',42*scale);
+   g.append(rect,label);svg.append(g);}
+  g.classList.toggle('local',local);}}
 function paintRunClock(){const s=Math.max(0,Math.floor((Date.now()-runClock)/1000));$('run-elapsed').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function stageTick(){stageTimer=null;if($('run-view').hidden||$('guide-workspace').hidden||flowHold)return;paintRunClock();
+ if(window.samStageJob?.until&&Date.now()>window.samStageJob.until)window.renderFlow();
  if(!$('stage-preview').hidden&&!stageStill()&&++stageTicks%3===0){stageStep++;paintStagePreview();}
  stageTimer=setTimeout(stageTick,1000);}
 function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-check').hidden,repairing=activeExecution?.action==='mapping_repair'||!!(typeof mappingRepair!=='undefined'&&mappingRepair.waiter),fixing=!$('fix-check').hidden;let active=RUN_PHASES.find(([id])=>phases[id].state==='running')||RUN_PHASES.find(([id])=>phases[id].state==='stopped');
  const attempt=autopilot?.attempt>1?' · attempt '+autopilot.attempt:'';
- $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':fixing||repairing?$('autopilot-status').textContent||'Waiting for you':(active?RUN_TITLES[active[0]]:'Starting')+attempt;
+ const setup=activeExecution?.action==='test'?null:setupStage(),setupJob=setup?.job,setupSaved=!!setup?.until,samInUse=!!setup&&setupUsedSam(setupJob);
+ if(setup&&!setupSaved&&active&&window.cameraSetupActivity?.note)phases[active[0]].note=window.cameraSetupActivity.note;
+ const setupTitle=setup&&(samInUse?(setupSaved?'Camera set up with SAM 3.1':'Setting up the camera with SAM 3.1'):setupSaved?'Camera set up':'Setting up the camera');
+ $('flow-title').textContent=flowHold?flowHold:blocked?'Waiting for you: fix the camera view':fixing||repairing?$('autopilot-status').textContent||'Waiting for you':setupTitle||(active?RUN_TITLES[active[0]]:'Starting')+attempt;
  flowPeak=Math.max(flowPeak,percent);$('run-bar').style.width=Math.max(flowPeak,2)+'%';$('run-view').classList.toggle('blocked',blocked||fixing);$('run-view').classList.toggle('fixing',fixing&&!blocked);$('run-ended').hidden=!flowHold;
  if (!$('run-phases').children.length) $('run-phases').replaceChildren(...RUN_PHASES.map(([id,name])=>{
   const li=node('li');li.dataset.phase=id;li.append(node('span',undefined,'phase-dot'));
@@ -73,27 +95,35 @@ function renderRunView(){const {phases,percent}=runPhases(),blocked=!$('view-che
  }));
  for (const li of $('run-phases').children) {
   const p=phases[li.dataset.phase];li.dataset.state=p.state;
+  const heading=li.querySelector('strong');if(samInUse&&li.dataset.phase===active?.[0])heading.dataset.model='SAM 3.1';else delete heading.dataset.model;
   const note=li.querySelector('.help');note.textContent=p.note;note.hidden=!p.note;
  }
  const job=activeExecution?.action==='test'?activeExecution:null,progress=job?.stage==='analysis'?job.reading_progress:null,steps=planSteps();
  const checking=!!autopilot&&!flowHold&&stageState('view')==='running';
  const checkFrame=checking&&lastViewCheck?.status==='running'&&lastViewCheck.proposal_id===executionPlan.id?lastViewCheck.latest_frame:null;
- const frame=job?.latest_frame||checkFrame;
+ const frame=(setup&&setupJob?.latest_frame)||job?.latest_frame||checkFrame;
  const preview=$('run-camera-preview'),img=$('run-frame');
  preview.hidden=blocked||fixing||repairing||!!flowHold;
  img.hidden=preview.hidden||!frame;
  const previewing=!preview.hidden&&!frame&&steps.length>0,capturing=!!job&&!progress;
  $('stage-preview').hidden=!previewing;
- preview.dataset.mode=frame?(progress?'reading':capturing?'recording':'checking'):'plan';
- $('stage-tag-text').textContent=frame?(progress?'Muse Spark reading':capturing?(frame.live?'Live · recording':'Recording'):'Camera check'):'Plan preview';
- const count=$('stage-count');count.hidden=!previewing&&!(frame&&(progress||(capturing&&job.capture_step)));
- if(frame)count.textContent=progress?readingNote(progress):capturing&&job.capture_step?'Step '+job.capture_step+' of '+steps.length:'';
+ const setupOnStage=!!setup&&!!frame,setupStep=setupJob?.stage,samWorking=setupOnStage&&!setupSaved&&setupStep==='suggesting',haveBoxes=setupOnStage&&Object.keys(setupRegions(setupJob)).length>0;
+ paintStageBoxes(setupOnStage?setupJob:null);
+ preview.dataset.mode=setupOnStage?(setupStep==='capture'&&!setupSaved?'checking':samWorking?'sam-working':samInUse?'sam':'checking'):frame?(progress?'reading':capturing?'recording':'checking'):'plan';
+ $('stage-tag-text').textContent=setupOnStage
+  ?(setupSaved?(samInUse?'SAM 3.1 · regions saved':'Regions saved'):setupStep==='capture'?'iPhone · capturing':samWorking?'SAM 3.1 · outlining parts':['aligning','locating'].includes(setupStep)?'Local vision · aligning':samInUse?'SAM 3.1 regions · checking':'Regions · checking')
+  :frame?(progress?'Muse Spark reading':capturing?(frame.live?'Live · recording':'Recording'):'Camera check'):'Plan preview';
+ const count=$('stage-count'),setupRetry=setupOnStage&&setupJob.setup_attempt>1;count.hidden=!previewing&&!setupRetry&&!(frame&&!setup&&(progress||(capturing&&job.capture_step)));
+ if(setupRetry)count.textContent='Attempt '+setupJob.setup_attempt;else if(frame)count.textContent=progress?readingNote(progress):capturing&&job.capture_step?'Step '+job.capture_step+' of '+steps.length:'';
  if(runClock===null){const began=Date.parse(activeExecution?.started_at_utc||'');runClock=Number.isNaN(began)?Date.now():began;}
  $('run-elapsed').hidden=!!flowHold;
  if(!flowHold){paintRunClock();if(stageTimer===null)stageTimer=setTimeout(stageTick,1000);}
  if(img.hidden){img.removeAttribute('src');delete img.dataset.url;}
  const said=progress?.last_text;
- const caption=frame
+ const someLocal=Object.values(setupJob?.sources||{}).includes('local-vision');
+ const caption=setupOnStage
+  ? (setupStep==='capture'&&!setupSaved?'Live camera':!haveBoxes?'SAM 3.1 is outlining the parts in this frame.':(samInUse?'SAM 3.1 proposed these regions from this frame.':'Local vision placed these regions on this frame.')+(someLocal&&samInUse?' Dashed boxes came from local vision.':'')+(setupSaved?' A separate capture confirmed them. SAM takes no part in the verdict.':' A separate capture decides if they are used.'))
+  : frame
   ? frame.live?'Live camera':checkFrame?'Frame from this camera check':progress?(said?'Muse Spark read "'+said+'"':'Muse Spark found this frame unreadable'):'Recorded frame'
   : 'Drawn from your plan, not the camera. Real frames replace this as soon as they arrive.';
  showFlowFrame(img,'run-frame-label',img.hidden?null:frame.url,preview.hidden?'':caption);
@@ -138,9 +168,13 @@ function renderExplanationBlock(run,saved,busy){const box=$('result-explain'),re
  if(busy){box.append(node('p','Muse Spark is reading the evidence…','help'));return;}
  box.hidden=true;$('result-explain-run').hidden=!plannerSession?.planning_available;}
 async function loadExplanationFor(run,version){try{const data=await api('/api/runs/'+encodeURIComponent(run.id)+'/explanations');if(version!==flowRunId)return;renderExplanationBlock(run,data.explanations.find(e=>e.status==='explained'));}catch(e){renderExplanationBlock(run);}}
+// Names SAM only when this test really used a reference from a camera setup that SAM took part in.
+function renderSamNote(job){const note=$('result-sam'),path=job.camera_policy_path||'',setup=(typeof executionJobs!=='undefined'?executionJobs:[]).find(j=>j.action==='camera_setup'&&j.status==='setup_ready'&&[j.automatic_candidate_id,j.id].some(id=>id&&path.includes('/'+id+'/')));
+ const sources=Object.values(setup?.sources||setup?.confirmation?.sources||{}),sam=sources.filter(s=>s==='sam-3.1').length;note.hidden=!sam;if(!sam)return;
+ note.replaceChildren(node('strong','SAM 3.1'),node('span',' outlined '+sam+' of '+sources.length+' camera regions for this test, and a separate capture confirmed them. SAM takes no part in the verdict.'));}
 async function loadResult(job){if(flowRunId===job.id)return;flowRunId=job.id;flowRun=null;$('result-error').hidden=true;$('result-explain').hidden=true;$('result-explain-run').hidden=true;
  try{const run=await api('/api/runs/test-'+job.id);if(flowRunId!==job.id)return;flowRun=run;showTestResult(job);window.showMappingRepairFor?.(job);$('result-again').textContent=run.behavior_verdict==='fail'?'I fixed it, run again':'Run again';renderHistory(job.id);
-  const tests=testHistory(),prior=priorNonPass(tests,tests.findIndex(j=>j.id===job.id));$('result-retest').hidden=!prior;if(prior)$('result-retest').textContent=(prior==='fail'?'The previous test of this firmware found a mismatch.':'The previous test of this firmware was incomplete.')+' This test passed with the same plan.';const problem=run.steps.find(s=>stepResult(run,s.id)!=='ok');flowStep=(problem||run.steps[0])?.id;renderResultStep();loadExplanationFor(run,job.id);}
+  const tests=testHistory(),prior=priorNonPass(tests,tests.findIndex(j=>j.id===job.id));$('result-retest').hidden=!prior;if(prior)$('result-retest').textContent=(prior==='fail'?'The previous test of this firmware found a mismatch.':'The previous test of this firmware was incomplete.')+' This test passed with the same plan.';renderSamNote(job);const problem=run.steps.find(s=>stepResult(run,s.id)!=='ok');flowStep=(problem||run.steps[0])?.id;renderResultStep();loadExplanationFor(run,job.id);}
  catch(e){if(flowRunId===job.id){$('result-error').textContent='This test\'s evidence failed its checks: '+e.message;$('result-error').hidden=false;}}}
 function renderStatus(){const running=runIsHere(),[label,state]=running?['Running','busy']:projectStatus(lifecycleSnapshot,project?.draft);$('flow-status').textContent=project?label:'';if(state)$('flow-status').dataset.state=state;else delete $('flow-status').dataset.state;}
 // Presentation only. Activity comes from current jobs and requests, never a simulated timer.
@@ -149,7 +183,7 @@ function projectActivity(state) {
  if (window.cameraSetupActive) {
   const setup = window.cameraSetupActivity;
   return activity(2, setup?.busy ? 'working' : 'waiting',
-   setup?.busy ? 'Finding a clear view of your build' : 'The camera needs your help',
+   setup?.busy ? (setup.owner === 'SAM 3.1' ? 'SAM 3.1 is outlining your build' : 'Finding a clear view of your build') : 'The camera needs your help',
    setup?.note || 'Choose the iPhone camera to continue.', setup?.owner || 'Camera setup');
  }
  if (state === 'running') {
@@ -227,7 +261,7 @@ function renderProjectProgress(state) {
   if (index === a.step) item.setAttribute('aria-current', 'step');
   else item.removeAttribute('aria-current');
   item.querySelector('small').textContent = index < a.step ? 'Complete' : index === a.step
-   ? {working:'In progress',waiting:'Needs your attention',done:'Verified on camera',bad:'Mismatch found',idle:'Stopped'}[a.tone]
+   ? (window.cameraSetupActive&&working&&index===2?a.owner:{working:'In progress',waiting:'Needs your attention',done:'Verified on camera',bad:'Mismatch found',idle:'Stopped'}[a.tone])
    : ['Muse Spark','Your review','SAM + camera','Build + test','Camera evidence'][index];
   if (state === 'result' && index === 3) item.querySelector('small').textContent = a.tone === 'idle' ? 'Stopped' : 'Finished';
  }
